@@ -58,21 +58,24 @@ When executing or modifying `scripts/setup_rp5.py`, verify the following stages:
 
 ---
 
-## 5. Emulator Package Reference
+## 5. Emulator Package Reference & Distribution Channels
 
-Key emulator packages targeted by this workspace:
-
-- **Obtainium**: `dev.imranr.obtainium`
-- **RetroArch**: `com.retroarch` / `com.retroarch.aarch64`
+### A. Google Play Store (Manual install / no standalone GitHub APKs)
 - **Dolphin (GameCube / Wii)**: `org.dolphinemu.dolphinemu`
-- **AetherSX2 / NetherSX2 (PS2)**: `xyz.aethersx2.android`
 - **DuckStation (PS1)**: `com.github.stenzek.duckstation`
-- **PPSSPP (PSP)**: `org.ppsspp.ppsspp` / `org.ppsspp.ppssppgold`
-- **Mupen64Plus FZ (N64)**: `org.mupen64plusae.v3.fzurita` / `org.mupen64plusae.v3.fzurita.pro`
-- **Citra / Lime3DS (3DS)**: `io.github.lime3ds` / `org.citra.emu`
+*(Once downloaded from Play Store, re-run setup_rp5.py to apply MANAGE_EXTERNAL_STORAGE AppOps automatically.)*
+
+### B. Tracked via Obtainium (`rp5_master_obtainium.json`)
+- **Obtainium App Updater**: `dev.imranr.obtainium`
+- **ES-DE Frontend**: `org.es_de.frontend`
+- **RetroArch (64-bit)**: `com.retroarch.aarch64`
+- **NetherSX2 (PS2)**: `xyz.aethersx2.android`
+- **PPSSPP (PSP)**: `org.ppsspp.ppsspp`
+- **Azahar (3DS)**: `org.azahar_emu.azahar`
 - **Vita3K (PS Vita)**: `org.vita3k.emulator`
-- **Flycast (Dreamcast)**: `com.flyinghead.flycast`
-- **Frontends**: `me.quack.daijisho` (Daijisho), `org.es_de.frontend` (ES-DE), `com.magneticstarlight.beacon` (Beacon)
+- **Flycast (Dreamcast)**: `com.flycast.emulator`
+- **Daijisho (Frontend)**: `com.magneticchen.daijishou`
+- **Additional Frontends / Tools**: `com.magneticstarlight.beacon` (Beacon), `org.mupen64plusae.v3.fzurita` (Mupen64Plus FZ)
 
 ---
 

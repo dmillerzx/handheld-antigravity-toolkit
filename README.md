@@ -60,6 +60,11 @@ The pipeline runs these stages in order:
 | `--skip-phantom` / `--skip-scaffold` / `--skip-obtainium` / `--skip-permissions` | Skip the corresponding stage |
 | `--adb <path>` | Explicit adb binary path |
 
+### Emulator Ecosystem & Distribution Channels
+
+- **Google Play Store**: **Dolphin** (`org.dolphinemu.dolphinemu`) and **DuckStation** (`com.github.stenzek.duckstation`) do not publish standalone Android APK releases on GitHub and are provisioned directly from Google Play. Once installed from the Play Store, re-running `setup_rp5.py` automatically grants them `MANAGE_EXTERNAL_STORAGE` permissions.
+- **Obtainium**: All other emulators and frontends (**RetroArch**, **NetherSX2**, **PPSSPP**, **Azahar**, **Vita3K**, **Flycast**, **Daijisho**, and **ES-DE**) are tracked and updated directly from upstream GitHub releases via `configs/rp5_master_obtainium.json`.
+
 ### Bootstrapping Obtainium
 
 Download the arm64 build into `apks/` and verify it against the published checksum, then run the pipeline with `--install-apks`:

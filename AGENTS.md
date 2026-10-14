@@ -99,7 +99,9 @@ Android 11+ restricts storage access under Scoped Storage. Standard runtime perm
 adb shell appops set <package.name> MANAGE_EXTERNAL_STORAGE allow
 adb shell appops set dev.imranr.obtainium REQUEST_INSTALL_PACKAGES allow
 ```
-`MANAGE_EXTERNAL_STORAGE` is applied across all detected emulator and frontend packages (RetroArch, Dolphin, NetherSX2, DuckStation, PPSSPP, Mupen64Plus FZ, Lime3DS, Vita3K, Daijisho, ES-DE, Obtainium, etc.). `REQUEST_INSTALL_PACKAGES` is additionally granted to Obtainium.
+### F. Emulator Distribution Channels (Obtainium vs Google Play)
+- **Google Play Store**: **Dolphin** (`org.dolphinemu.dolphinemu`) and **DuckStation** (`com.github.stenzek.duckstation`) do not publish standalone Android APK release assets on GitHub and are provisioned via Google Play. Once downloaded from Play Store, re-running `setup_rp5.py` immediately grants them `MANAGE_EXTERNAL_STORAGE`.
+- **Obtainium**: All other emulators and frontends (**RetroArch**, **NetherSX2**, **PPSSPP**, **Azahar**, **Vita3K**, **Flycast**, **Daijisho**, and **ES-DE**) are provisioned and tracked directly from upstream GitHub releases using `configs/rp5_master_obtainium.json`.
 
 ---
 
