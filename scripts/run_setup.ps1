@@ -12,17 +12,33 @@ if ((Test-Path $PlatformTools) -and ($env:Path -notlike "*$PlatformTools*")) {
     $env:Path = "$PlatformTools;$env:Path"
 }
 
-# Ensure Python is found
-$PythonExe = (Get-Command python -ErrorAction SilentlyContinue).Source
-if (-not $PythonExe) {
-    $PythonDefault = "C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe"
-    if (Test-Path $PythonDefault) {
-        $PythonExe = $PythonDefault
-    } else {
-        Write-Error "Python executable not found. Please install Python."
-        exit 1
+# Resolve real Python executable, avoiding WindowsApps execution alias stub
+$KnownPythons = @(
+    "C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe",
+    (Join-Path $env:LOCALAPPDATA "Programs\Python\Python312\python.exe"),
+    (Join-Path $env:LOCALAPPDATA "Programs\Python\Python311\python.exe"),
+    (Join-Path $env:ProgramFiles "Python312\python.exe")
+)
+
+$PythonExe = $null
+foreach ($cand in $KnownPythons) {
+    if (Test-Path $cand) {
+        $PythonExe = $cand
+        break
     }
 }
 
+if (-not $PythonExe) {
+    $cmdPy = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if ($cmdPy -and ($cmdPy -notmatch "WindowsApps")) {
+        $PythonExe = $cmdPy
+    }
+}
+
+if (-not $PythonExe) {
+    Write-Error "Python 3.12 executable not found. Please install Python."
+    exit 1
+}
+
 $SetupScript = Join-Path $ScriptDir "setup_rp5.py"
-& $PythonExe $SetupScript $args
+& $PythonExe $SetupScript @args
