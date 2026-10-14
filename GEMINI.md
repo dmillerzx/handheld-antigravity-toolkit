@@ -45,19 +45,24 @@ If a task seems to require a different path, stop and ask the user instead of cr
 
 ## 4. Provisioning Checklist
 
-When executing or modifying `scripts/setup_rp5.py`, verify the following stages:
+When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps1`, verify the following stages:
 
 | Stage | Action | Verification Command |
 |---|---|---|
 | **Connectivity** | Confirm device is online and authorized | `adb devices` |
 | **Phantom Process** | Disable Android 13 phantom process restrictions | `adb shell "/system/bin/device_config get activity_manager max_phantom_processes"` |
-| **Storage Scaffolding** | Create the canonical directories only | `adb shell "ls -la /sdcard/bios /storage/<SD_ID>"` |
+| **Storage Scaffolding** | Create canonical directories | `adb shell "ls -la /sdcard/bios /storage/<SD_ID>"` |
 | **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
 | **ES-DE Pre-Config** | Push `es_settings.xml` configured with MicroSD ROM path | `adb shell "cat /sdcard/ES-DE/settings/es_settings.xml"` |
 | **Turnip Drivers** | Stage Mesa Turnip GPU drivers in `/sdcard/Download/drivers/` | `adb shell "ls -la /sdcard/Download/drivers"` |
-| **Hardware Tuning** | Disable lockscreen, hide floating overlay, set Xbox gamepad layout | `adb shell "getprop persist.sys.gamepad.type"` |
-| **APK Install** | Install staged APKs from `apks/` | `adb shell "pm list packages \| grep -E 'obtainium\|es_de'"` |
-| **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` (all targets) and `REQUEST_INSTALL_PACKAGES` (Obtainium) AppOps | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
+| **Hardware Tuning** | Lockscreen disabled, overlay hidden, Xbox gamepad layout, Both triggers (`persist.sys.trigger.mode 2`) | `adb shell "getprop persist.sys.trigger.mode"` |
+| **DroidDeck & Vita** | Stage DroidDeck 720p/FSR profile and Sony Vita firmware `PSP2UPDAT.PUP` | `adb shell "ls -la /sdcard/Download/vita3k"` |
+| **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
+| **2D/Arcade Cores** | Fetch & stage 11 designated cores and frontend assets | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |
+| **Standalone 3D Profiles** | Inject tuned Vulkan/audio profiles into DuckStation, NetherSX2, Dolphin, PPSSPP, Flycast, Azahar, Vita3K | `adb shell "cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini"` |
+| **Widescreen Patches** | Stage GameCube Gecko patches and NetherSX2 PCSX2 master `.pnach` cheats | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
+| **Save Backup Sync** | Mirror saves, savestates, and memory cards to `/storage/<SD_ID>/Saves_Backup/latest/` | `adb shell "ls -la /storage/<SD_ID>/Saves_Backup/latest"` |
+| **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` across all emulators and frontends | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
 
 ---
 
@@ -68,7 +73,7 @@ When executing or modifying `scripts/setup_rp5.py`, verify the following stages:
 - **DuckStation (PS1)**: `com.github.stenzek.duckstation`
 *(Once downloaded from Play Store, re-run setup_rp5.py to apply MANAGE_EXTERNAL_STORAGE AppOps automatically.)*
 
-### B. Tracked via Obtainium (`rp5_master_obtainium.json`)
+### B. Tracked via Obtainium (`rp5_master_obtainium.json`) & Staged APKs
 - **Obtainium App Updater**: `dev.imranr.obtainium`
 - **ES-DE Frontend**: `org.es_de.frontend`
 - **RetroArch (64-bit)**: `com.retroarch.aarch64`
@@ -78,25 +83,27 @@ When executing or modifying `scripts/setup_rp5.py`, verify the following stages:
 - **Vita3K (PS Vita)**: `org.vita3k.emulator`
 - **Flycast (Dreamcast)**: `com.flycast.emulator`
 - **Daijisho (Frontend)**: `com.magneticchen.daijishou`
+- **DroidDeck (Steam Launcher)**: `com.droiddeck.launcher`
 - **Additional Frontends / Tools**: `com.magneticstarlight.beacon` (Beacon), `org.mupen64plusae.v3.fzurita` (Mupen64Plus FZ)
 
 ---
 
 ## 6. Script Invocation
 
-To run the provisioning pipeline:
+To run the complete zero-touch provisioning pipeline:
 ```powershell
-python scripts/setup_rp5.py
+.\scripts\provision_all.ps1 -Serial ff152647
 ```
-Or via the PowerShell launcher:
+Or directly via Python:
 ```powershell
-.\scripts\run_setup.ps1
+python scripts/setup_rp5.py --serial ff152647 --all
 ```
 Options available:
+- `--all`: Execute complete community provisioning pipeline (hardware tuning, storage, Obtainium, DroidDeck, Vita firmware, RetroArch low-pass engine, standalone 3D profiles, widescreen patches, and save backup sync).
 - `--dry-run`: Preview ADB commands without applying them.
 - `--status`: Check device connection and print hardware specs, then exit.
 - `--serial <id>` / `-s <id>`: Target a specific device if multiple ADB instances exist.
-- `--install-apks`: Install every `.apk` staged in `apks/` (runs before the AppOps step).
+- `--install-apks`: Install every `.apk` staged in `apks/`.
 - `--skip-phantom`: Skip the Phantom Process Killer unlock.
 - `--skip-scaffold`: Skip canonical directory scaffolding.
 - `--skip-obtainium`: Skip pushing `rp5_master_obtainium.json`.

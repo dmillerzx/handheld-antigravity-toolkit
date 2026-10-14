@@ -39,6 +39,7 @@ TARGET_PACKAGES = [
     ("com.magneticchen.daijishou", "Daijisho Frontend"),
     ("org.dolphinemu.dolphinemu", "Dolphin Emulator (GameCube/Wii)"),
     ("com.github.stenzek.duckstation", "DuckStation (PS1)"),
+    ("com.droiddeck.launcher", "DroidDeck Launcher (Steam)"),
     ("com.retroarch", "RetroArch (Standard)"),
     ("com.retroarch.ra32", "RetroArch (32-bit)"),
     ("org.ppsspp.ppssppgold", "PPSSPP Gold"),
@@ -57,6 +58,7 @@ TARGET_PACKAGES = [
 # Additional AppOps granted (beyond MANAGE_EXTERNAL_STORAGE) to specific packages
 EXTRA_APPOPS = {
     "dev.imranr.obtainium": ["REQUEST_INSTALL_PACKAGES"],
+    "com.droiddeck.launcher": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "REQUEST_INSTALL_PACKAGES"],
 }
 
 # ---------------------------------------------------------------------------
@@ -298,11 +300,166 @@ class RP5Provisioner:
         print("    -> Setting gamepad controller style to Xbox mode (persist.sys.gamepad.type=0)...")
         self.shell("setprop persist.sys.gamepad.type 0", check=False)
 
-        # 4. Power / end button behavior (2 = sleep/wake)
+        # 4. Enforce Both trigger mode (Analog axis + digital button click)
+        print("    -> Setting trigger mode to Both (analog + digital, persist.sys.trigger.mode=2)...")
+        self.shell("setprop persist.sys.trigger.mode 2", check=False)
+
+        # 5. Power / end button behavior (2 = sleep/wake)
         print("    -> Setting end button behavior...")
         self.shell("settings put system end_button_behavior 2", check=False)
 
         print("    -> Retroid OS system and hardware tuning complete.")
+
+    def stage_droiddeck(self) -> None:
+        """Deploys DroidDeck config and scaffolds prefix/Steam library directories."""
+        print("\n[*] Staging DroidDeck configuration and storage structure...")
+        internal, sdcard = self.discover_storage_targets()
+
+        self.shell("mkdir -p /sdcard/DroidDeck/prefixes/default", check=False)
+        self.shell("mkdir -p /sdcard/Android/data/com.droiddeck.launcher/files", check=False)
+
+        if sdcard:
+            self.shell(f"mkdir -p '{sdcard}/Games/Steam'", check=False)
+
+        cfg_source = WORKSPACE_ROOT / "configs" / "droiddeck_config.json"
+        if cfg_source.exists():
+            print("    -> Pushing DroidDeck config (720p base rendering, FSR 1080p, Turnip driver)...")
+            self.run_cmd("push", str(cfg_source), "/sdcard/DroidDeck/config.json")
+            self.run_cmd("push", str(cfg_source), "/sdcard/Android/data/com.droiddeck.launcher/files/config.json")
+
+        vita_firmware_sources = [
+            WORKSPACE_ROOT / "scratch" / "PSP2UPDAT.PUP",
+            WORKSPACE_ROOT / "bios" / "PSP2UPDAT.PUP",
+        ]
+        for vfw in vita_firmware_sources:
+            if vfw.exists():
+                print(f"    -> Staging Sony PS Vita OS Firmware ({vfw.name}) to /sdcard/Download/vita3k/...")
+                self.shell("mkdir -p /sdcard/Download/vita3k", check=False)
+                self.run_cmd("push", str(vfw), "/sdcard/Download/vita3k/PSP2UPDAT.PUP")
+                break
+        print("    -> DroidDeck and PS Vita firmware staging complete.")
+
+    def stage_retroarch_engine(self) -> None:
+        """Deploys ultra-low latency RetroArch configurations and low-pass audio filters."""
+        print("\n[*] Staging Ultra-Low Latency RetroArch 2D engine & low-pass audio filters...")
+        internal, sdcard = self.discover_storage_targets()
+        sd_id = os.path.basename(sdcard) if sdcard else "EEEF-F762"
+
+        ra_cfgs = WORKSPACE_ROOT / "configs" / "retroarch"
+        if not ra_cfgs.exists():
+            print("    [!] RetroArch configs directory not found. Skipping.")
+            return
+
+        internal_ra = "/sdcard/Android/data/com.retroarch.aarch64/files"
+        sd_ra = f"/storage/{sd_id}/RetroArch"
+        self.shell(f"mkdir -p '{internal_ra}' '{sd_ra}/config' '{sd_ra}/filters/audio' '{sd_ra}/shaders'", check=False)
+
+        main_cfg = ra_cfgs / "retroarch.cfg"
+        if main_cfg.exists():
+            print("    -> Deploying tuned retroarch.cfg...")
+            self.run_cmd("push", str(main_cfg), f"{internal_ra}/retroarch.cfg")
+            self.run_cmd("push", str(main_cfg), f"{sd_ra}/config/retroarch.cfg")
+
+        core_opts = ra_cfgs / "retroarch-core-options.cfg"
+        if core_opts.exists():
+            print("    -> Deploying core options (Genesis Model 1 LPF range 60, Snes9x Gaussian, Gambatte Sinc)...")
+            self.run_cmd("push", str(core_opts), f"{internal_ra}/retroarch-core-options.cfg")
+            self.run_cmd("push", str(core_opts), f"{sd_ra}/config/retroarch-core-options.cfg")
+
+        gba_dsp = ra_cfgs / "filters" / "audio" / "gba_lowpass.dsp"
+        if gba_dsp.exists():
+            print("    -> Deploying GBA 5.5kHz low-pass audio filter (gba_lowpass.dsp)...")
+            self.run_cmd("push", str(gba_dsp), f"{sd_ra}/filters/audio/gba_lowpass.dsp")
+            self.shell(f"mkdir -p '{internal_ra}/filters/audio'", check=False)
+            self.run_cmd("push", str(gba_dsp), f"{internal_ra}/filters/audio/gba_lowpass.dsp")
+
+        mgba_cfg = ra_cfgs / "config" / "mGBA" / "mGBA.cfg"
+        mgba_slangp = ra_cfgs / "config" / "mGBA" / "mGBA.slangp"
+        if mgba_cfg.exists():
+            self.shell(f"mkdir -p '{sd_ra}/config/mGBA' '{internal_ra}/config/mGBA'", check=False)
+            self.run_cmd("push", str(mgba_cfg), f"{sd_ra}/config/mGBA/mGBA.cfg")
+            self.run_cmd("push", str(mgba_cfg), f"{internal_ra}/config/mGBA/mGBA.cfg")
+        if mgba_slangp.exists():
+            self.run_cmd("push", str(mgba_slangp), f"{sd_ra}/config/mGBA/mGBA.slangp")
+            self.run_cmd("push", str(mgba_slangp), f"{internal_ra}/config/mGBA/mGBA.slangp")
+
+        print("    -> RetroArch 2D engine & low-pass audio filters staged successfully.")
+
+    def stage_widescreen_patches(self) -> None:
+        """Pushes GameCube Gecko widescreen patches and PS2 pnach cheats."""
+        print("\n[*] Staging Widescreen Patches (GameCube Gecko & PS2 pnach)...")
+        gcn_patches = list((WORKSPACE_ROOT / "patches" / "gcn").glob("*.ini"))
+        if gcn_patches:
+            dest_gcn = "/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"
+            self.shell(f"mkdir -p '{dest_gcn}'", check=False)
+            print(f"    -> Deploying {len(gcn_patches)} GameCube widescreen Gecko patches...")
+            for patch in gcn_patches:
+                self.run_cmd("push", str(patch), f"{dest_gcn}/{patch.name}")
+
+        tar_patch = WORKSPACE_ROOT / "scratch" / "ps2_patches.tar.gz"
+        if tar_patch.exists():
+            print("    -> Deploying NetherSX2 PCSX2 widescreen pnach cheats...")
+            remote_tar = "/sdcard/Download/ps2_patches.tar.gz"
+            self.run_cmd("push", str(tar_patch), remote_tar)
+            self.shell("mkdir -p /sdcard/Android/data/xyz.aethersx2.android/files/cheats; tar -xzf /sdcard/Download/ps2_patches.tar.gz -C /sdcard/Android/data/xyz.aethersx2.android/files/cheats/ && rm /sdcard/Download/ps2_patches.tar.gz", check=False)
+        print("    -> Widescreen patches deployment complete.")
+
+    def run_standalone_config(self) -> None:
+        """Executes configure_standalones.py to configure 3D emulator profiles."""
+        script = WORKSPACE_ROOT / "scripts" / "configure_standalones.py"
+        if script.exists():
+            print("\n[*] Injecting Standalone 3D Emulator Profiles...")
+            cmd = [sys.executable, str(script), "--adb", self.adb]
+            if self.serial:
+                cmd.extend(["-s", self.serial])
+            if self.dry_run:
+                cmd.append("--dry-run")
+            subprocess.run(cmd, check=False)
+
+    def run_retroarch_core_download(self) -> None:
+        """Executes download_retroarch_cores.py to ensure 2D/Arcade cores & assets are present."""
+        script = WORKSPACE_ROOT / "scripts" / "download_retroarch_cores.py"
+        if script.exists():
+            print("\n[*] Provisioning RetroArch 2D/Arcade Cores & Assets...")
+            cmd = [sys.executable, str(script), "--adb", self.adb]
+            if self.serial:
+                cmd.extend(["-s", self.serial])
+            if self.dry_run:
+                cmd.append("--dry-run")
+            subprocess.run(cmd, check=False)
+
+    def run_save_sync(self) -> None:
+        """Executes sync_all_saves.py to back up saves, savestates, and memory cards."""
+        script = WORKSPACE_ROOT / "scripts" / "sync_all_saves.py"
+        if script.exists():
+            print("\n[*] Executing Automated Save & State Backup Pipeline...")
+            cmd = [sys.executable, str(script), "--adb", self.adb]
+            if self.serial:
+                cmd.extend(["-s", self.serial])
+            if self.dry_run:
+                cmd.append("--dry-run")
+            subprocess.run(cmd, check=False)
+
+    def provision_all(self, apks_dir: Optional[Path] = None) -> None:
+        """Runs the complete end-to-end community provisioning pipeline."""
+        print("\n" + "=" * 72)
+        print("   Starting Complete RP5 Zero-Touch Community Provisioning Pipeline")
+        print("=" * 72)
+        self.unlock_phantom_process_killer()
+        self.scaffold_directories()
+        self.stage_obtainium_config()
+        self.stage_esde_config()
+        self.stage_turnip_drivers()
+        self.tune_retroid_hardware()
+        if apks_dir and apks_dir.exists():
+            self.install_local_apks(apks_dir)
+        self.grant_storage_permissions()
+        self.stage_droiddeck()
+        self.stage_retroarch_engine()
+        self.stage_widescreen_patches()
+        self.run_standalone_config()
+        self.run_retroarch_core_download()
+        self.run_save_sync()
 
     def _write_fallback_obtainium(self, path: Path) -> None:
         """Creates a default rp5_master_obtainium.json if not present."""
@@ -414,6 +571,7 @@ def main() -> int:
     parser.add_argument("--skip-tuning", action="store_true", help="Skip Retroid OS hardware & system tuning.")
     parser.add_argument("--skip-permissions", action="store_true", help="Skip granting MANAGE_EXTERNAL_STORAGE.")
     parser.add_argument("--install-apks", action="store_true", help="Install any .apk files staged in apks/ folder.")
+    parser.add_argument("--all", action="store_true", help="Execute complete zero-touch community provisioning pipeline.")
     args = parser.parse_args()
 
     print("=" * 72)
@@ -450,6 +608,13 @@ def main() -> int:
     print("--------------------------")
 
     if args.status:
+        return 0
+
+    if args.all:
+        provisioner.provision_all(apks_dir=WORKSPACE_ROOT / "apks")
+        print("\n" + "=" * 72)
+        print("   Retroid Pocket 5 Complete Community Provisioning Finished!")
+        print("=" * 72)
         return 0
 
     # 1. Android 13 Phantom Process unlock

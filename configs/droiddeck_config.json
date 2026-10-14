@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "rendering": {
+    "base_resolution": "1280x720",
+    "base_resolution_width": 1280,
+    "base_resolution_height": 720,
+    "target_resolution": "1920x1080",
+    "target_resolution_width": 1920,
+    "target_resolution_height": 1080,
+    "fsr_enabled": true,
+    "fsr_sharpness": 2
+  },
+  "environment": {
+    "DXVK_ASYNC": "1",
+    "DXVK_STATE_CACHE": "1",
+    "CUSTOM_GPU_DRIVER": "/sdcard/Download/drivers/Turnip_v26.0.0_R8.zip"
+  },
+  "storage": {
+    "prefix_root": "/sdcard/DroidDeck/prefixes/default",
+    "steam_library": "/storage/EEEF-F762/Games/Steam"
+  }
+}

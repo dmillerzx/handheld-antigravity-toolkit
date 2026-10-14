@@ -1,0 +1,16 @@
+# mGBA Chained Shader Preset: gba-color -> lcd-grid-v2
+shaders = 2
+
+shader0 = "/storage/EEEF-F762/RetroArch/shaders/handheld/shaders/color/gba-color.slang"
+filter_linear0 = false
+scale_type0 = source
+scale0 = 1.0
+
+shader1 = "/storage/EEEF-F762/RetroArch/shaders/handheld/shaders/lcd-cgwg/lcd-grid-v2.slang"
+filter_linear1 = false
+scale_type1 = viewport
+scale1 = 1.0
+
+parameters = "target_gamma;GRID_STRENGTH"
+target_gamma = "2.200000"
+GRID_STRENGTH = "0.180000"

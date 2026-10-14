@@ -29,20 +29,21 @@ Internal storage   /sdcard/
 MicroSD            /storage/<SD_ID>/
 ├── bios/                         # BIOS files (canonical, shared by all emulators)
 ├── ROMs/                         # All ROMs (one subfolder per system, managed by ES-DE)
-└── ES-DE/                        # ES-DE frontend data (gamelists, media, settings)
+├── ES-DE/                        # ES-DE frontend data (gamelists, media, settings)
+├── RetroArch/                    # RetroArch configs, cores, joypad autoconfig, shaders
+├── Saves_Backup/                 # Canonical save, savestate & memory card backup mirrors
+└── Games/Steam/                  # External DroidDeck Steam library (MicroSD)
 ```
 
 ### Layout rules for agents
 
-1. **Do NOT create alternative folder variants.** Forbidden on the device, on both internal storage and the MicroSD card:
-   - `Games/`, `Games/BIOS`, `BIOS/` (upper-case), `Bios/`
+1. **Do NOT create alternative ROM folder variants.** Forbidden on the device, on both internal storage and the MicroSD card:
+   - `Games/BIOS`, `BIOS/` (upper-case), `Bios/`
    - `roms/` (lower-case), `Emulation/`, `Emulation/roms`, `Emulation/bios`
-   - `RetroArch/`, `Dolphin/` scaffolding folders created by scripts
-   - Any other new top-level directory on `/storage/<SD_ID>/` besides `bios`, `ROMs`, `ES-DE`
-2. **No internal ROM directories.** ROMs live only on the MicroSD card in `/storage/<SD_ID>/ROMs`. Never create `/sdcard/ROMs`, `/sdcard/roms` or `/sdcard/Emulation`.
-3. Android-managed folders (`Android/`, `Download/`, and the stock media folders) are owned by the OS. Do not rely on them, and never delete `Android/`. `/sdcard/Download/` is used only to stage `rp5_master_obtainium.json`.
-4. Do not add paths to scripts or docs without first updating this section.
-5. When pushing BIOS files, push to `/sdcard/bios/` and `/storage/<SD_ID>/bios/` only.
+   - `/sdcard/ROMs`, `/sdcard/roms`, `/sdcard/Emulation` (ROMs live only on MicroSD in `/storage/<SD_ID>/ROMs`)
+2. **Canonical ROM storage.** ROMs live strictly on the MicroSD card in `/storage/<SD_ID>/ROMs/<system>/`.
+3. Android-managed folders (`Android/`, `Download/`, and the stock media folders) are owned by the OS. Do not rely on them, and never delete `Android/`. `/sdcard/Download/` is used only to stage `rp5_master_obtainium.json`, Mesa Turnip drivers, and Vita firmware.
+4. When pushing BIOS files, push to `/sdcard/bios/` and `/storage/<SD_ID>/bios/` only.
 
 ---
 
@@ -50,31 +51,37 @@ MicroSD            /storage/<SD_ID>/
 
 ```text
 AntigravityWorkingDir/
-├── .gitignore               # Excludes platform-tools/, logs, *.apk, bios/*, roms/**/* (keeps .gitkeep)
+├── .gitignore               # Excludes platform-tools/, logs, *.apk, bios/*, roms/**/*, *.pnach
 ├── AGENTS.md                # Agent overview, canonical storage layout, workspace instructions
 ├── GEMINI.md                # Gemini-specific provisioning guidelines
-├── README.md                # Hardware specs, pipeline docs, canonical storage map
+├── README.md                # Hardware specs, pipeline docs, ecosystem matrix
 ├── platform-tools/          # Local Google Android SDK Platform-Tools (adb, fastboot) - not versioned
 ├── apks/                    # Staging directory for offline APK installations (not versioned)
 ├── bios/                    # Local staging copy of system BIOS files (not versioned)
 ├── roms/                    # Local ROM staging (not versioned)
 ├── patches/
-│   ├── gcn/                 # GameCube widescreen/60fps/HD gecko patches & textures
-│   └── ps2/                 # PS2 widescreen/60fps pnach patches
+│   ├── gcn/                 # GameCube widescreen/60fps Gecko patches
+│   └── ps2/                 # PS2 PCSX2 master pnach cheats (.gitkeep)
 ├── configs/                 # Device profiles, ES-DE configs & Obtainium templates
 │   ├── rp5_master_obtainium.json
-│   └── es_settings.xml
+│   ├── es_settings.xml
+│   ├── droiddeck_config.json
+│   └── retroarch/           # Low-latency configs, core options, GBA low-pass filter & shader
 ├── drivers/                 # Mesa Turnip Adreno 650 GPU drivers (not versioned)
 └── scripts/
-    ├── setup_rp5.py         # Main automated ADB provisioning script
+    ├── provision_all.ps1    # Master PowerShell provisioning orchestrator
+    ├── setup_rp5.py         # Main automated ADB provisioning script (--all)
+    ├── configure_standalones.py # Standalone 3D emulator profile injector
+    ├── download_retroarch_cores.py # Automated Libretro 2D/Arcade core & asset deployer
+    ├── sync_all_saves.py    # Save, savestate & memory card backup sync
     └── run_setup.ps1        # PowerShell helper wrapper ensuring PATH resolution
 ```
 
 ---
 
-## 4. Automation Protocols (`scripts/setup_rp5.py`)
+## 4. Automation Protocols (`scripts/setup_rp5.py` and `scripts/provision_all.ps1`)
 
-The primary provisioning script handles the following Android 13 configuration routines:
+The provisioning pipeline handles the following Android 13 configuration routines:
 
 ### A. Android 13 Phantom Process Killer Unlock
 Android 12 and 13 enforce a maximum of 32 child processes per background app tree. Emulators, background tasks, and translation environments can trigger silent `SIGKILL` termination. The script disables this limit:
@@ -86,46 +93,51 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 
 ### B. Directory Scaffolding (Canonical Layout Only)
 - Creates `/sdcard/bios`.
-- Automatically discovers the external MicroSD card under `/storage/XXXX-XXXX` and creates exactly `bios/`, `ROMs/` and `ES-DE/` there (see Section 2).
+- Automatically discovers the external MicroSD card under `/storage/XXXX-XXXX` and creates canonical directories.
 
-### C. Staging Obtainium Configuration
+### C. Staging Obtainium & DroidDeck Configuration
 - Pushes `configs/rp5_master_obtainium.json` directly to `/sdcard/Download/rp5_master_obtainium.json`.
-- Users can launch Obtainium on the device and select **Import/Export -> Obtainium Import** to batch-install and track all emulator releases directly from upstream GitHub releases.
+- Pushes `configs/droiddeck_config.json` (720p base rendering, FSR 1080p, `DXVK_ASYNC=1`, Turnip driver) to `/sdcard/DroidDeck/config.json`.
+- Stages Sony PS Vita OS Firmware `PSP2UPDAT.PUP` to `/sdcard/Download/vita3k/`.
 
-### D. Headless ES-DE Storage Pre-Configuration
-- Pushes `configs/es_settings.xml` configured with `<string name="ROMDirectory" value="/storage/EEEF-F762/ROMs" />` to both `/sdcard/ES-DE/settings/es_settings.xml` and `/storage/<SD_ID>/ES-DE/settings/es_settings.xml`.
-- Bypasses ES-DE's initial directory setup prompt on first launch and guarantees that ES-DE reads ROMs exclusively from the canonical MicroSD path.
+### D. Ultra-Low-Latency 2D RetroArch Engine & Low-Pass Audio Filters
+- Vulkan video backend, Ozone menu, frame delay 4, 48ms OpenSLES audio latency, run-ahead 1 frame.
+- Genesis Model 1 low-pass filter (range 60, YM2612 MAME).
+- Super Nintendo Gaussian audio interpolation (Snes9x).
+- Game Boy / Game Boy Color Sinc audio resampler (Gambatte).
+- Game Boy Advance 5.5kHz IIR low-pass DSP filter (`gba_lowpass.dsp`) + `mGBA.slangp` GBA color & LCD grid shader.
+- Automated fetching of 11 designated 2D/Arcade cores and frontend assets.
 
-### E. Mesa Turnip GPU Driver Staging (Adreno 650)
-- Mesa Turnip Vulkan drivers (from `K11MCH1/AdrenoToolsDrivers`) are staged locally in `drivers/` (git-ignored) and pushed to `/sdcard/Download/drivers/`.
-- Allows standalone emulators supporting custom AdrenoTools GPU drivers (e.g., Azahar / 3DS, Vita3K / PS Vita) to load optimized Turnip drivers via their GPU driver configuration menus.
+### E. Standalone 3D Emulators Injection
+- Injects optimal profiles for DuckStation (5x 1080p PGXP, Cubeb 20ms), NetherSX2 (2.25x 1080p SPU2 Hermite), Dolphin (2.5x 1080p OpenSLES DSP, analog triggers), PPSSPP (4x 1080p 16x Aniso), Flycast (2x 1080p Widescreen), Azahar (3x 1080p Turnip), and Vita3K (2x 1080p Turnip).
 
-### F. Retroid OS System & Hardware Tuning
-The script configures optimal system defaults via ADB:
-- **Lockscreen**: Disabled via `adb shell locksettings set-disabled true` to allow uninterrupted testing, reboot recovery, and automated boot into frontends.
-- **Floating Game Assistant Overlay**: Disabled via `adb shell settings put system is_show_floatingIcon 0` to prevent UI obstruction and inadvertent touch triggers during emulation.
-- **Controller Style**: Set to Xbox mode via `adb shell setprop persist.sys.gamepad.type 0` (0 = Xbox style, 1 = Retro style) for standard A/B X/Y mapping across modern Android emulators.
-- **Power Button / End Button Behavior**: Configured via `adb shell settings put system end_button_behavior 2` (sleep/wake).
-- **Retroid Quick Settings Tiles**: Custom system tiles available on RP5 include `performancemode`, `ledlights`, `fan`, `controllerStyle`, `triggerInputMode`, `FloatingWindowTileService`, `KeepScreenOnTileService`, and `ForceLandscapeTileService`.
+### F. Widescreen Patches & Headless ES-DE Routing
+- Pushes GameCube Gecko widescreen patches to Dolphin `GameSettings/`.
+- Pushes NetherSX2 PCSX2 master widescreen `.pnach` cheats.
+- Headless `es_settings.xml` pre-routes all 3D systems to standalone emulators while routing 2D/Arcade systems to RetroArch.
 
-### G. APK Installation (`--install-apks`)
-Installs every `.apk` staged in `apks/` with `adb install -r -g`. Runs **before** the AppOps step so freshly installed packages are granted permissions in the same run.
+### G. Save & State Backup Pipeline
+- Systematically mirrors saves, states, and virtual memory cards across all emulators to `/storage/<SD_ID>/Saves_Backup/latest/`.
 
-### H. Granting AppOps
-Android 11+ restricts storage access under Scoped Storage. Standard runtime permission requests fail for emulators reading ROMs from MicroSD. The script invokes AppOps:
+### H. Retroid OS System & Hardware Tuning
+- **Lockscreen**: Disabled (`locksettings set-disabled true`).
+- **Floating Overlay**: Disabled (`settings put system is_show_floatingIcon 0`).
+- **Controller Style**: Xbox mode (`persist.sys.gamepad.type 0`).
+- **Trigger Mode**: Both analog axis + digital button click (`persist.sys.trigger.mode 2`).
+
+### I. Granting AppOps
+Android 11+ restricts storage access under Scoped Storage. The script invokes AppOps:
 ```bash
 adb shell appops set <package.name> MANAGE_EXTERNAL_STORAGE allow
 adb shell appops set dev.imranr.obtainium REQUEST_INSTALL_PACKAGES allow
+adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 ```
-### I. Emulator Distribution Channels (Obtainium vs Google Play)
-- **Google Play Store**: **Dolphin** (`org.dolphinemu.dolphinemu`) and **DuckStation** (`com.github.stenzek.duckstation`) do not publish standalone Android APK release assets on GitHub and are provisioned via Google Play. Once downloaded from Play Store, re-running `setup_rp5.py` immediately grants them `MANAGE_EXTERNAL_STORAGE`.
-- **Obtainium**: All other emulators and frontends (**RetroArch**, **NetherSX2**, **PPSSPP**, **Azahar**, **Vita3K**, **Flycast**, **Daijisho**, and **ES-DE**) are provisioned and tracked directly from upstream GitHub releases using `configs/rp5_master_obtainium.json`.
 
 ---
 
 ## 5. Operational Best Practices for Agents
 
-1. **Path Resolution**: When calling ADB or Python, prioritize local `platform-tools/adb.exe` if `adb` is missing from the global execution environment, or use `scripts/run_setup.ps1`.
+1. **Master Runner**: Execute `.\scripts\provision_all.ps1 -Serial ff152647` or `python scripts/setup_rp5.py --serial ff152647 --all`.
 2. **Device State Verification**: Always check `adb devices` before executing device commands. If status is `unauthorized`, prompt the user to accept the USB debugging prompt on the RP5 screen.
 3. **Safe Storage Handling**: Do not write large binary files directly to version control. Validate paths before issuing `adb push` commands, and only push to the canonical paths in Section 2.
 4. **Multiple Devices**: A Konkr Pocket Advance may also be attached. Always pass `-s <serial>` explicitly; the RP5 serial is `ff152647`.

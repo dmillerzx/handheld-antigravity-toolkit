@@ -22,6 +22,10 @@ platform-tools/
 drivers/*
 !drivers/.gitkeep
 
+# Patches staging (exclude bulky fetched pnach patch dumps)
+patches/ps2/*.pnach
+!patches/ps2/.gitkeep
+
 
 # Python caches and virtual environments
 __pycache__/
