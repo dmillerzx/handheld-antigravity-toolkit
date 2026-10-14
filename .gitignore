@@ -1,0 +1,32 @@
+# Retroid Pocket 5 Provisioning Workspace .gitignore
+
+# APK packages
+*.apk
+
+# BIOS files (exclude binary dumps, retain directory structure)
+bios/*
+!bios/.gitkeep
+
+# ROM dumps (exclude binary dumps across all platform subdirectories)
+roms/**/*
+!roms/**/
+!roms/**/.gitkeep
+
+# Local platform tools archive & extracted binaries
+platform-tools/
+*.zip
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Operating system and editor artifacts
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
