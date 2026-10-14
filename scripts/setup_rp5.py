@@ -386,23 +386,18 @@ class RP5Provisioner:
         print("    -> RetroArch 2D engine & low-pass audio filters staged successfully.")
 
     def stage_widescreen_patches(self) -> None:
-        """Pushes GameCube Gecko widescreen patches and PS2 pnach cheats."""
-        print("\n[*] Staging Widescreen Patches (GameCube Gecko & PS2 pnach)...")
-        gcn_patches = list((WORKSPACE_ROOT / "patches" / "gcn").glob("*.ini"))
-        if gcn_patches:
-            dest_gcn = "/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"
-            self.shell(f"mkdir -p '{dest_gcn}'", check=False)
-            print(f"    -> Deploying {len(gcn_patches)} GameCube widescreen Gecko patches...")
-            for patch in gcn_patches:
-                self.run_cmd("push", str(patch), f"{dest_gcn}/{patch.name}")
-
-        tar_patch = WORKSPACE_ROOT / "scratch" / "ps2_patches.tar.gz"
-        if tar_patch.exists():
-            print("    -> Deploying NetherSX2 PCSX2 widescreen pnach cheats...")
-            remote_tar = "/sdcard/Download/ps2_patches.tar.gz"
-            self.run_cmd("push", str(tar_patch), remote_tar)
-            self.shell("mkdir -p /sdcard/Android/data/xyz.aethersx2.android/files/cheats; tar -xzf /sdcard/Download/ps2_patches.tar.gz -C /sdcard/Android/data/xyz.aethersx2.android/files/cheats/ && rm /sdcard/Download/ps2_patches.tar.gz", check=False)
-        print("    -> Widescreen patches deployment complete.")
+        """Executes stage_community_patches.py to deploy universal PS2 and Dolphin widescreen patches."""
+        script = WORKSPACE_ROOT / "scripts" / "stage_community_patches.py"
+        if script.exists():
+            print("\n[*] Deploying Universal PS2 & GameCube/Wii Community Patches...")
+            cmd = [sys.executable, str(script), "--adb", self.adb]
+            if self.serial:
+                cmd.extend(["-s", self.serial])
+            if self.dry_run:
+                cmd.append("--dry-run")
+            subprocess.run(cmd, check=False)
+        else:
+            print("    [!] stage_community_patches.py not found. Skipping.")
 
     def run_standalone_config(self) -> None:
         """Executes configure_standalones.py to configure 3D emulator profiles."""

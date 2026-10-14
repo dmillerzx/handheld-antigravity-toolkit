@@ -1,0 +1,51 @@
+"libraryfolders"
+{
+	"0"
+	{
+		"path"		"/data/user/0/com.droiddeck.launcher/files/steam"
+		"label"		"Internal"
+		"contentid"		"8029104829104829104"
+		"total_size"		"0"
+		"update_clean_bytes_tally"		"0"
+		"time_last_update_verified"		"0"
+		"apps"
+		{
+		}
+	}
+	"1"
+	{
+		"path"		"/mnt/bannerlator-sd"
+		"label"		"RP5"
+		"contentid"		"3903766020842695481"
+		"total_size"		"0"
+		"update_clean_bytes_tally"		"0"
+		"time_last_update_verified"		"0"
+		"apps"
+		{
+		}
+	}
+	"2"
+	{
+		"path"		"/storage/EEEF-F762/Games/Steam"
+		"label"		"MicroSD Steam"
+		"contentid"		"3903766020842695482"
+		"total_size"		"0"
+		"update_clean_bytes_tally"		"0"
+		"time_last_update_verified"		"0"
+		"apps"
+		{
+		}
+	}
+	"3"
+	{
+		"path"		"D:\\"
+		"label"		"Drive D"
+		"contentid"		"3903766020842695483"
+		"total_size"		"0"
+		"update_clean_bytes_tally"		"0"
+		"time_last_update_verified"		"0"
+		"apps"
+		{
+		}
+	}
+}

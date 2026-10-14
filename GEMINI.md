@@ -56,11 +56,11 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **ES-DE Pre-Config** | Push `es_settings.xml` configured with MicroSD ROM path | `adb shell "cat /sdcard/ES-DE/settings/es_settings.xml"` |
 | **Turnip Drivers** | Stage Mesa Turnip GPU drivers in `/sdcard/Download/drivers/` | `adb shell "ls -la /sdcard/Download/drivers"` |
 | **Hardware Tuning** | Lockscreen disabled, overlay hidden, Xbox gamepad layout, Both triggers (`persist.sys.trigger.mode 2`) | `adb shell "getprop persist.sys.trigger.mode"` |
-| **DroidDeck & Vita** | Stage DroidDeck 720p/FSR profile and Sony Vita firmware `PSP2UPDAT.PUP` | `adb shell "ls -la /sdcard/Download/vita3k"` |
+| **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
 | **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
 | **2D/Arcade Cores** | Fetch & stage 11 designated cores and frontend assets | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |
 | **Standalone 3D Profiles** | Inject tuned Vulkan/audio profiles into DuckStation, NetherSX2, Dolphin, PPSSPP, Flycast, Azahar, Vita3K | `adb shell "cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini"` |
-| **Widescreen Patches** | Stage GameCube Gecko patches and NetherSX2 PCSX2 master `.pnach` cheats | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
+| **Universal Patches** | Stage 4,700+ PS2 pnach cheats & 1,891 curated Dolphin GameSettings with 16:9 Gecko codes | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
 | **Save Backup Sync** | Mirror saves, savestates, and memory cards to `/storage/<SD_ID>/Saves_Backup/latest/` | `adb shell "ls -la /storage/<SD_ID>/Saves_Backup/latest"` |
 | **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` across all emulators and frontends | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
 

@@ -132,10 +132,33 @@ The pipeline executes the following stages end-to-end headlessly over ADB:
 ## Repository Layout
 
 ```text
+### Universal Community Patch Engine (PS2 & GameCube/Wii)
+
+The toolkit integrates a universal patch staging and curation engine ([`scripts/stage_community_patches.py`](scripts/stage_community_patches.py)):
+- **PlayStation 2 (NetherSX2 / PCSX2)**: Automatically synchronizes the complete upstream PCSX2 master patch repository (4,700+ `.pnach` widescreen and 60fps cheats) directly into `/sdcard/Android/data/xyz.aethersx2.android/files/patches/` and `cheats/`.
+- **GameCube & Wii (Dolphin)**: Pulls the complete official upstream Dolphin GameSettings catalog (1,891 INIs), parses all `[Gecko]` cheat definitions, detects 16:9 widescreen codes, automatically injects them under `[Gecko_Enabled]`, sets `[Video_Settings] AspectRatio = 1`, merges custom Gecko widescreen patches from `patches/gcn/*.ini`, and deploys the full catalog to Dolphin's `GameSettings/`.
+
+### DroidDeck Runtime Bootstrap & Steam MicroSD Library
+
+DroidDeck operates a containerized Linux runtime (PRoot + gamescope + Xwayland + FEX-Emu/Box64 + Wine) to run Steam Big Picture and Windows PC titles on the Snapdragon 865:
+- **Mesa Turnip GPU Driver**: Pre-configured to utilize the staged Adreno 650 Turnip driver (`/sdcard/Download/drivers/Turnip_v26.0.0_R8.zip`).
+- **Container Environment Overrides**:
+  * `DXVK_ASYNC=1`: Enables asynchronous shader compilation in DXVK to eliminate stutter.
+  * `MESA_VK_WSI_PRESENT_MODE=mailbox`: Low-latency Vulkan presentation mode without tearing.
+  * `TU_DEBUG=noconform`: Bypasses non-conformant Vulkan checks on Adreno 650 for maximum title compatibility.
+- **MicroSD Steam Library Pre-Seeding**: [`configs/libraryfolders.vdf`](configs/libraryfolders.vdf) pre-mounts external MicroSD storage (`/mnt/bannerlator-sd` and `/storage/EEEF-F762/Games/Steam`, mapped as drive `D:\`), allowing Steam to automatically detect and install games to the MicroSD card without manual directory setup in the GUI.
+- **Steam 2FA**: Steam Big Picture mode launches with an interactive QR code and login prompt for instant Steam Mobile Guard authentication.
+
+---
+
+## Repository Layout
+
+```text
 .
 ├── scripts/
 │   ├── provision_all.ps1            # Master PowerShell orchestrator
 │   ├── setup_rp5.py                 # Core ADB provisioning & pipeline (--all)
+│   ├── stage_community_patches.py   # Universal PS2 & GameCube/Wii patch engine
 │   ├── configure_standalones.py     # Standalone 3D emulator profile injector
 │   ├── download_retroarch_cores.py  # Headless 2D/Arcade core & asset deployer
 │   ├── sync_all_saves.py            # Save, state & memory card backup sync
@@ -143,7 +166,8 @@ The pipeline executes the following stages end-to-end headlessly over ADB:
 ├── configs/
 │   ├── rp5_master_obtainium.json    # Upstream emulator catalog for Obtainium
 │   ├── es_settings.xml              # Headless ES-DE storage & emulator routing
-│   ├── droiddeck_config.json        # DroidDeck 720p/FSR 1080p Turnip profile
+│   ├── droiddeck_config.json        # DroidDeck 720p/FSR 1080p Turnip profile & env overrides
+│   ├── libraryfolders.vdf           # Pre-seeded Steam MicroSD library definition
 │   └── retroarch/                   # Ultra-low-latency 2D RetroArch configuration
 │       ├── retroarch.cfg            # Main config (Vulkan, Ozone, 48ms, hotkeys)
 │       ├── retroarch-core-options.cfg # Low-pass audio & interpolation options

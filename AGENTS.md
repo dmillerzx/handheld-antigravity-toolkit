@@ -66,11 +66,13 @@ AntigravityWorkingDir/
 │   ├── rp5_master_obtainium.json
 │   ├── es_settings.xml
 │   ├── droiddeck_config.json
+│   ├── libraryfolders.vdf   # Pre-seeded Steam MicroSD library mapping
 │   └── retroarch/           # Low-latency configs, core options, GBA low-pass filter & shader
 ├── drivers/                 # Mesa Turnip Adreno 650 GPU drivers (not versioned)
 └── scripts/
     ├── provision_all.ps1    # Master PowerShell provisioning orchestrator
     ├── setup_rp5.py         # Main automated ADB provisioning script (--all)
+    ├── stage_community_patches.py # Universal PS2 & GameCube/Wii patch engine
     ├── configure_standalones.py # Standalone 3D emulator profile injector
     ├── download_retroarch_cores.py # Automated Libretro 2D/Arcade core & asset deployer
     ├── sync_all_saves.py    # Save, savestate & memory card backup sync
@@ -97,7 +99,8 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 
 ### C. Staging Obtainium & DroidDeck Configuration
 - Pushes `configs/rp5_master_obtainium.json` directly to `/sdcard/Download/rp5_master_obtainium.json`.
-- Pushes `configs/droiddeck_config.json` (720p base rendering, FSR 1080p, `DXVK_ASYNC=1`, Turnip driver) to `/sdcard/DroidDeck/config.json`.
+- Pushes `configs/droiddeck_config.json` (720p base rendering, FSR 1080p, `DXVK_ASYNC=1`, `MESA_VK_WSI_PRESENT_MODE=mailbox`, `TU_DEBUG=noconform`, Turnip driver) to `/sdcard/DroidDeck/config.json`.
+- Deploys `configs/libraryfolders.vdf` mapping `/mnt/bannerlator-sd` and `/storage/<SD_ID>/Games/Steam` (drive `D:\`).
 - Stages Sony PS Vita OS Firmware `PSP2UPDAT.PUP` to `/sdcard/Download/vita3k/`.
 
 ### D. Ultra-Low-Latency 2D RetroArch Engine & Low-Pass Audio Filters
@@ -111,9 +114,9 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 ### E. Standalone 3D Emulators Injection
 - Injects optimal profiles for DuckStation (5x 1080p PGXP, Cubeb 20ms), NetherSX2 (2.25x 1080p SPU2 Hermite), Dolphin (2.5x 1080p OpenSLES DSP, analog triggers), PPSSPP (4x 1080p 16x Aniso), Flycast (2x 1080p Widescreen), Azahar (3x 1080p Turnip), and Vita3K (2x 1080p Turnip).
 
-### F. Widescreen Patches & Headless ES-DE Routing
-- Pushes GameCube Gecko widescreen patches to Dolphin `GameSettings/`.
-- Pushes NetherSX2 PCSX2 master widescreen `.pnach` cheats.
+### F. Universal Community Patch Engine (`scripts/stage_community_patches.py`)
+- **PS2 (NetherSX2 / PCSX2)**: Downloads and deploys 4,700+ `.pnach` master cheats to both `patches/` and `cheats/`.
+- **GameCube & Wii (Dolphin)**: Parses 1,891 upstream GameSettings INIs, injects 16:9 widescreen Gecko codes under `[Gecko_Enabled]`, sets `[Video_Settings] AspectRatio = 1`, and merges custom Gecko patches.
 - Headless `es_settings.xml` pre-routes all 3D systems to standalone emulators while routing 2D/Arcade systems to RetroArch.
 
 ### G. Save & State Backup Pipeline
