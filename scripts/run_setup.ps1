@@ -1,6 +1,10 @@
 <#
 .SYNOPSIS
     Convenience wrapper to run setup_rp5.py with PATH resolution.
+.DESCRIPTION
+    Canonical RP5 storage layout enforced by setup_rp5.py (do not create variants):
+      Internal : /sdcard/bios
+      MicroSD  : /storage/<SD_ID>/{bios, ROMs, ES-DE}
 #>
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path

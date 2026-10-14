@@ -50,30 +50,23 @@ TARGET_PACKAGES = [
     ("pl.solidexplorer2", "Solid Explorer"),
 ]
 
-# Standard emulation directory hierarchy
-EMULATION_SUBDIRS = [
-    "Emulation/bios",
-    "Emulation/roms/gc",
-    "Emulation/roms/ps2",
-    "Emulation/roms/n64",
-    "Emulation/roms/snes",
-    "Emulation/roms/gba",
-    "Emulation/roms/nds",
-    "Emulation/roms/3ds",
-    "Emulation/roms/psp",
-    "Emulation/roms/psx",
-    "Emulation/roms/dreamcast",
-    "Emulation/roms/switch",
-    "Emulation/patches/gcn",
-    "Emulation/patches/ps2",
-    "Emulation/saves",
-    "Emulation/states",
-    "RetroArch/system",
-    "RetroArch/saves",
-    "RetroArch/states",
-    "Dolphin/User/Load/Textures",
-    "Dolphin/User/Load/Riivolution",
-]
+# Additional AppOps granted (beyond MANAGE_EXTERNAL_STORAGE) to specific packages
+EXTRA_APPOPS = {
+    "dev.imranr.obtainium": ["REQUEST_INSTALL_PACKAGES"],
+}
+
+# ---------------------------------------------------------------------------
+# CANONICAL STORAGE LAYOUT (hardcoded - do NOT add alternative folder variants)
+#
+#   Internal : /sdcard/bios
+#   MicroSD  : /storage/<SD_ID>/{bios, ROMs, ES-DE}
+#
+# No ROM/Emulation/Games trees are ever created on internal storage, and no
+# other top-level directories are created on the MicroSD card.
+# ---------------------------------------------------------------------------
+INTERNAL_ROOT = "/sdcard"
+INTERNAL_DIRS = ["bios"]
+SD_DIRS = ["bios", "ROMs", "ES-DE"]
 
 
 class RP5Provisioner:
@@ -208,8 +201,8 @@ class RP5Provisioner:
         return internal, sdcard
 
     def scaffold_directories(self) -> None:
-        """Creates emulation directories on internal storage and SD card."""
-        print("\n[*] [2/4] Scaffolding storage folder structure...")
+        """Creates ONLY the canonical directories: /sdcard/bios and /storage/<SD_ID>/{bios,ROMs,ES-DE}."""
+        print("\n[*] [2/4] Scaffolding canonical storage folder structure...")
         internal, sdcard = self.discover_storage_targets()
 
         print(f"    -> Internal storage: {internal}")
@@ -218,14 +211,13 @@ class RP5Provisioner:
         else:
             print("    -> Notice: No external MicroSD card detected. Only internal storage will be scaffolded.")
 
-        # Ensure base directories
-        targets = [internal]
-        if sdcard and not self.dry_run:
-            targets.append(sdcard)
+        targets = [(internal, INTERNAL_DIRS)]
+        if sdcard:
+            targets.append((sdcard, SD_DIRS))
 
-        for target in targets:
-            print(f"    Scaffolding directories on {target}...")
-            mkdir_cmd = " && ".join([f"mkdir -p '{target}/{subdir}'" for subdir in EMULATION_SUBDIRS])
+        for target, subdirs in targets:
+            print(f"    Scaffolding {', '.join(subdirs)} on {target}...")
+            mkdir_cmd = " && ".join([f"mkdir -p '{target}/{subdir}'" for subdir in subdirs])
             self.shell(mkdir_cmd, check=False)
 
         print("    -> Storage scaffolding complete.")
@@ -283,6 +275,9 @@ class RP5Provisioner:
             if is_installed:
                 print(f"    -> Granting MANAGE_EXTERNAL_STORAGE to {label} ({pkg})...")
                 self.shell(f"appops set {pkg} MANAGE_EXTERNAL_STORAGE allow", check=False)
+                for extra_op in EXTRA_APPOPS.get(pkg, []):
+                    print(f"    -> Granting {extra_op} to {label} ({pkg})...")
+                    self.shell(f"appops set {pkg} {extra_op} allow", check=False)
                 granted_count += 1
             else:
                 # App not installed yet, but we can set the default or log it
@@ -399,13 +394,13 @@ def main() -> int:
     if not args.skip_obtainium:
         provisioner.stage_obtainium_config()
 
-    # 4. Grant MANAGE_EXTERNAL_STORAGE AppOps
-    if not args.skip_permissions:
-        provisioner.grant_storage_permissions()
-
-    # 5. Optional APK installations
+    # 4. Optional APK installations
     if args.install_apks:
         provisioner.install_local_apks(WORKSPACE_ROOT / "apks")
+
+    # 5. Grant MANAGE_EXTERNAL_STORAGE AppOps
+    if not args.skip_permissions:
+        provisioner.grant_storage_permissions()
 
     print("\n" + "=" * 72)
     print("   Retroid Pocket 5 Provisioning Sequence Complete!")
@@ -414,7 +409,7 @@ def main() -> int:
     print("1. Open Obtainium -> Tap 'Import/Export' -> 'Obtainium Import'.")
     print("2. Choose /sdcard/Download/rp5_master_obtainium.json.")
     print("3. Batch-install your preferred emulators (RetroArch, NetherSX2, Dolphin, etc.).")
-    print("4. Place your BIOS files in 'bios/' and ROMs in 'roms/<platform>/'.")
+    print("4. Canonical layout: BIOS in /sdcard/bios and /storage/<SD_ID>/bios; ROMs in /storage/<SD_ID>/ROMs; ES-DE data in /storage/<SD_ID>/ES-DE.")
     return 0
 
 
