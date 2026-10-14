@@ -18,6 +18,11 @@ roms/**/*
 platform-tools/
 *.zip
 
+# GPU Driver archives
+drivers/*
+!drivers/.gitkeep
+
+
 # Python caches and virtual environments
 __pycache__/
 *.py[cod]
@@ -31,5 +36,6 @@ ENV/
 Thumbs.db
 *.log
 task-*.log
+scratch/
 .idea/
 .vscode/

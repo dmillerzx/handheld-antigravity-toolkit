@@ -61,8 +61,10 @@ AntigravityWorkingDir/
 ├── patches/
 │   ├── gcn/                 # GameCube widescreen/60fps/HD gecko patches & textures
 │   └── ps2/                 # PS2 widescreen/60fps pnach patches
-├── configs/                 # Device profiles & Obtainium import templates
-│   └── rp5_master_obtainium.json
+├── configs/                 # Device profiles, ES-DE configs & Obtainium templates
+│   ├── rp5_master_obtainium.json
+│   └── es_settings.xml
+├── drivers/                 # Mesa Turnip Adreno 650 GPU drivers (not versioned)
 └── scripts/
     ├── setup_rp5.py         # Main automated ADB provisioning script
     └── run_setup.ps1        # PowerShell helper wrapper ensuring PATH resolution
@@ -90,16 +92,32 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - Pushes `configs/rp5_master_obtainium.json` directly to `/sdcard/Download/rp5_master_obtainium.json`.
 - Users can launch Obtainium on the device and select **Import/Export -> Obtainium Import** to batch-install and track all emulator releases directly from upstream GitHub releases.
 
-### D. APK Installation (`--install-apks`)
+### D. Headless ES-DE Storage Pre-Configuration
+- Pushes `configs/es_settings.xml` configured with `<string name="ROMDirectory" value="/storage/EEEF-F762/ROMs" />` to both `/sdcard/ES-DE/settings/es_settings.xml` and `/storage/<SD_ID>/ES-DE/settings/es_settings.xml`.
+- Bypasses ES-DE's initial directory setup prompt on first launch and guarantees that ES-DE reads ROMs exclusively from the canonical MicroSD path.
+
+### E. Mesa Turnip GPU Driver Staging (Adreno 650)
+- Mesa Turnip Vulkan drivers (from `K11MCH1/AdrenoToolsDrivers`) are staged locally in `drivers/` (git-ignored) and pushed to `/sdcard/Download/drivers/`.
+- Allows standalone emulators supporting custom AdrenoTools GPU drivers (e.g., Azahar / 3DS, Vita3K / PS Vita) to load optimized Turnip drivers via their GPU driver configuration menus.
+
+### F. Retroid OS System & Hardware Tuning
+The script configures optimal system defaults via ADB:
+- **Lockscreen**: Disabled via `adb shell locksettings set-disabled true` to allow uninterrupted testing, reboot recovery, and automated boot into frontends.
+- **Floating Game Assistant Overlay**: Disabled via `adb shell settings put system is_show_floatingIcon 0` to prevent UI obstruction and inadvertent touch triggers during emulation.
+- **Controller Style**: Set to Xbox mode via `adb shell setprop persist.sys.gamepad.type 0` (0 = Xbox style, 1 = Retro style) for standard A/B X/Y mapping across modern Android emulators.
+- **Power Button / End Button Behavior**: Configured via `adb shell settings put system end_button_behavior 2` (sleep/wake).
+- **Retroid Quick Settings Tiles**: Custom system tiles available on RP5 include `performancemode`, `ledlights`, `fan`, `controllerStyle`, `triggerInputMode`, `FloatingWindowTileService`, `KeepScreenOnTileService`, and `ForceLandscapeTileService`.
+
+### G. APK Installation (`--install-apks`)
 Installs every `.apk` staged in `apks/` with `adb install -r -g`. Runs **before** the AppOps step so freshly installed packages are granted permissions in the same run.
 
-### E. Granting AppOps
+### H. Granting AppOps
 Android 11+ restricts storage access under Scoped Storage. Standard runtime permission requests fail for emulators reading ROMs from MicroSD. The script invokes AppOps:
 ```bash
 adb shell appops set <package.name> MANAGE_EXTERNAL_STORAGE allow
 adb shell appops set dev.imranr.obtainium REQUEST_INSTALL_PACKAGES allow
 ```
-### F. Emulator Distribution Channels (Obtainium vs Google Play)
+### I. Emulator Distribution Channels (Obtainium vs Google Play)
 - **Google Play Store**: **Dolphin** (`org.dolphinemu.dolphinemu`) and **DuckStation** (`com.github.stenzek.duckstation`) do not publish standalone Android APK release assets on GitHub and are provisioned via Google Play. Once downloaded from Play Store, re-running `setup_rp5.py` immediately grants them `MANAGE_EXTERNAL_STORAGE`.
 - **Obtainium**: All other emulators and frontends (**RetroArch**, **NetherSX2**, **PPSSPP**, **Azahar**, **Vita3K**, **Flycast**, **Daijisho**, and **ES-DE**) are provisioned and tracked directly from upstream GitHub releases using `configs/rp5_master_obtainium.json`.
 

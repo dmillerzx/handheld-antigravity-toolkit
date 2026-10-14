@@ -23,6 +23,8 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 
 # Fallback Obtainium configuration if configs/rp5_master_obtainium.json is missing
 DEFAULT_OBTAINIUM_PATH = WORKSPACE_ROOT / "configs" / "rp5_master_obtainium.json"
+DEFAULT_ESDE_CONFIG_PATH = WORKSPACE_ROOT / "configs" / "es_settings.xml"
+DEFAULT_DRIVERS_PATH = WORKSPACE_ROOT / "drivers"
 
 # Key emulator & frontend packages that benefit from MANAGE_EXTERNAL_STORAGE
 TARGET_PACKAGES = [
@@ -239,6 +241,69 @@ class RP5Provisioner:
         self.run_cmd("push", str(source_json), dest_remote)
         print("    -> Obtainium master config staged successfully in /sdcard/Download/.")
 
+    def stage_esde_config(self, custom_path: Optional[Path] = None) -> None:
+        """Pushes headless es_settings.xml pre-configured with canonical ROMDirectory."""
+        print("\n[*] Staging headless ES-DE configuration...")
+        source_xml = custom_path or DEFAULT_ESDE_CONFIG_PATH
+        if not source_xml.exists():
+            print(f"    [!] Notice: ES-DE config not found at {source_xml}. Skipping.")
+            return
+
+        internal, sdcard = self.discover_storage_targets()
+        dest_internal = f"{internal}/ES-DE/settings/es_settings.xml"
+        self.shell(f"mkdir -p '{internal}/ES-DE/settings'", check=False)
+        print(f"    Pushing {source_xml.name} -> {dest_internal}")
+        self.run_cmd("push", str(source_xml), dest_internal)
+
+        if sdcard:
+            dest_sd = f"{sdcard}/ES-DE/settings/es_settings.xml"
+            self.shell(f"mkdir -p '{sdcard}/ES-DE/settings'", check=False)
+            print(f"    Pushing {source_xml.name} -> {dest_sd}")
+            self.run_cmd("push", str(source_xml), dest_sd)
+        print("    -> Headless ES-DE configuration staged successfully.")
+
+    def stage_turnip_drivers(self, drivers_dir: Optional[Path] = None) -> None:
+        """Pushes staged Mesa Turnip GPU drivers from local drivers/ to /sdcard/Download/drivers/."""
+        print("\n[*] Staging Mesa Turnip Adreno 650 GPU drivers...")
+        src_dir = drivers_dir or DEFAULT_DRIVERS_PATH
+        if not src_dir.exists():
+            print(f"    [!] Notice: Local drivers directory {src_dir} does not exist. Skipping.")
+            return
+
+        zips = list(src_dir.glob("*.zip"))
+        if not zips:
+            print("    [!] Notice: No driver .zip archives found in drivers/ staging folder. Skipping.")
+            return
+
+        remote_drivers_dir = "/sdcard/Download/drivers"
+        self.shell(f"mkdir -p '{remote_drivers_dir}'", check=False)
+        print(f"    Found {len(zips)} driver archive(s). Pushing to {remote_drivers_dir}...")
+        for z in zips:
+            print(f"    -> Pushing {z.name}...")
+            self.run_cmd("push", str(z), f"{remote_drivers_dir}/{z.name}")
+        print("    -> Mesa Turnip drivers staged successfully.")
+
+    def tune_retroid_hardware(self) -> None:
+        """Applies Retroid OS system tuning, disables lock screen, and optimizes hardware defaults."""
+        print("\n[*] Applying Retroid OS hardware & system tuning...")
+        # 1. Disable Android lock screen
+        print("    -> Disabling lock screen...")
+        self.shell("locksettings set-disabled true", check=False)
+
+        # 2. Disable on-screen floating game assistant icon overlay
+        print("    -> Disabling floating game assistant icon...")
+        self.shell("settings put system is_show_floatingIcon 0", check=False)
+
+        # 3. Set controller style to Xbox layout (0 = Xbox, 1 = Retro)
+        print("    -> Setting gamepad controller style to Xbox mode (persist.sys.gamepad.type=0)...")
+        self.shell("setprop persist.sys.gamepad.type 0", check=False)
+
+        # 4. Power / end button behavior (2 = sleep/wake)
+        print("    -> Setting end button behavior...")
+        self.shell("settings put system end_button_behavior 2", check=False)
+
+        print("    -> Retroid OS system and hardware tuning complete.")
+
     def _write_fallback_obtainium(self, path: Path) -> None:
         """Creates a default rp5_master_obtainium.json if not present."""
         data = {
@@ -344,6 +409,9 @@ def main() -> int:
     parser.add_argument("--skip-phantom", action="store_true", help="Skip Android 13 phantom process killer unlocks.")
     parser.add_argument("--skip-scaffold", action="store_true", help="Skip directory scaffolding on storage.")
     parser.add_argument("--skip-obtainium", action="store_true", help="Skip pushing rp5_master_obtainium.json.")
+    parser.add_argument("--skip-esde", action="store_true", help="Skip staging headless ES-DE es_settings.xml.")
+    parser.add_argument("--skip-drivers", action="store_true", help="Skip staging Mesa Turnip GPU drivers.")
+    parser.add_argument("--skip-tuning", action="store_true", help="Skip Retroid OS hardware & system tuning.")
     parser.add_argument("--skip-permissions", action="store_true", help="Skip granting MANAGE_EXTERNAL_STORAGE.")
     parser.add_argument("--install-apks", action="store_true", help="Install any .apk files staged in apks/ folder.")
     args = parser.parse_args()
@@ -396,11 +464,23 @@ def main() -> int:
     if not args.skip_obtainium:
         provisioner.stage_obtainium_config()
 
-    # 4. Optional APK installations
+    # 4. Stage Headless ES-DE config
+    if not args.skip_esde:
+        provisioner.stage_esde_config()
+
+    # 5. Stage Mesa Turnip GPU drivers
+    if not args.skip_drivers:
+        provisioner.stage_turnip_drivers()
+
+    # 6. Retroid OS Hardware & System Tuning
+    if not args.skip_tuning:
+        provisioner.tune_retroid_hardware()
+
+    # 7. Optional APK installations
     if args.install_apks:
         provisioner.install_local_apks(WORKSPACE_ROOT / "apks")
 
-    # 5. Grant MANAGE_EXTERNAL_STORAGE AppOps
+    # 8. Grant MANAGE_EXTERNAL_STORAGE AppOps
     if not args.skip_permissions:
         provisioner.grant_storage_permissions()
 

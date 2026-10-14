@@ -53,6 +53,9 @@ When executing or modifying `scripts/setup_rp5.py`, verify the following stages:
 | **Phantom Process** | Disable Android 13 phantom process restrictions | `adb shell "/system/bin/device_config get activity_manager max_phantom_processes"` |
 | **Storage Scaffolding** | Create the canonical directories only | `adb shell "ls -la /sdcard/bios /storage/<SD_ID>"` |
 | **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
+| **ES-DE Pre-Config** | Push `es_settings.xml` configured with MicroSD ROM path | `adb shell "cat /sdcard/ES-DE/settings/es_settings.xml"` |
+| **Turnip Drivers** | Stage Mesa Turnip GPU drivers in `/sdcard/Download/drivers/` | `adb shell "ls -la /sdcard/Download/drivers"` |
+| **Hardware Tuning** | Disable lockscreen, hide floating overlay, set Xbox gamepad layout | `adb shell "getprop persist.sys.gamepad.type"` |
 | **APK Install** | Install staged APKs from `apks/` | `adb shell "pm list packages \| grep -E 'obtainium\|es_de'"` |
 | **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` (all targets) and `REQUEST_INSTALL_PACKAGES` (Obtainium) AppOps | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
 
@@ -97,5 +100,9 @@ Options available:
 - `--skip-phantom`: Skip the Phantom Process Killer unlock.
 - `--skip-scaffold`: Skip canonical directory scaffolding.
 - `--skip-obtainium`: Skip pushing `rp5_master_obtainium.json`.
+- `--skip-esde`: Skip staging headless ES-DE `es_settings.xml`.
+- `--skip-drivers`: Skip staging Mesa Turnip GPU drivers.
+- `--skip-tuning`: Skip Retroid OS hardware & system tuning.
 - `--skip-permissions`: Skip the AppOps grants.
 - `--adb <path>`: Explicit path to the adb binary.
+
