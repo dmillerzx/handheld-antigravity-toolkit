@@ -155,9 +155,9 @@ ControllerView = None
     # 2. NETHERSX2 (PS2)
     def configure_nethersx2(self) -> None:
         scale = self.emulation.get("nethersx2_upscale_multiplier", 2.25)
-        aspect = "16:9" if self.force_widescreen else "4:3"
+        aspect = "1" if self.force_widescreen else "0"
         ws_patches = "true" if self.force_widescreen else "false"
-        print(f"\n[*] Configuring NetherSX2 (PS2 - {scale}x Vulkan, SPU2 Interpolation & Widescreen={ws_patches})...")
+        print(f"\n[*] Configuring NetherSX2 (PS2 - {scale}x Vulkan, SPU2 Interpolation, AspectRatio={aspect}, Crop=1 & Widescreen={ws_patches})...")
         content = f"""[General]
 Bios = scph70012.bin
 BiosDirectory = {self.bios_dir}
@@ -172,6 +172,7 @@ SyncMode = 0
 Renderer = Vulkan
 UpscaleMultiplier = {scale}
 AspectRatio = {aspect}
+Crop = 1
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 ThreadedPresentation = true
@@ -210,7 +211,7 @@ SIDevice0 = 6
 SIDevice1 = 0
 SIDevice2 = 0
 SIDevice3 = 0
-WiimoteSource0 = 0
+WiimoteSource0 = 1
 WiimoteSource1 = 0
 WiimoteSource2 = 0
 WiimoteSource3 = 0
@@ -298,8 +299,9 @@ Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
         # WiimoteNew.ini (Classic controller mapped)
         wiimote_ini = f"""[Wiimote1]
 Device = {ctrl_dev}
-Source = 0
+Source = 1
 Extension = Classic
+Classic/Device = {ctrl_dev}
 Buttons/A = `{ctrl_dev}:Button 97` | `Android/8/Retroid Pocket Controller:Button 97` | `Android/5/Retroid Pocket Controller:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
 Buttons/B = `{ctrl_dev}:Button 96` | `Android/8/Retroid Pocket Controller:Button 96` | `Android/5/Retroid Pocket Controller:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
 Buttons/1 = `{ctrl_dev}:Button 99` | `Android/8/Retroid Pocket Controller:Button 99` | `Android/5/Retroid Pocket Controller:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
@@ -314,8 +316,8 @@ Classic/Buttons/A = `{ctrl_dev}:Button 97` | `Android/8/Retroid Pocket Controlle
 Classic/Buttons/B = `{ctrl_dev}:Button 96` | `Android/8/Retroid Pocket Controller:Button 96` | `Android/5/Retroid Pocket Controller:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
 Classic/Buttons/X = `{ctrl_dev}:Button 100` | `Android/8/Retroid Pocket Controller:Button 100` | `Android/5/Retroid Pocket Controller:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
 Classic/Buttons/Y = `{ctrl_dev}:Button 99` | `Android/8/Retroid Pocket Controller:Button 99` | `Android/5/Retroid Pocket Controller:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Classic/Buttons/ZL = `{ctrl_dev}:Button 102` | `Android/8/Retroid Pocket Controller:Button 102` | `Android/5/Retroid Pocket Controller:Button 102` | `Android/1/Retroid Pocket Controller:Button 102` | `Button 102`
-Classic/Buttons/ZR = `{ctrl_dev}:Button 103` | `Android/8/Retroid Pocket Controller:Button 103` | `Android/5/Retroid Pocket Controller:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `Button 103`
+Classic/Buttons/ZL = `{ctrl_dev}:Button 102` | `{ctrl_dev}:Button 104` | `Android/8/Retroid Pocket Controller:Button 102` | `Button 102`
+Classic/Buttons/ZR = `{ctrl_dev}:Button 103` | `{ctrl_dev}:Button 105` | `Android/8/Retroid Pocket Controller:Button 103` | `Button 103`
 Classic/Buttons/Plus = `{ctrl_dev}:Button 108` | `Android/8/Retroid Pocket Controller:Button 108` | `Android/5/Retroid Pocket Controller:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
 Classic/Buttons/Minus = `{ctrl_dev}:Button 109` | `Android/8/Retroid Pocket Controller:Button 109` | `Android/5/Retroid Pocket Controller:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
 Classic/Left Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
@@ -339,10 +341,42 @@ Classic/Triggers/R = `{ctrl_dev}:Axis 22+` | `{ctrl_dev}:Button 105` | `Axis 22+
 Classic/Triggers/Threshold = 50.000000
 Classic/Triggers/L-Analog = `{ctrl_dev}:Axis 23+` | `Axis 23+`
 Classic/Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
+
+[Classic1]
+Device = {ctrl_dev}
+Buttons/A = `{ctrl_dev}:Button 97` | `Button 97`
+Buttons/B = `{ctrl_dev}:Button 96` | `Button 96`
+Buttons/X = `{ctrl_dev}:Button 100` | `Button 100`
+Buttons/Y = `{ctrl_dev}:Button 99` | `Button 99`
+Buttons/ZL = `{ctrl_dev}:Button 102` | `{ctrl_dev}:Button 104` | `Button 102`
+Buttons/ZR = `{ctrl_dev}:Button 103` | `{ctrl_dev}:Button 105` | `Button 103`
+Buttons/Plus = `{ctrl_dev}:Button 108` | `Button 108`
+Buttons/Minus = `{ctrl_dev}:Button 109` | `Button 109`
+Left Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
+Left Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
+Left Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
+Left Stick/Right = `{ctrl_dev}:Axis 0+` | `Axis 0+`
+Left Stick/Modifier = `Shift`
+Left Stick/Modifier/Range = 50.000000
+Right Stick/Up = `{ctrl_dev}:Axis 14-` | `Axis 14-`
+Right Stick/Down = `{ctrl_dev}:Axis 14+` | `Axis 14+`
+Right Stick/Left = `{ctrl_dev}:Axis 11-` | `Axis 11-`
+Right Stick/Right = `{ctrl_dev}:Axis 11+` | `Axis 11+`
+Right Stick/Modifier = `Control`
+Right Stick/Modifier/Range = 50.000000
+D-Pad/Up = `{ctrl_dev}:Hat 0N` | `{ctrl_dev}:Button 19` | `Hat 0N` | `Button 19`
+D-Pad/Down = `{ctrl_dev}:Hat 0S` | `{ctrl_dev}:Button 20` | `Hat 0S` | `Button 20`
+D-Pad/Left = `{ctrl_dev}:Hat 0W` | `{ctrl_dev}:Button 21` | `Hat 0W` | `Button 21`
+D-Pad/Right = `{ctrl_dev}:Hat 0E` | `{ctrl_dev}:Button 22` | `Hat 0E` | `Button 22`
+Triggers/L = `{ctrl_dev}:Axis 23+` | `{ctrl_dev}:Button 104` | `Axis 23+` | `Button 104`
+Triggers/R = `{ctrl_dev}:Axis 22+` | `{ctrl_dev}:Button 105` | `Axis 22+` | `Button 105`
+Triggers/Threshold = 50.000000
+Triggers/L-Analog = `{ctrl_dev}:Axis 23+` | `Axis 23+`
+Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
 """
         hotkeys_ini = f"""[Hotkeys]
 Device = {ctrl_dev}
-General/Toggle Pause = F10
+General/Toggle Pause = `{ctrl_dev}:Button 106` & `{ctrl_dev}:Button 107` | `Button 106` & `Button 107` | F10
 General/Stop = Escape
 """
         freelook_ini = f"""[FreeLook1]
@@ -366,6 +400,13 @@ Device = {ctrl_dev}
         for f in [f_dol, f_gfx, f_pad, f_wii, f_hot, f_hot2, f_free]:
             self.push_file(f, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/{f.name}")
             self.push_file(f, f"/sdcard/dolphin-emu/Config/{f.name}")
+
+        # Deploy tuned Mario Kart Wii GameSettings overrides
+        for rmc_name in ["RMCE01.ini", "RMC.ini", "RMCP01.ini", "RMCJ01.ini"]:
+            local_rmc = WORKSPACE_ROOT / "patches" / "wii" / rmc_name
+            if local_rmc.exists():
+                self.push_file(local_rmc, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/{rmc_name}")
+                self.push_file(local_rmc, f"/sdcard/dolphin-emu/GameSettings/{rmc_name}")
 
     # 4. PPSSPP (PSP)
     def configure_ppsspp(self) -> None:
