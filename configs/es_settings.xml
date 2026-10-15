@@ -178,7 +178,7 @@
 <string name="UIMode_passkey" value="uuddlrlrba" />
 <string name="AlternativeEmulator.gc" value="Dolphin (Standalone)" />
 <string name="AlternativeEmulator.wii" value="Dolphin (Standalone)" />
-<string name="AlternativeEmulator.ps2" value="NetherSX2 (Standalone)" />
+<string name="AlternativeEmulator.ps2" value="ARMSX2 (Standalone)" />
 <string name="AlternativeEmulator.psx" value="DuckStation (Standalone)" />
 <string name="AlternativeEmulator.psp" value="PPSSPP (Standalone)" />
 <string name="AlternativeEmulator.dreamcast" value="Flycast (Standalone)" />

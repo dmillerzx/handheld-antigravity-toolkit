@@ -35,6 +35,8 @@ SAVE_TARGETS = [
     ("Dolphin (Wii Saves)", "/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Wii", "dolphin/Wii"),
     ("NetherSX2 (PS2 Memcards)", "/sdcard/Android/data/xyz.aethersx2.android/files/memcards", "nethersx2/memcards"),
     ("NetherSX2 (Savestates)", "/sdcard/Android/data/xyz.aethersx2.android/files/sstates", "nethersx2/sstates"),
+    ("ARM SX2 (PS2 Memcards)", "/sdcard/Android/data/com.armsx2/files/memcards", "armsx2/memcards"),
+    ("ARM SX2 (Savestates)", "/sdcard/Android/data/com.armsx2/files/sstates", "armsx2/sstates"),
     ("DuckStation (PS1 Memcards)", "/sdcard/Android/data/com.github.stenzek.duckstation/files/memcards", "duckstation/memcards"),
     ("DuckStation (Savestates)", "/sdcard/Android/data/com.github.stenzek.duckstation/files/savestates", "duckstation/savestates"),
     ("PPSSPP (PSP Savedata)", "/sdcard/PSP/SAVEDATA", "ppsspp/SAVEDATA"),

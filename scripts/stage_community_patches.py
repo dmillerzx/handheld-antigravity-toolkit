@@ -165,22 +165,26 @@ class CommunityPatchEngine:
             for pnach in staged_patches:
                 tar.add(pnach, arcname=pnach.name)
 
-        # 5. Push and unpack over ADB to NetherSX2
+        # 5. Push and unpack over ADB to NetherSX2 and ARM SX2
         remote_tar = "/sdcard/Download/ps2_patches.tar.gz"
-        remote_patches_dir = "/sdcard/Android/data/xyz.aethersx2.android/files/patches"
-        remote_cheats_dir = "/sdcard/Android/data/xyz.aethersx2.android/files/cheats"
+        nethersx2_patches = "/sdcard/Android/data/xyz.aethersx2.android/files/patches"
+        nethersx2_cheats = "/sdcard/Android/data/xyz.aethersx2.android/files/cheats"
+        armsx2_patches = "/sdcard/Android/data/com.armsx2/files/patches"
+        armsx2_cheats = "/sdcard/Android/data/com.armsx2/files/cheats"
 
-        print(f"    -> Deploying patches to NetherSX2 ({remote_patches_dir} & {remote_cheats_dir})...")
+        print(f"    -> Deploying patches to NetherSX2 and ARM SX2...")
         self.adb_cmd("push", str(tar_path), remote_tar)
 
         extract_cmd = (
-            f"mkdir -p '{remote_patches_dir}' '{remote_cheats_dir}' && "
-            f"tar -xzf '{remote_tar}' -C '{remote_patches_dir}/' && "
-            f"tar -xzf '{remote_tar}' -C '{remote_cheats_dir}/' && "
-            f"rm '{remote_tar}'"
+            f"mkdir -p '{nethersx2_patches}' '{nethersx2_cheats}' '{armsx2_patches}' '{armsx2_cheats}' && "
+            f"tar -xzf '{remote_tar}' -C '{nethersx2_patches}/' 2>/dev/null || true && "
+            f"tar -xzf '{remote_tar}' -C '{nethersx2_cheats}/' 2>/dev/null || true && "
+            f"tar -xzf '{remote_tar}' -C '{armsx2_patches}/' 2>/dev/null || true && "
+            f"tar -xzf '{remote_tar}' -C '{armsx2_cheats}/' 2>/dev/null || true && "
+            f"rm -f '{remote_tar}'"
         )
         self.shell(extract_cmd, check=False)
-        print(f"    [OK] Successfully deployed {len(staged_patches):,} PS2 patches to NetherSX2.")
+        print(f"    [OK] Successfully deployed {len(staged_patches):,} PS2 patches to NetherSX2 and ARM SX2.")
 
         # 6. Wipe scratch ps2 directory to free disk space
         shutil.rmtree(ps2_scratch, ignore_errors=True)

@@ -133,7 +133,7 @@ MicroSD Storage    /storage/<SD_ID>/   (or /sdcard/ fallback)
 | **Arcade / Neo Geo** | RetroArch (`fbneo`) | 4-point Interpolation | Native | `/storage/<SD_ID>/ROMs/arcade`, `/neogeo` |
 | **Atari 2600** | RetroArch (`stella`) | OpenSLES (48ms) | Native | `/storage/<SD_ID>/ROMs/atarias` |
 | **PlayStation (PS1)** | DuckStation (Standalone) | Cubeb (20ms) Gaussian | 5x (1080p PGXP) | `/storage/<SD_ID>/ROMs/psx` |
-| **PlayStation 2 (PS2)** | NetherSX2 (Standalone) | SPU2 Hermite (Mode 4) | 2.25x (1080p Widescreen) | `/storage/<SD_ID>/ROMs/ps2` |
+| **PlayStation 2 (PS2)** | ARM SX2 (Primary) / NetherSX2 (Fallback) | Vulkan, No-Readbacks (`HardwareDownloadMode=1`), Crop=1, SPU2 Hermite | 2.0x / 2.25x (1080p Widescreen) | `/storage/<SD_ID>/ROMs/ps2` |
 | **Nintendo GameCube** | Dolphin (Standalone) | OpenSLES DSP / Analog Triggers | 2.5x (1080p Gecko) | `/storage/<SD_ID>/ROMs/gc` |
 | **Nintendo Wii** | Dolphin (Standalone) | OpenSLES DSP / Classic Pad | 2.5x (1080p Widescreen & Deflicker Off) | `/storage/<SD_ID>/ROMs/wii` |
 | **Sony PSP** | PPSSPP (Standalone) | Low Latency (Latency=0) | 4x (1080p 16x Aniso) | `/storage/<SD_ID>/ROMs/psp` |

@@ -40,6 +40,19 @@
       "overrideSource": "GitHub"
     },
     {
+      "id": "com.armsx2",
+      "url": "https://github.com/ARMSX2/ARMSX2",
+      "author": "ARMSX2",
+      "name": "ARM SX2",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"a13-armv8.2-sdk33|a13.*apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"ARM SX2\",\"appAuthor\":\"ARMSX2\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation 2 Emulator (ARM SX2 Community Fork)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "categories": [
+        "Emulator"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub"
+    },
+    {
       "id": "org.ppsspp.ppsspp",
       "url": "https://github.com/hrydgard/ppsspp",
       "author": "hrydgard",

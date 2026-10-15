@@ -59,7 +59,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
 | **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
 | **2D/Arcade Cores** | Fetch & stage 11 designated cores and frontend assets | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |
-| **Standalone 3D Profiles** | Inject tuned Vulkan/audio profiles into DuckStation, NetherSX2, Dolphin, PPSSPP, Flycast, Azahar, Vita3K | `adb shell "cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini"` |
+| **Standalone 3D Profiles** | Inject tuned Vulkan/audio profiles into DuckStation, NetherSX2, ARM SX2, Dolphin, PPSSPP, Flycast, Azahar, Vita3K | `adb shell "cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini"` |
 | **Universal Patches** | Stage 4,700+ PS2 pnach cheats & 1,891 curated Dolphin GameSettings with 16:9 Gecko codes | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
 | **Save Backup Sync** | Mirror saves, savestates, and memory cards to `/storage/<SD_ID>/Saves_Backup/latest/` | `adb shell "ls -la /storage/<SD_ID>/Saves_Backup/latest"` |
 | **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` across all emulators and frontends | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
@@ -77,7 +77,8 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 - **Obtainium App Updater**: `dev.imranr.obtainium`
 - **ES-DE Frontend**: `org.es_de.frontend`
 - **RetroArch (64-bit)**: `com.retroarch.aarch64`
-- **NetherSX2 (PS2)**: `xyz.aethersx2.android`
+- **ARM SX2 (PS2 Primary)**: `com.armsx2`
+- **NetherSX2 (PS2 Fallback)**: `xyz.aethersx2.android`
 - **PPSSPP (PSP)**: `org.ppsspp.ppsspp`
 - **Azahar (3DS)**: `org.azahar_emu.azahar`
 - **Vita3K (PS Vita)**: `org.vita3k.emulator`

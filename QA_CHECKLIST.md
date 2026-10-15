@@ -12,7 +12,7 @@ This document provides systematic, platform-by-platform validation procedures fo
 | **RetroArch 2D** | Frame Pacing & Latency | Solid 60.0 fps, 1-frame sub-frame response, Vulkan swapchain; Global Rewind OFF | `[PASS]` |
 | **RetroArch Audio** | GBA 5.5kHz DSP & Genesis M1 LPF | Muffled harsh DAC noise eliminated, authentic analog timbre | `[PASS]` |
 | **DuckStation (PS1)** | PGXP 1080p Geometry Precision | No polygon jitter/wobble, 5x native scaling, Cubeb 20ms, Force43For2D | `[PASS]` |
-| **NetherSX2 (PS2)** | CRC pnach, Overscan & FastBoot | 16:9 widescreen, Crop=1 overscan border removal, FastBoot & HW Download Mode | `[PASS]` |
+| **ARM SX2 & NetherSX2 (PS2)** | CRC pnach, Overscan & FastBoot | 16:9 widescreen, Crop=1 overscan border removal, FastBoot, No-Readbacks (`HWDownloadMode=1`) | `[PASS]` |
 | **Dolphin (GC/Wii)** | Controller Node, MemCard & Hacks | Hardware auto-discovery, Classic mapping, L3+R3 pause hotkeys, SlotA MemCard, EFB speedhack | `[PASS]` |
 | **PPSSPP (PSP)** | FastMemory & 4x Vulkan | 4x 1080p resolution, 16x Aniso, FastMemory active, touch overlay disabled | `[PASS]` |
 | **Azahar (3DS)** | Mesa Turnip Driver Stability | Vulkan Async shaders compile without pipeline stalls | `[PASS]` |
@@ -95,12 +95,12 @@ This document provides systematic, platform-by-platform validation procedures fo
      * Audio Backend: **Cubeb** (Buffer: 20ms)
 * **Pass Criteria:** 3D road tracks and character models remain stable without vertex wobble or texture warping; audio stays perfectly synced with 0 crackling.
 
-#### Test Case 3D-02: NetherSX2 (PS2) — CRC pnach Widescreen Hooks & CRT Overscan Crop
-* **Objective:** Ensure automated master widescreen cheat injection functions without stretching 4:3 viewports, and eliminate CRT analog overscan blanking borders.
+#### Test Case 3D-02: ARM SX2 & NetherSX2 (PS2) — 16:9 Widescreen, GT4 Overscan Crop & Zero-Readback Acceleration
+* **Objective:** Ensure automated master widescreen cheat injection functions without stretching 4:3 viewports, eliminate CRT analog overscan blanking borders (`Crop = 1`), and eliminate night/tunnel lag via GS no-readbacks (`HardwareDownloadMode = 1`).
 * **Test Game:** *Gran Turismo 4 Spec II*, *Final Fantasy X*, or *Burnout 3: Takedown*.
 * **Procedure:**
-  1. Launch NetherSX2.
-  2. Verify that `Enable Widescreen Patches` is active and `Crop = 1` is configured under `[EmuCore/GS]` in `PCSX2.ini`.
+  1. Launch ARM SX2 (primary) or NetherSX2 (fallback) from ES-DE or app drawer.
+  2. Verify that `Enable Widescreen Patches` is active and `Crop = 1` is configured under `[EmuCore/GS]` in `PCSX2.ini` / `armsx2-settings.json`.
   3. Launch *Gran Turismo 4 Spec II*. Observe menu navigation and in-race transition.
 * **Pass Criteria:** 
   - Menus render cleanly in 4:3 pillarboxed format.

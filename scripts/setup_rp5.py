@@ -42,6 +42,7 @@ TARGET_PACKAGES = [
     ("dev.imranr.obtainium", "Obtainium App Updater"),
     ("org.es_de.frontend", "ES-DE Frontend"),
     ("com.retroarch.aarch64", "RetroArch (64-bit)"),
+    ("com.armsx2", "ARM SX2 (PS2)"),
     ("xyz.aethersx2.android", "NetherSX2 / AetherSX2 (PS2)"),
     ("org.ppsspp.ppsspp", "PPSSPP"),
     ("org.azahar_emu.azahar", "Azahar (3DS)"),

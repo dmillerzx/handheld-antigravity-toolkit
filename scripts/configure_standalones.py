@@ -196,6 +196,19 @@ ControllerView = None
         local_cfg.write_text(content, encoding="utf-8")
         self.push_file(local_cfg, "/sdcard/Android/data/xyz.aethersx2.android/files/inis/PCSX2.ini")
 
+        # Deploy GT4 Spec II and GT4 per-game overscan crop & no-readback performance profiles
+        gt4_ini_content = f"""[EmuCore/GS]
+AspectRatio = {aspect}
+Crop = 1
+HardwareDownloadMode = 1
+UpscaleMultiplier = {scale}
+EnableWideScreenPatches = {ws_patches}
+"""
+        gt4_cfg = self.temp_dir / "gt4_nethersx2_gamesettings.ini"
+        gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
+        for gt4_id in ["SLUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
+            self.push_file(gt4_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{gt4_id}")
+
         # Deploy Retroid Pocket 5 calibrated input profile
         input_prof = WORKSPACE_ROOT / "configs" / "nethersx2_rp5_inputprofile.ini"
         if input_prof.exists():
@@ -204,6 +217,135 @@ ControllerView = None
         # Stage BIOS into NetherSX2 internal directory
         self.shell("mkdir -p /sdcard/Android/data/xyz.aethersx2.android/files/bios")
         self.shell("cp /sdcard/bios/*.bin /sdcard/Android/data/xyz.aethersx2.android/files/bios/ 2>/dev/null || true")
+
+    # 2b. ARM SX2 (PS2 - Primary Standalone)
+    def configure_armsx2(self) -> None:
+        scale = self.emulation.get("armsx2_upscale_multiplier", 2.0)
+        aspect = "1" if self.force_widescreen else "0"
+        ws_patches = "true" if self.force_widescreen else "false"
+        print(f"\n[*] Configuring ARM SX2 (PS2 Primary - {scale}x Vulkan, AspectRatio={aspect}, Crop=1, Disable Readbacks & Widescreen={ws_patches})...")
+
+        # 1. Generate PCSX2-Android.ini
+        pcsx2_ini_content = f"""[UI]
+SettingsVersion = 1
+
+[Folders]
+Bios = {self.bios_dir}
+Snapshots = snaps
+Savestates = sstates
+MemoryCards = memcards
+Logs = logs
+Cheats = cheats
+Patches = patches
+UserResources = resources
+Cache = cache
+Textures = textures
+InputProfiles = inputprofiles
+
+[EmuCore]
+EnablePatches = true
+EnableCheats = true
+EnableWideScreenPatches = {ws_patches}
+EnableNoInterlacingPatches = true
+EnableFastBoot = true
+WarnAboutUnsafeSettings = false
+
+[EmuCore/GS]
+Renderer = Vulkan
+UpscaleMultiplier = {scale}
+AspectRatio = {aspect}
+Crop = 1
+HardwareDownloadMode = 1
+EnableWideScreenPatches = {ws_patches}
+EnableCheats = true
+ThreadedPresentation = true
+Hacks = 1
+
+[Touchscreen]
+ControllerView = None
+"""
+        local_ini = self.temp_dir / "armsx2_PCSX2-Android.ini"
+        local_ini.write_text(pcsx2_ini_content, encoding="utf-8")
+        self.push_file(local_ini, "/sdcard/Android/data/com.armsx2/files/PCSX2-Android.ini")
+        self.push_file(local_ini, "/sdcard/Android/data/com.armsx2/files/inis/PCSX2.ini")
+
+        # 2. Generate/update armsx2-settings.json
+        existing_json = self.shell("cat /sdcard/Android/data/com.armsx2/files/armsx2-settings.json 2>/dev/null || true")
+        import json
+        settings_data = {}
+        if existing_json and existing_json.startswith("{"):
+            try:
+                settings_data = json.loads(existing_json)
+            except Exception:
+                settings_data = {}
+
+        if "global" not in settings_data:
+            settings_data["global"] = {}
+        g = settings_data["global"]
+        g["renderer"] = "vulkan"
+        g["upscaleFloat"] = float(scale)
+        g["aspectRatio"] = int(aspect)
+        g["enableWideScreenPatches"] = (ws_patches == "true")
+        g["enableNoInterlacingPatches"] = True
+        g["enableCheats"] = True
+        g["enableFastBoot"] = True
+        g["hardwareDownloadMode"] = 1  # Disable GS Readbacks (eliminates GT4 tunnel/night lag)
+        g["antiBlur"] = True
+        g["accurateBlendingUnit"] = 1
+        g["memoryCardSlot1Filename"] = "mcd001.ps2"
+        g["memoryCardSlot2Filename"] = "mcd002.ps2"
+
+        local_json = self.temp_dir / "armsx2-settings.json"
+        local_json.write_text(json.dumps(settings_data, indent=2), encoding="utf-8")
+        self.push_file(local_json, "/sdcard/Android/data/com.armsx2/files/armsx2-settings.json")
+
+        # 3. Deploy Retroid Pocket 5 calibrated input profile
+        input_prof = WORKSPACE_ROOT / "configs" / "nethersx2_rp5_inputprofile.ini"
+        if input_prof.exists():
+            self.push_file(input_prof, "/sdcard/Android/data/com.armsx2/files/inputprofiles/RP5r.ini")
+
+        # 4. Deploy GT4 Spec II and GT4 per-game overscan crop & no-readback performance profiles
+        gt4_ini_content = f"""[EmuCore/GS]
+AspectRatio = {aspect}
+Crop = 1
+HardwareDownloadMode = 1
+UpscaleMultiplier = {scale}
+EnableWideScreenPatches = {ws_patches}
+"""
+        gt4_cfg = self.temp_dir / "gt4_armsx2_gamesettings.ini"
+        gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
+        for gt4_id in ["SLUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
+            self.push_file(gt4_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{gt4_id}")
+
+        # 5. Stage BIOS into ARM SX2 internal directory
+        self.shell("mkdir -p /sdcard/Android/data/com.armsx2/files/bios", check=False)
+        self.shell("cp /sdcard/bios/*.bin /sdcard/Android/data/com.armsx2/files/bios/ 2>/dev/null || true", check=False)
+        if self.sd_id:
+            self.shell(f"cp /storage/{self.sd_id}/bios/*.bin /sdcard/Android/data/com.armsx2/files/bios/ 2>/dev/null || true", check=False)
+
+        # 6. Bi-directional Memory Card Mirroring between NetherSX2 and ARM SX2
+        self.shell("mkdir -p /sdcard/Android/data/com.armsx2/files/memcards", check=False)
+        self.shell("mkdir -p /sdcard/Android/data/xyz.aethersx2.android/files/memcards", check=False)
+        # NetherSX2 -> ARM SX2
+        self.shell("cp -n /sdcard/Android/data/xyz.aethersx2.android/files/memcards/* /sdcard/Android/data/com.armsx2/files/memcards/ 2>/dev/null || true", check=False)
+        # Ensure lowercase mcd001.ps2 / mcd002.ps2 exist for ARM SX2
+        self.shell("cp /sdcard/Android/data/com.armsx2/files/memcards/Mcd001.ps2 /sdcard/Android/data/com.armsx2/files/memcards/mcd001.ps2 2>/dev/null || true", check=False)
+        self.shell("cp /sdcard/Android/data/com.armsx2/files/memcards/Mcd002.ps2 /sdcard/Android/data/com.armsx2/files/memcards/mcd002.ps2 2>/dev/null || true", check=False)
+
+        # 7. Disable all onscreen touch controls (RP5 has physical integrated controls)
+        touch_json_path = "/sdcard/Android/data/com.armsx2/files/inputprofiles/Default.touch.json"
+        raw_touch = self.shell(f"cat '{touch_json_path}' 2>/dev/null || true")
+        if raw_touch and raw_touch.startswith("{"):
+            try:
+                touch_data = json.loads(raw_touch)
+                if "layout" in touch_data and "buttons" in touch_data["layout"]:
+                    for btn in touch_data["layout"]["buttons"]:
+                        btn["on"] = False
+                    local_touch = self.temp_dir / "Default.touch.json"
+                    local_touch.write_text(json.dumps(touch_data, indent=2), encoding="utf-8")
+                    self.push_file(local_touch, touch_json_path)
+            except Exception:
+                pass
 
     # 3. DOLPHIN (GameCube / Wii)
     def configure_dolphin(self) -> None:
@@ -537,6 +679,7 @@ gui-controllers-overlay: false
     # 8. ES-DE STANDALONE EMULATOR ROUTING
     def configure_esde_routing(self) -> None:
         print("\n[*] Locking down ES-DE standalone routing for all 3D systems...")
+        self.shell("am force-stop org.es_de.frontend", check=False)
         source_systems = WORKSPACE_ROOT / "configs" / "es_systems.xml"
         source_settings = WORKSPACE_ROOT / "configs" / "es_settings.xml"
 
@@ -570,6 +713,7 @@ gui-controllers-overlay: false
         print(f"[Standalone 3D Profiler] Turnip Support : {self.supports_turnip}")
         self.configure_duckstation()
         self.configure_nethersx2()
+        self.configure_armsx2()
         self.configure_dolphin()
         self.configure_ppsspp()
         self.configure_flycast()
