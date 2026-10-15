@@ -172,6 +172,7 @@ Fastmem = True
 DualCore = True
 EnableCheats = True
 CPUThread = True
+WiimoteEnableGCControllers = True
 
 [DSP]
 Backend = OpenSLES
@@ -201,7 +202,7 @@ Backend = Vulkan
 InternalResolution = {scale}
 AspectRatio = {aspect_ratio}
 WideScreenHack = False
-WaitForShadersBeforeStarting = True
+WaitForShadersBeforeStarting = False
 VSync = True
 ShaderCompilationMode = 2
 
@@ -216,7 +217,7 @@ DeferEFBCopies = True
 """
         # GCPadNew.ini (Controller mapping)
         gcpad_ini = """[GCPad1]
-Device = Android/0/Retroid Pocket Controller
+Device = Android/1/Retroid Pocket Controller
 Buttons/A = `Button 96`
 Buttons/B = `Button 97`
 Buttons/X = `Button 99`
@@ -235,23 +236,33 @@ C-Stick/Left = `Axis 11-`
 C-Stick/Right = `Axis 11+`
 C-Stick/Modifier = `Control`
 C-Stick/Modifier/Range = 50.000000
-D-Pad/Up = `Hat 0N`
-D-Pad/Down = `Hat 0S`
-D-Pad/Left = `Hat 0W`
-D-Pad/Right = `Hat 0E`
-Triggers/L = `Axis 23+`
-Triggers/R = `Axis 22+`
-Triggers/Threshold = 90.000000
+D-Pad/Up = `Hat 0N` | `Button 19`
+D-Pad/Down = `Hat 0S` | `Button 20`
+D-Pad/Left = `Hat 0W` | `Button 21`
+D-Pad/Right = `Hat 0E` | `Button 22`
+Triggers/L = `Axis 23+` | `Button 104`
+Triggers/R = `Axis 22+` | `Button 105`
+Triggers/Threshold = 50.000000
 Triggers/L-Analog = `Axis 23+`
 Triggers/R-Analog = `Axis 22+`
 """
         # WiimoteNew.ini (Classic controller mapped)
         wiimote_ini = """[Wiimote1]
-Device = Android/0/Retroid Pocket Controller
+Device = Android/1/Retroid Pocket Controller
 Source = 1
 Extension = Classic
+Buttons/A = `Button 96`
+Buttons/B = `Button 97`
+Buttons/1 = `Button 99`
+Buttons/2 = `Button 100`
+Buttons/- = `Button 109`
+Buttons/+ = `Button 108`
+D-Pad/Up = `Hat 0N` | `Button 19`
+D-Pad/Down = `Hat 0S` | `Button 20`
+D-Pad/Left = `Hat 0W` | `Button 21`
+D-Pad/Right = `Hat 0E` | `Button 22`
 [Classic1]
-Device = Android/0/Retroid Pocket Controller
+Device = Android/1/Retroid Pocket Controller
 Buttons/A = `Button 96`
 Buttons/B = `Button 97`
 Buttons/X = `Button 99`
@@ -268,13 +279,21 @@ Right Stick/Up = `Axis 14-`
 Right Stick/Down = `Axis 14+`
 Right Stick/Left = `Axis 11-`
 Right Stick/Right = `Axis 11+`
-D-Pad/Up = `Hat 0N`
-D-Pad/Down = `Hat 0S`
-D-Pad/Left = `Hat 0W`
-D-Pad/Right = `Hat 0E`
-Triggers/L = `Axis 23+`
-Triggers/R = `Axis 22+`
-Triggers/Threshold = 90.000000
+D-Pad/Up = `Hat 0N` | `Button 19`
+D-Pad/Down = `Hat 0S` | `Button 20`
+D-Pad/Left = `Hat 0W` | `Button 21`
+D-Pad/Right = `Hat 0E` | `Button 22`
+Triggers/L = `Axis 23+` | `Button 104`
+Triggers/R = `Axis 22+` | `Button 105`
+Triggers/Threshold = 50.000000
+"""
+        hotkeys_ini = """[Hotkeys]
+Device = Android/1/Retroid Pocket Controller
+General/Toggle Pause = F10
+General/Stop = Escape
+"""
+        freelook_ini = """[FreeLook1]
+Device = Android/1/Retroid Pocket Controller
 """
         f_dol = self.temp_dir / "Dolphin.ini"
         f_dol.write_text(dolphin_ini, encoding="utf-8")
@@ -284,8 +303,14 @@ Triggers/Threshold = 90.000000
         f_pad.write_text(gcpad_ini, encoding="utf-8")
         f_wii = self.temp_dir / "WiimoteNew.ini"
         f_wii.write_text(wiimote_ini, encoding="utf-8")
+        f_hot = self.temp_dir / "Hotkeys.ini"
+        f_hot.write_text(hotkeys_ini, encoding="utf-8")
+        f_hot2 = self.temp_dir / "HotKey.ini"
+        f_hot2.write_text(hotkeys_ini, encoding="utf-8")
+        f_free = self.temp_dir / "FreeLookController.ini"
+        f_free.write_text(freelook_ini, encoding="utf-8")
 
-        for f in [f_dol, f_gfx, f_pad, f_wii]:
+        for f in [f_dol, f_gfx, f_pad, f_wii, f_hot, f_hot2, f_free]:
             self.push_file(f, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/{f.name}")
             self.push_file(f, f"/sdcard/dolphin-emu/Config/{f.name}")
 
