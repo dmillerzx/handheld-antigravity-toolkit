@@ -154,9 +154,11 @@ class PreFlightAuditor:
                     self.add_result("Config", name, "FAIL", f"Missing from {path}")
 
         # Dedicated Root-Cause Schema Audits
-        # 1. MKWii PadType0 override bug check & profile binding
+        # 1. MKWii Controller Mode check
         mkwii_ini = self.shell("cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/RMCEA2.ini 2>/dev/null || true")
-        if "PadType0" in mkwii_ini:
+        if "WiimoteSource0 = 0" in mkwii_ini:
+            self.add_result("RootCause", "MKWii Controller Mode", "PASS", "GameCube Controller pass-through active (WiimoteSource0 = 0)")
+        elif "PadType0" in mkwii_ini:
             self.add_result("RootCause", "MKWii PadType Override", "FAIL", "Found conflicting PadType0 in RMCEA2.ini!")
         elif "WiimoteProfile1 = Classic_Controller" in mkwii_ini:
             self.add_result("RootCause", "MKWii Profile Binding", "PASS", "Bound to Classic_Controller profile without PadType0 conflict")
@@ -165,8 +167,8 @@ class PreFlightAuditor:
 
         # 2. PS2 Widescreen & CropMode check
         armsx2_ini = self.shell("cat /sdcard/Android/data/com.armsx2/files/inis/PCSX2.ini 2>/dev/null || true")
-        if "AspectRatio = 16:9" in armsx2_ini and "CropMode = Overscan" in armsx2_ini:
-            self.add_result("RootCause", "ARM SX2 16:9 & Crop", "PASS", "AspectRatio = 16:9 and CropMode = Overscan verified")
+        if "AspectRatio = 16:9" in armsx2_ini and ("CropMode = Overscan" in armsx2_ini or "CropMode = 1" in armsx2_ini):
+            self.add_result("RootCause", "ARM SX2 16:9 & Crop", "PASS", "AspectRatio = 16:9 and CropMode = 1 / Overscan verified")
         else:
             self.add_result("RootCause", "ARM SX2 16:9 & Crop", "WARN", "AspectRatio or CropMode not fully matching 16:9 / Overscan")
 
@@ -235,8 +237,10 @@ class PreFlightAuditor:
         dol_ini = self.shell("cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini 2>/dev/null || true")
         if "WiimoteSource0 = 1" in dol_ini:
             self.add_result("Schema", "Dolphin Wiimote Source", "PASS", "WiimoteSource0 = 1 (Emulated Wiimote active)")
+        elif "WiimoteSource0 = 0" in dol_ini and "SIDevice0 = 6" in dol_ini:
+            self.add_result("Schema", "Dolphin Wiimote Source", "PASS", "WiimoteSource0 = 0 & SIDevice0 = 6 (GameCube Controller 1 pass-through active)")
         else:
-            self.add_result("Schema", "Dolphin Wiimote Source", "WARN", "WiimoteSource0 is not set to 1")
+            self.add_result("Schema", "Dolphin Wiimote Source", "WARN", "WiimoteSource0 is not set to 1 or 0")
 
         # Community profiles directory check
         prof_count_str = self.shell("ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Profiles/Wiimote/ 2>/dev/null | wc -l")
