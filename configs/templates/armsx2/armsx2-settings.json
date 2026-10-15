@@ -1,0 +1,17 @@
+{
+  "global": {
+    "renderer": "vulkan",
+    "upscaleFloat": 2.0,
+    "aspectRatio": 1,
+    "enableWideScreenPatches": true,
+    "enableNoInterlacingPatches": true,
+    "enableCheats": true,
+    "enableFastBoot": true,
+    "hardwareDownloadMode": 1,
+    "antiBlur": true,
+    "accurateBlendingUnit": 1,
+    "memoryCardSlot1Filename": "mcd001.ps2",
+    "memoryCardSlot2Filename": "mcd002.ps2",
+    "touchControllerOpacity": 0
+  }
+}

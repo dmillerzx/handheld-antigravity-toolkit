@@ -603,6 +603,8 @@ class RP5Provisioner:
             if is_installed:
                 print(f"    -> Granting MANAGE_EXTERNAL_STORAGE to {label} ({pkg})...")
                 self.shell(f"appops set {pkg} MANAGE_EXTERNAL_STORAGE allow", check=False)
+                self.shell(f"pm grant {pkg} android.permission.READ_EXTERNAL_STORAGE 2>/dev/null || true", check=False)
+                self.shell(f"pm grant {pkg} android.permission.WRITE_EXTERNAL_STORAGE 2>/dev/null || true", check=False)
                 for extra_op in EXTRA_APPOPS.get(pkg, []):
                     print(f"    -> Granting {extra_op} to {label} ({pkg})...")
                     self.shell(f"appops set {pkg} {extra_op} allow", check=False)
