@@ -8,22 +8,45 @@ This document provides systematic, platform-by-platform validation procedures fo
 
 | Platform / Subsystem | Primary Verification Target | Expected Behavior | Status |
 |---|---|---|---|
-| **RetroArch 2D** | Frame Pacing & Run-Ahead | Solid 60.0 fps, 1-frame sub-frame response, Vulkan swapchain | `[PASS]` |
+| **Retroid OS / Android** | Screen Rotation & Audio Clicks | Auto-rotate disabled (locked landscape); touch sounds muted; AMOLED Dark Theme; Doze whitelist | `[PASS]` |
+| **RetroArch 2D** | Frame Pacing & Latency | Solid 60.0 fps, 1-frame sub-frame response, Vulkan swapchain; Global Rewind OFF | `[PASS]` |
 | **RetroArch Audio** | GBA 5.5kHz DSP & Genesis M1 LPF | Muffled harsh DAC noise eliminated, authentic analog timbre | `[PASS]` |
-| **DuckStation (PS1)** | PGXP 1080p Geometry Precision | No polygon jitter/wobble, 5x native scaling, Cubeb 20ms | `[PASS]` |
-| **NetherSX2 (PS2)** | CRC pnach Widescreen & CRT Crop | 16:9 widescreen without stretching; Crop=1 overscan border removal (Verified in GT4 Spec II) | `[PASS]` |
-| **Dolphin (GC/Wii)** | Dynamic Controller Node & Classic Pad | Hardware auto-discovery, Classic mapping & L3+R3 pause hotkeys (Verified in Mario Kart Wii) | `[PASS]` |
+| **DuckStation (PS1)** | PGXP 1080p Geometry Precision | No polygon jitter/wobble, 5x native scaling, Cubeb 20ms, Force43For2D | `[PASS]` |
+| **NetherSX2 (PS2)** | CRC pnach, Overscan & FastBoot | 16:9 widescreen, Crop=1 overscan border removal, FastBoot & HW Download Mode | `[PASS]` |
+| **Dolphin (GC/Wii)** | Controller Node, MemCard & Hacks | Hardware auto-discovery, Classic mapping, L3+R3 pause hotkeys, SlotA MemCard, EFB speedhack | `[PASS]` |
+| **PPSSPP (PSP)** | FastMemory & 4x Vulkan | 4x 1080p resolution, 16x Aniso, FastMemory active, touch overlay disabled | `[PASS]` |
 | **Azahar (3DS)** | Mesa Turnip Driver Stability | Vulkan Async shaders compile without pipeline stalls | `[PASS]` |
 | **Vita3K (PS Vita)** | Mesa Turnip 1080p Rendering | Stable 2x scaling without texture corruption or crashing | `[PASS]` |
+| **ES-DE Frontend** | Region Scraping & Back Safety | ScraperRegion set to US; BackEventAppExit=false (no accidental exits to Android) | `[PASS]` |
 | **DroidDeck (Steam)** | 720p FSR & MicroSD Steam Mount | MicroSD library mounted; 60fps UI; native XInput gamepad | `[PASS]` |
 
 ---
 
 ## 2. Platform-by-Platform Validation Procedures
 
-### A. RetroArch (2D & Arcade Low-Latency Engine)
+### A. Handheld OS & Hardware Tuning
 
-#### Test Case RA-01: Frame Pacing & Run-Ahead Latency Check
+#### Test Case OS-01: Screen Rotation, Dark Theme & Audio Effects
+* **Objective:** Ensure display orientation is permanently locked to landscape, touch sounds are disabled, AMOLED dark theme is active, and emulators are whitelisted from Android Doze.
+* **Procedure:**
+  1. Rotate the device physically on all axes.
+  2. Tap UI icons and navigate Android settings menus.
+  3. Verify system appearance is dark mode.
+  4. Query ADB settings:
+     ```bash
+     adb shell "settings get system accelerometer_rotation; settings get system sound_effects_enabled; settings get secure ui_night_mode"
+     ```
+* **Pass Criteria:** 
+  - Screen remains strictly locked in landscape mode; no accidental vertical orientation triggers.
+  - No touch audio clicks or pop noises occur during navigation.
+  - System UI renders in pure black/dark mode (`ui_night_mode = 2`).
+  - `org.es_de.frontend`, `com.retroarch.aarch64`, and `com.droiddeck.launcher` appear in `dumpsys deviceidle whitelist`.
+
+---
+
+### B. RetroArch (2D & Arcade Low-Latency Engine)
+
+#### Test Case RA-01: Frame Pacing, Run-Ahead & Global Rewind Check
 * **Objective:** Ensure ultra-responsive frame execution with zero dropped frames.
 * **Test Rom:** *Super Mario World* (SNES) or *Sonic the Hedgehog 2* (Genesis).
 * **Procedure:**
@@ -152,4 +175,10 @@ To verify permissions, directory integrity, and active settings in one command o
 
 # Verify Android 13 Phantom Process Limit Bypass
 .\platform-tools\adb.exe -s ff152647 shell "/system/bin/device_config get activity_manager max_phantom_processes"
+
+# Verify Screen Auto-Rotate Disabled (Locked Landscape) & Dark Theme
+.\platform-tools\adb.exe -s ff152647 shell "settings get system accelerometer_rotation; settings get secure ui_night_mode; settings get system sound_effects_enabled"
+
+# Verify Doze Whitelist for Frontends & Emulators
+.\platform-tools\adb.exe -s ff152647 shell "dumpsys deviceidle whitelist | grep -E 'es_de|retroarch|droiddeck'"
 ```

@@ -139,11 +139,12 @@ python scripts/setup_rp5.py --serial ff152647 --profile rp5 --all
 ## 🧪 Quality Assurance & Testing
 
 Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verification tests covering:
-* RetroArch frame pacing and 1-frame Run-Ahead responsiveness.
-* GBA 5.5kHz IIR audio filtering and Genesis Model 1 LPF tone.
-* DuckStation PGXP precision and NetherSX2 CRC widescreen hooks.
-* Dolphin analog trigger stroke thresholds (`Threshold = 50.0`, `Trigger = 100.0`).
+* Android OS tuning: screen auto-rotation disabled, AMOLED Dark Theme, UI touch sounds muted, and Doze whitelist exemptions.
+* RetroArch frame pacing, 1-frame Run-Ahead, GBA 5.5kHz IIR audio DSP, Genesis Model 1 LPF, and global rewind disabled.
+* DuckStation PGXP precision and NetherSX2 FastBoot, CRC widescreen hooks, and Hardware Download Mode.
+* Dolphin GameCube Memory Card Slot A auto-insertion, CPU EFB readback bypass, and L3+R3 safety hotkeys.
 * Azahar / Vita3K Mesa Turnip driver stability.
+* ES-DE North American scraper region (`us`) and navigation back-button safety.
 * DroidDeck 720p FSR upscaling and MicroSD Steam library streaming throughput.
 
 ---
