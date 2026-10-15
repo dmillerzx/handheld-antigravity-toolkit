@@ -160,6 +160,15 @@ ControllerView = None
         local_cfg.write_text(content, encoding="utf-8")
         self.push_file(local_cfg, "/sdcard/Android/data/xyz.aethersx2.android/files/inis/PCSX2.ini")
 
+        # Deploy Retroid Pocket 5 calibrated input profile
+        input_prof = WORKSPACE_ROOT / "configs" / "nethersx2_rp5_inputprofile.ini"
+        if input_prof.exists():
+            self.push_file(input_prof, "/sdcard/Android/data/xyz.aethersx2.android/files/inputprofiles/RP5r.ini")
+
+        # Stage BIOS into NetherSX2 internal directory
+        self.shell("mkdir -p /sdcard/Android/data/xyz.aethersx2.android/files/bios")
+        self.shell("cp /sdcard/bios/*.bin /sdcard/Android/data/xyz.aethersx2.android/files/bios/ 2>/dev/null || true")
+
     # 3. DOLPHIN (GameCube / Wii)
     def configure_dolphin(self) -> None:
         scale = self.emulation.get("dolphin_internal_resolution", 2.5)
@@ -177,7 +186,7 @@ SIDevice0 = 6
 SIDevice1 = 0
 SIDevice2 = 0
 SIDevice3 = 0
-WiimoteSource0 = 1
+WiimoteSource0 = 0
 WiimoteSource1 = 0
 WiimoteSource2 = 0
 WiimoteSource3 = 0
@@ -202,6 +211,10 @@ PAL60 = True
 [Android]
 JoystickRelCenter = False
 ShowInputOverlay = False
+
+[Analytics]
+Enabled = False
+PermissionAsked = True
 """
         # GFX.ini (Graphics & Performance)
         aspect_ratio = 1 if self.force_widescreen else 0
@@ -226,10 +239,10 @@ DeferEFBCopies = True
         # GCPadNew.ini (Controller mapping)
         gcpad_ini = """[GCPad1]
 Device = Android/1/Retroid Pocket Controller
-Buttons/A = `Android/1/Retroid Pocket Controller:Button 96` | `Android/0/Retroid Pocket Controller:Button 96` | `Button 96`
-Buttons/B = `Android/1/Retroid Pocket Controller:Button 97` | `Android/0/Retroid Pocket Controller:Button 97` | `Button 97`
-Buttons/X = `Android/1/Retroid Pocket Controller:Button 99` | `Android/0/Retroid Pocket Controller:Button 99` | `Button 99`
-Buttons/Y = `Android/1/Retroid Pocket Controller:Button 100` | `Android/0/Retroid Pocket Controller:Button 100` | `Button 100`
+Buttons/A = `Android/1/Retroid Pocket Controller:Button 97` | `Android/0/Retroid Pocket Controller:Button 97` | `Button 97`
+Buttons/B = `Android/1/Retroid Pocket Controller:Button 96` | `Android/0/Retroid Pocket Controller:Button 96` | `Button 96`
+Buttons/X = `Android/1/Retroid Pocket Controller:Button 100` | `Android/0/Retroid Pocket Controller:Button 100` | `Button 100`
+Buttons/Y = `Android/1/Retroid Pocket Controller:Button 99` | `Android/0/Retroid Pocket Controller:Button 99` | `Button 99`
 Buttons/Z = `Android/1/Retroid Pocket Controller:Button 103` | `Android/0/Retroid Pocket Controller:Button 103` | `Button 103`
 Buttons/Start = `Android/1/Retroid Pocket Controller:Button 108` | `Android/0/Retroid Pocket Controller:Button 108` | `Button 108`
 Main Stick/Up = `Axis 1-`
@@ -257,10 +270,10 @@ Triggers/R-Analog = `Axis 22+`
         # WiimoteNew.ini (Classic controller mapped)
         wiimote_ini = """[Wiimote1]
 Device = Android/1/Retroid Pocket Controller
-Source = 1
+Source = 0
 Extension = Classic
-Buttons/A = `Android/1/Retroid Pocket Controller:Button 96` | `Android/0/Retroid Pocket Controller:Button 96` | `Button 96`
-Buttons/B = `Android/1/Retroid Pocket Controller:Button 97` | `Android/0/Retroid Pocket Controller:Button 97` | `Button 97`
+Buttons/A = `Android/1/Retroid Pocket Controller:Button 97` | `Android/0/Retroid Pocket Controller:Button 97` | `Button 97`
+Buttons/B = `Android/1/Retroid Pocket Controller:Button 96` | `Android/0/Retroid Pocket Controller:Button 96` | `Button 96`
 Buttons/1 = `Android/1/Retroid Pocket Controller:Button 99` | `Android/0/Retroid Pocket Controller:Button 99` | `Button 99`
 Buttons/2 = `Android/1/Retroid Pocket Controller:Button 100` | `Android/0/Retroid Pocket Controller:Button 100` | `Button 100`
 Buttons/- = `Android/1/Retroid Pocket Controller:Button 109` | `Android/0/Retroid Pocket Controller:Button 109` | `Button 109`
@@ -269,10 +282,10 @@ D-Pad/Up = `Hat 0N` | `Button 19`
 D-Pad/Down = `Hat 0S` | `Button 20`
 D-Pad/Left = `Hat 0W` | `Button 21`
 D-Pad/Right = `Hat 0E` | `Button 22`
-Classic/Buttons/A = `Android/1/Retroid Pocket Controller:Button 96` | `Android/0/Retroid Pocket Controller:Button 96` | `Button 96`
-Classic/Buttons/B = `Android/1/Retroid Pocket Controller:Button 97` | `Android/0/Retroid Pocket Controller:Button 97` | `Button 97`
-Classic/Buttons/X = `Android/1/Retroid Pocket Controller:Button 99` | `Android/0/Retroid Pocket Controller:Button 99` | `Button 99`
-Classic/Buttons/Y = `Android/1/Retroid Pocket Controller:Button 100` | `Android/0/Retroid Pocket Controller:Button 100` | `Button 100`
+Classic/Buttons/A = `Android/1/Retroid Pocket Controller:Button 97` | `Android/0/Retroid Pocket Controller:Button 97` | `Button 97`
+Classic/Buttons/B = `Android/1/Retroid Pocket Controller:Button 96` | `Android/0/Retroid Pocket Controller:Button 96` | `Button 96`
+Classic/Buttons/X = `Android/1/Retroid Pocket Controller:Button 100` | `Android/0/Retroid Pocket Controller:Button 100` | `Button 100`
+Classic/Buttons/Y = `Android/1/Retroid Pocket Controller:Button 99` | `Android/0/Retroid Pocket Controller:Button 99` | `Button 99`
 Classic/Buttons/ZL = `Android/1/Retroid Pocket Controller:Button 102` | `Android/0/Retroid Pocket Controller:Button 102` | `Button 102`
 Classic/Buttons/ZR = `Android/1/Retroid Pocket Controller:Button 103` | `Android/0/Retroid Pocket Controller:Button 103` | `Button 103`
 Classic/Buttons/Plus = `Android/1/Retroid Pocket Controller:Button 108` | `Android/0/Retroid Pocket Controller:Button 108` | `Button 108`
