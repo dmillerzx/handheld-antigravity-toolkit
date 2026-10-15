@@ -269,6 +269,20 @@ class RP5Provisioner:
             self.run_cmd("push", str(tmp_xml), dest_sd)
         print("    -> Headless ES-DE configuration staged successfully.")
 
+        # Stage custom_systems/es_systems.xml (Force Standalone 3D Emulators)
+        source_systems = WORKSPACE_ROOT / "configs" / "es_systems.xml"
+        if source_systems.exists():
+            dest_sys_internal = f"{internal}/ES-DE/custom_systems/es_systems.xml"
+            self.shell(f"mkdir -p '{internal}/ES-DE/custom_systems'", check=False)
+            print(f"    Pushing {source_systems.name} -> {dest_sys_internal}")
+            self.run_cmd("push", str(source_systems), dest_sys_internal)
+            if sdcard:
+                dest_sys_sd = f"{sdcard}/ES-DE/custom_systems/es_systems.xml"
+                self.shell(f"mkdir -p '{sdcard}/ES-DE/custom_systems'", check=False)
+                print(f"    Pushing {source_systems.name} -> {dest_sys_sd}")
+                self.run_cmd("push", str(source_systems), dest_sys_sd)
+            print("    -> ES-DE custom_systems standalone emulator overrides deployed.")
+
     def stage_turnip_drivers(self, drivers_dir: Optional[Path] = None) -> None:
         """
         Pushes staged Mesa Turnip GPU drivers from local drivers/ to /sdcard/Download/drivers/.

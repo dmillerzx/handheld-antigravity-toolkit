@@ -65,6 +65,7 @@ AntigravityWorkingDir/
 │   └── ps2/                 # PS2 PCSX2 master pnach cheats (.gitkeep)
 ├── configs/                 # Device profiles, ES-DE configs & Obtainium templates
 │   ├── rp5_master_obtainium.json
+│   ├── es_systems.xml       # Custom systems forcing standalone 3D emulator priority
 │   ├── es_settings.xml
 │   ├── droiddeck_config.json
 │   ├── libraryfolders.vdf   # Pre-seeded Steam MicroSD library mapping

@@ -176,13 +176,13 @@
 <string name="ThemeVariant" value="" />
 <string name="UIMode" value="full" />
 <string name="UIMode_passkey" value="uuddlrlrba" />
-<string name="AlternativeEmulator_gc" value="Dolphin (Standalone)" />
-<string name="AlternativeEmulator_wii" value="Dolphin (Standalone)" />
-<string name="AlternativeEmulator_ps2" value="NetherSX2" />
-<string name="AlternativeEmulator_psx" value="DuckStation (Standalone)" />
-<string name="AlternativeEmulator_psp" value="PPSSPP (Standalone)" />
-<string name="AlternativeEmulator_dreamcast" value="Flycast (Standalone)" />
-<string name="AlternativeEmulator_n3ds" value="Azahar (Standalone)" />
-<string name="AlternativeEmulator_psvita" value="Vita3K (Standalone)" />
+<string name="AlternativeEmulator.gc" value="Dolphin (Standalone)" />
+<string name="AlternativeEmulator.wii" value="Dolphin (Standalone)" />
+<string name="AlternativeEmulator.ps2" value="NetherSX2 (Standalone)" />
+<string name="AlternativeEmulator.psx" value="DuckStation (Standalone)" />
+<string name="AlternativeEmulator.psp" value="PPSSPP (Standalone)" />
+<string name="AlternativeEmulator.dreamcast" value="Flycast (Standalone)" />
+<string name="AlternativeEmulator.n3ds" value="Azahar (Standalone)" />
+<string name="AlternativeEmulator.psvita" value="Vita3K (Standalone)" />
 <string name="ROMDirectory" value="/storage/EEEF-F762/ROMs" />
 </config>

@@ -175,6 +175,7 @@ Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verificat
 │   └── sync_all_saves.py            # Save, state & memory card backup sync
 ├── configs/
 │   ├── rp5_master_obtainium.json    # Upstream emulator catalog for Obtainium
+│   ├── es_systems.xml               # ES-DE custom systems standalone emulator overrides
 │   ├── es_settings.xml              # Headless ES-DE storage & emulator routing
 │   ├── droiddeck_config.json        # DroidDeck 720p/FSR 1080p Turnip profile
 │   ├── libraryfolders.vdf           # Pre-seeded Steam MicroSD library definition

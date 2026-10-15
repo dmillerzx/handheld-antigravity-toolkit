@@ -10,6 +10,7 @@ Dolphin, PPSSPP, Flycast, Azahar, and Vita3K based on dynamic device profiles.
 import argparse
 import configparser
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -374,6 +375,35 @@ fullscreen: true
         self.push_file(local_cfg, "/sdcard/Android/data/org.vita3k.emulator/files/vita/config.yml")
         self.push_file(local_cfg, "/sdcard/Android/data/org.vita3k.emulator/files/config.yml")
 
+    # 8. ES-DE STANDALONE EMULATOR ROUTING
+    def configure_esde_routing(self) -> None:
+        print("\n[*] Locking down ES-DE standalone routing for all 3D systems...")
+        source_systems = WORKSPACE_ROOT / "configs" / "es_systems.xml"
+        source_settings = WORKSPACE_ROOT / "configs" / "es_settings.xml"
+
+        target_rom_dir = f"/storage/{self.sd_id}/ROMs" if self.sd_id else "/sdcard/ROMs"
+
+        # 1. Deploy custom_systems/es_systems.xml
+        if source_systems.exists():
+            self.push_file(source_systems, "/sdcard/ES-DE/custom_systems/es_systems.xml")
+            if self.sd_id:
+                self.push_file(source_systems, f"/storage/{self.sd_id}/ES-DE/custom_systems/es_systems.xml")
+
+        # 2. Deploy es_settings.xml with verified AlternativeEmulator keys & dynamic ROMDirectory
+        if source_settings.exists():
+            content = source_settings.read_text(encoding="utf-8")
+            content_mod = re.sub(
+                r'<string\s+name="ROMDirectory"\s+value="[^"]*"',
+                f'<string name="ROMDirectory" value="{target_rom_dir}"',
+                content
+            )
+            local_settings = self.temp_dir / "es_settings.xml"
+            local_settings.write_text(content_mod, encoding="utf-8")
+            self.push_file(local_settings, "/sdcard/ES-DE/settings/es_settings.xml")
+            if self.sd_id:
+                self.push_file(local_settings, f"/storage/{self.sd_id}/ES-DE/settings/es_settings.xml")
+        print("    [OK] ES-DE custom_systems & AlternativeEmulator mappings locked down.")
+
     def run_all(self) -> None:
         print(f"\n[Standalone 3D Profiler] Active Profile: {self.profile.get('name', 'Unknown')}")
         print(f"[Standalone 3D Profiler] MicroSD Root   : {f'/storage/{self.sd_id}' if self.sd_id else 'None (/sdcard/ fallback)'}")
@@ -386,9 +416,10 @@ fullscreen: true
         self.configure_flycast()
         self.configure_azahar()
         self.configure_vita3k()
+        self.configure_esde_routing()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
         print("\n========================================================================")
-        print("   All Standalone 3D Emulators Successfully Configured!")
+        print("   All Standalone 3D Emulators & ES-DE Routing Successfully Configured!")
         print("========================================================================")
 
 
