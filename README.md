@@ -1,4 +1,4 @@
-# Handheld Community Provisioning Toolkit (rp5-antigravity-toolkit)
+# Handheld Community Provisioning Toolkit (handheld-antigravity-toolkit)
 
 **Status:** `v1.0-baseline (Active Testing & Community QA)`
 
