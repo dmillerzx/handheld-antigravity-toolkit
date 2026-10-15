@@ -154,12 +154,14 @@ class PreFlightAuditor:
                     self.add_result("Config", name, "FAIL", f"Missing from {path}")
 
         # Dedicated Root-Cause Schema Audits
-        # 1. MKWii PadType0 override bug check
+        # 1. MKWii PadType0 override bug check & profile binding
         mkwii_ini = self.shell("cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/RMCEA2.ini 2>/dev/null || true")
-        if "PadType0" in mkwii_ini or "WiimoteProfile1" in mkwii_ini:
-            self.add_result("RootCause", "MKWii PadType Override", "FAIL", "Found conflicting PadType0 or WiimoteProfile1 in RMCEA2.ini!")
+        if "PadType0" in mkwii_ini:
+            self.add_result("RootCause", "MKWii PadType Override", "FAIL", "Found conflicting PadType0 in RMCEA2.ini!")
+        elif "WiimoteProfile1 = Classic_Controller" in mkwii_ini:
+            self.add_result("RootCause", "MKWii Profile Binding", "PASS", "Bound to Classic_Controller profile without PadType0 conflict")
         else:
-            self.add_result("RootCause", "MKWii PadType Override", "PASS", "Clean: inherits global standard controller cleanly")
+            self.add_result("RootCause", "MKWii Profile Binding", "WARN", "WiimoteProfile1 = Classic_Controller not found in RMCEA2.ini")
 
         # 2. PS2 Widescreen & CropMode check
         armsx2_ini = self.shell("cat /sdcard/Android/data/com.armsx2/files/inis/PCSX2.ini 2>/dev/null || true")
@@ -174,6 +176,13 @@ class PreFlightAuditor:
             self.add_result("RootCause", "Vita3K Setup Bypass", "PASS", "initial-setup: false and Vulkan backend active")
         else:
             self.add_result("RootCause", "Vita3K Setup Bypass", "WARN", "Vita3K config.yml missing initial-setup or Vulkan backend")
+
+        # 4. ARM SX2 ES-DE ROMSAF intent check
+        es_sys = self.shell("cat /sdcard/ES-DE/custom_systems/es_systems.xml 2>/dev/null || true")
+        if "%EMULATOR_ARMSX2%" in es_sys and "%DATA%=%ROMSAF%" in es_sys:
+            self.add_result("RootCause", "ARM SX2 ES-DE Intent", "PASS", "Configured with %DATA%=%ROMSAF% content-URI")
+        else:
+            self.add_result("RootCause", "ARM SX2 ES-DE Intent", "WARN", "ARM SX2 command not yet using %ROMSAF%")
 
     # =========================================================================
     # 3. CONTROLLER DESCRIPTOR & SCHEMA VERIFICATION (5 LAWS AUDIT)
@@ -215,6 +224,12 @@ class PreFlightAuditor:
             self.add_result("Schema (Law 1)", "Wiimote Key Coverage", "FAIL", f"Missing vital keys: {', '.join(missing_keys)}")
         else:
             self.add_result("Schema (Law 1)", "Wiimote Key Coverage", "PASS", "All Classic Controller keys mapped")
+
+        # Trigger axis orientation check (L=Axis 22+, R=Axis 23+)
+        if "Classic/Triggers/L = `Axis 22+`" in wii_ini and "Classic/Triggers/R = `Axis 23+`" in wii_ini:
+            self.add_result("Schema (Triggers)", "Wii Classic Trigger Axes", "PASS", "L=Axis 22+, R=Axis 23+ verified")
+        else:
+            self.add_result("Schema (Triggers)", "Wii Classic Trigger Axes", "WARN", "Trigger axes not mapped to L=Axis 22+, R=Axis 23+")
 
         # Dolphin.ini WiimoteSource0 check
         dol_ini = self.shell("cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini 2>/dev/null || true")

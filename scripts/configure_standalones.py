@@ -461,11 +461,11 @@ D-Pad/Up = `Button 19`
 D-Pad/Down = `Button 20`
 D-Pad/Left = `Button 21`
 D-Pad/Right = `Button 22`
-Triggers/L = `Axis 23+`
-Triggers/R = `Axis 22+`
+Triggers/L = `Axis 22+`
+Triggers/R = `Axis 23+`
 Triggers/Threshold = 50.000000
-Triggers/L-Analog = `Axis 23+`
-Triggers/R-Analog = `Axis 22+`
+Triggers/L-Analog = `Axis 22+`
+Triggers/R-Analog = `Axis 23+`
 """
         # WiimoteNew.ini (Classic controller mapped flat inside Wiimote1)
         wiimote_ini = f"""[Wiimote1]
@@ -504,11 +504,11 @@ Classic/Right Stick/Up = `Axis 14-`
 Classic/Right Stick/Down = `Axis 14+`
 Classic/Right Stick/Left = `Axis 11-`
 Classic/Right Stick/Right = `Axis 11+`
-Classic/Triggers/L = `Axis 23+`
-Classic/Triggers/R = `Axis 22+`
+Classic/Triggers/L = `Axis 22+`
+Classic/Triggers/R = `Axis 23+`
 Classic/Triggers/Threshold = 50.000000
-Classic/Triggers/L-Analog = `Axis 23+`
-Classic/Triggers/R-Analog = `Axis 22+`
+Classic/Triggers/L-Analog = `Axis 22+`
+Classic/Triggers/R-Analog = `Axis 23+`
 """
         hotkeys_ini = f"""[Hotkeys]
 Device = {ctrl_dev}

@@ -115,10 +115,10 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - Automated fetching of 11 designated 2D/Arcade cores and frontend assets.
 
 ### E. Standalone 3D Emulators Injection
-- **ARM SX2 (PS2 Primary)**: Direct boot via `%EMULATOR_ARMSX2% %ACTIVITY%=.Main %ACTION%=android.intent.action.VIEW %DATA%=file://%ROM%`. 2.0x 1080p Vulkan, string `AspectRatio = 16:9` (`"aspectRatio": 1` in UI JSON), `Crop = 1`, `CropMode = Overscan`, `HardwareDownloadMode = 1` (Disable Readbacks), and `touchControllerOpacity = 0`.
+- **ARM SX2 (PS2 Primary)**: Direct boot via `%EMULATOR_ARMSX2% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%`. 2.0x 1080p Vulkan, string `AspectRatio = 16:9` (`"aspectRatio": 1` in UI JSON), `Crop = 1`, `CropMode = Overscan`, `HardwareDownloadMode = 1` (Disable Readbacks), and `touchControllerOpacity = 0`.
 - **NetherSX2 (PS2 Fallback)**: 2.25x 1080p SPU2 Hermite interpolation, `AspectRatio = 16:9`, `Crop = 1`, `CropMode = Overscan`.
 - **DuckStation (PS1)**: 5x 1080p PGXP, Cubeb 20ms low latency audio.
-- **Dolphin (GameCube & Wii)**: 2.5x 1080p OpenSLES DSP audio, analog triggers. Global `SIDevice0 = 6`, `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`. Avoids per-game `PadType0` dropdown index conflicts and conflicting `WiimoteProfile1` overrides in Mario Kart Wii (`RMC*.ini`).
+- **Dolphin (GameCube & Wii)**: 2.5x 1080p OpenSLES DSP audio, analog triggers (L=`Axis 22+`, R=`Axis 23+`). Global `SIDevice0 = 6`, `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`. Binds `WiimoteProfile1 = Classic_Controller` and `WiimoteSource0 = 1` in Mario Kart Wii (`RMC*.ini`) without conflicting `PadType0` dropdown indices.
 - **PPSSPP (PSP)**: 4x 1080p 16x Anisotropic filtering.
 - **Flycast (Dreamcast)**: 2x 1080p Widescreen.
 - **Azahar (3DS)**: 3x 1080p Mesa Turnip driver, async shader compilation.
