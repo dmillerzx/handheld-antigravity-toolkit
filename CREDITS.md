@@ -7,6 +7,7 @@ The **Retroid Pocket 5 (RP5) Automated Provisioning Workspace** is made possible
 ## 1. Standalone Emulators & Runtimes
 
 * **[Dolphin Emulator](https://dolphin-emu.org/)** — Developed by the Dolphin Emulator Project & Dolphin Team. High-efficiency GameCube and Wii emulation, dual-core JIT translation, and extensive Gecko patch engines.
+* **[ARM SX2](https://github.com/ARMSX2/ARMSX2)** — Developed by the ARMSX2 Team (jpolo1224 and contributors) based on PCSX2 / AetherSX2. Modern, active PlayStation 2 Android emulator with native scoped storage handling, Turnip GPU driver support, and optimized Vulkan pipelines.
 * **[NetherSX2 / PCSX2](https://github.com/Trixarian/NetherSX2-patch)** — Developed by Trixarian and the PCSX2 team (based on AetherSX2 by Tahlreth). High-performance PlayStation 2 emulation on Android with custom widescreen and 60fps `.pnach` patch engines.
 * **[DuckStation](https://github.com/stenzek/duckstation)** — Developed by Stenzek. Precision PlayStation (PS1) emulation featuring PGXP geometric precision, Vulkan rendering, and low-latency Cubeb audio pipelines.
 * **[PPSSPP](https://www.ppsspp.org/)** — Developed by Henrik Rydgård and open-source contributors. Industry-standard PlayStation Portable (PSP) emulator with high-efficiency Vulkan backends.

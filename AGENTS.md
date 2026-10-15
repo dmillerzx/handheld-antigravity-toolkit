@@ -115,7 +115,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - Automated fetching of 11 designated 2D/Arcade cores and frontend assets.
 
 ### E. Standalone 3D Emulators Injection
-- Injects optimal profiles for DuckStation (5x 1080p PGXP, Cubeb 20ms), NetherSX2 (2.25x 1080p SPU2 Hermite), Dolphin (2.5x 1080p OpenSLES DSP, analog triggers), PPSSPP (4x 1080p 16x Aniso), Flycast (2x 1080p Widescreen), Azahar (3x 1080p Turnip), and Vita3K (2x 1080p Turnip).
+- Injects optimal profiles for ARM SX2 (2.0x 1080p Vulkan, Turnip T19, No-Readbacks, Crop=1), DuckStation (5x 1080p PGXP, Cubeb 20ms), NetherSX2 (2.25x 1080p SPU2 Hermite, Crop=1), Dolphin (2.5x 1080p OpenSLES DSP, analog triggers), PPSSPP (4x 1080p 16x Aniso), Flycast (2x 1080p Widescreen), Azahar (3x 1080p Turnip), and Vita3K (2x 1080p Turnip).
 
 ### F. Universal Community Patch Engine (`scripts/stage_community_patches.py`)
 - **PS2 (NetherSX2 / PCSX2)**: Downloads and deploys 4,700+ `.pnach` master cheats to both `patches/` and `cheats/`.

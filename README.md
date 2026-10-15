@@ -60,9 +60,10 @@ Designed for everyday gamers and handheld owners across **Windows, macOS, and Li
 #### What the Setup Does Automatically:
 * **Google ADB Platform-Tools**: Automatically downloaded and configured if not already installed.
 * **Hardware Detection**: Automatically detects whether you connected an RP5, RP Mini, RP4 Pro, or Odin 2.
-* **Physical Controller Auto-Binding**: Queries your handheld's input subsystem and binds Dolphin (GameCube Port 1 & Wii Classic Controller), NetherSX2, and RetroArch.
+* **Physical Controller Auto-Binding**: Queries your handheld's input subsystem and binds Dolphin (GameCube Port 1 & Wii Classic Controller), ARM SX2, NetherSX2, and RetroArch.
 * **Controller Back-Button Isolation**: Isolates the physical 'B' button from triggering the Dolphin pause drawer so in-game actions (braking, drifting, cancel) work reliably. Safety pause menu is assigned to **L3 + R3** click combo.
-* **Display & CRT Auto-Crop**: Configures NetherSX2 with 16:9 rendering and CRT overscan crop (`Crop = 1`) to eliminate black borders in games like *Gran Turismo 4*.
+* **PS2 Dual-Engine Architecture (ARM SX2 + NetherSX2)**: Integrates modern ARM SX2 as primary PS2 emulator with Obtainium 1-click update tracking, preserving NetherSX2 as seamless fallback. Shared memory card sync ensures zero progress loss.
+* **Display & CRT Auto-Crop**: Configures PS2 emulators with 16:9 rendering, CRT overscan crop (`Crop = 1`) to eliminate black borders without stretching geometry, and disables GS readbacks (`HardwareDownloadMode = 1`) to eliminate tunnel/night track slowdowns in games like *Gran Turismo 4*.
 * **2D Ultra-Low-Latency Audio/Video**: Injects Vulkan backend, 48ms OpenSLES latency, GBA 5.5kHz IIR low-pass DSP, and Genesis Model 1 LPF.
 * **Steam PC Gaming Ready**: Pre-configures DroidDeck with 720p base rendering, FSR upscaling to 1080p, Mesa Turnip GPU drivers, and pre-seeds your MicroSD Steam library.
 * **4,700+ Community Widescreen Patches**: Streamed live from upstream PCSX2 and Dolphin Gecko repositories.
