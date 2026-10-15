@@ -86,28 +86,32 @@ class StandaloneConfigurator:
         self.adb_cmd("push", str(local_path), remote_path)
 
     def get_controller_device_string(self) -> str:
-        """Dynamically queries connected Android InputDevices to resolve controller ID & name."""
+        """Dynamically queries connected Android InputDevices to resolve Dolphin controller identifier."""
         try:
             dumpsys = self.shell("dumpsys input")
-            m = re.search(r"(?:Device\s+)?(\d+):\s+([^\r\n]+Controller[^\r\n]*)", dumpsys, re.IGNORECASE)
-            if m:
-                dev_id = m.group(1).strip()
-                dev_name = m.group(2).strip()
-                return f"Android/{dev_id}/{dev_name}"
-        except Exception:
-            pass
-
-        try:
-            pout = self.shell("cat /proc/bus/input/devices")
-            m = re.search(r'Name="([^"]+Controller[^"]*)".*?Handlers=.*?\bevent(\d+)\b', pout, re.DOTALL | re.IGNORECASE)
+            m = re.search(
+                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNumber:\s*(\d+)',
+                dumpsys,
+                re.MULTILINE | re.DOTALL | re.IGNORECASE
+            )
             if m:
                 dev_name = m.group(1).strip()
-                dev_id = m.group(2).strip()
-                return f"Android/{dev_id}/{dev_name}"
+                controller_num = m.group(2).strip()
+                return f"Android/{controller_num}/{dev_name}"
+
+            m2 = re.search(
+                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNum:\s*(\d+)',
+                dumpsys,
+                re.MULTILINE | re.DOTALL | re.IGNORECASE
+            )
+            if m2:
+                dev_name = m2.group(1).strip()
+                controller_num = m2.group(2).strip()
+                return f"Android/{controller_num}/{dev_name}"
         except Exception:
             pass
 
-        return "Android/8/Retroid Pocket Controller"
+        return "Android/1/Retroid Pocket Controller"
 
     # 1. DUCKSTATION (PS1)
     def configure_duckstation(self) -> None:
@@ -213,6 +217,7 @@ Fastmem = True
 DualCore = True
 EnableCheats = True
 CPUThread = True
+FallbackRegion = 1
 WiimoteEnableGCControllers = True
 SIDevice0 = 6
 SIDevice1 = 0
@@ -234,6 +239,7 @@ WASAPIDevice = default
 [Interface]
 ConfirmStop = False
 ShowToolbar = False
+UsePanicHandlers = False
 
 [Wii]
 Enable = True
@@ -279,12 +285,12 @@ BBoxEnable = False
         # GCPadNew.ini (Controller mapping)
         gcpad_ini = f"""[GCPad1]
 Device = {ctrl_dev}
-Buttons/A = `{ctrl_dev}:Button 97` | `Android/8/Retroid Pocket Controller:Button 97` | `Android/5/Retroid Pocket Controller:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
-Buttons/B = `{ctrl_dev}:Button 96` | `Android/8/Retroid Pocket Controller:Button 96` | `Android/5/Retroid Pocket Controller:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
-Buttons/X = `{ctrl_dev}:Button 100` | `Android/8/Retroid Pocket Controller:Button 100` | `Android/5/Retroid Pocket Controller:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
-Buttons/Y = `{ctrl_dev}:Button 99` | `Android/8/Retroid Pocket Controller:Button 99` | `Android/5/Retroid Pocket Controller:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Buttons/Z = `{ctrl_dev}:Button 103` | `Android/8/Retroid Pocket Controller:Button 103` | `Android/5/Retroid Pocket Controller:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `Button 103`
-Buttons/Start = `{ctrl_dev}:Button 108` | `Android/8/Retroid Pocket Controller:Button 108` | `Android/5/Retroid Pocket Controller:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
+Buttons/A = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
+Buttons/B = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
+Buttons/X = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
+Buttons/Y = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
+Buttons/Z = `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `Button 103`
+Buttons/Start = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
 Main Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
 Main Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
 Main Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
@@ -313,24 +319,24 @@ Device = {ctrl_dev}
 Source = 1
 Extension = Classic
 Classic/Device = {ctrl_dev}
-Buttons/A = `{ctrl_dev}:Button 97` | `Android/8/Retroid Pocket Controller:Button 97` | `Android/5/Retroid Pocket Controller:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
-Buttons/B = `{ctrl_dev}:Button 96` | `Android/8/Retroid Pocket Controller:Button 96` | `Android/5/Retroid Pocket Controller:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
-Buttons/1 = `{ctrl_dev}:Button 99` | `Android/8/Retroid Pocket Controller:Button 99` | `Android/5/Retroid Pocket Controller:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Buttons/2 = `{ctrl_dev}:Button 100` | `Android/8/Retroid Pocket Controller:Button 100` | `Android/5/Retroid Pocket Controller:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
-Buttons/- = `{ctrl_dev}:Button 109` | `Android/8/Retroid Pocket Controller:Button 109` | `Android/5/Retroid Pocket Controller:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
-Buttons/+ = `{ctrl_dev}:Button 108` | `Android/8/Retroid Pocket Controller:Button 108` | `Android/5/Retroid Pocket Controller:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
+Buttons/A = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
+Buttons/B = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `{ctrl_dev}:Button 103` | `Button 103` | `Button 100`
+Buttons/1 = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
+Buttons/2 = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
+Buttons/- = `{ctrl_dev}:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
+Buttons/+ = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
 D-Pad/Up = `{ctrl_dev}:Hat 0N` | `{ctrl_dev}:Button 19` | `Hat 0N` | `Button 19`
 D-Pad/Down = `{ctrl_dev}:Hat 0S` | `{ctrl_dev}:Button 20` | `Hat 0S` | `Button 20`
 D-Pad/Left = `{ctrl_dev}:Hat 0W` | `{ctrl_dev}:Button 21` | `Hat 0W` | `Button 21`
 D-Pad/Right = `{ctrl_dev}:Hat 0E` | `{ctrl_dev}:Button 22` | `Hat 0E` | `Button 22`
-Classic/Buttons/A = `{ctrl_dev}:Button 97` | `Android/8/Retroid Pocket Controller:Button 97` | `Android/5/Retroid Pocket Controller:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
-Classic/Buttons/B = `{ctrl_dev}:Button 96` | `Android/8/Retroid Pocket Controller:Button 96` | `Android/5/Retroid Pocket Controller:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
-Classic/Buttons/X = `{ctrl_dev}:Button 100` | `Android/8/Retroid Pocket Controller:Button 100` | `Android/5/Retroid Pocket Controller:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
-Classic/Buttons/Y = `{ctrl_dev}:Button 99` | `Android/8/Retroid Pocket Controller:Button 99` | `Android/5/Retroid Pocket Controller:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Classic/Buttons/ZL = `{ctrl_dev}:Button 102` | `{ctrl_dev}:Button 104` | `Android/8/Retroid Pocket Controller:Button 102` | `Button 102`
-Classic/Buttons/ZR = `{ctrl_dev}:Button 103` | `{ctrl_dev}:Button 105` | `Android/8/Retroid Pocket Controller:Button 103` | `Button 103`
-Classic/Buttons/Plus = `{ctrl_dev}:Button 108` | `Android/8/Retroid Pocket Controller:Button 108` | `Android/5/Retroid Pocket Controller:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
-Classic/Buttons/Minus = `{ctrl_dev}:Button 109` | `Android/8/Retroid Pocket Controller:Button 109` | `Android/5/Retroid Pocket Controller:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
+Classic/Buttons/A = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
+Classic/Buttons/B = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
+Classic/Buttons/X = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
+Classic/Buttons/Y = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
+Classic/Buttons/ZL = `{ctrl_dev}:Button 102` | `Android/1/Retroid Pocket Controller:Button 102` | `{ctrl_dev}:Button 104` | `Button 102` | `Button 104`
+Classic/Buttons/ZR = `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `{ctrl_dev}:Button 105` | `Button 103` | `Button 105`
+Classic/Buttons/Plus = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
+Classic/Buttons/Minus = `{ctrl_dev}:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
 Classic/Left Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
 Classic/Left Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
 Classic/Left Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
@@ -355,14 +361,14 @@ Classic/Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
 
 [Classic1]
 Device = {ctrl_dev}
-Buttons/A = `{ctrl_dev}:Button 97` | `Button 97`
-Buttons/B = `{ctrl_dev}:Button 96` | `Button 96`
-Buttons/X = `{ctrl_dev}:Button 100` | `Button 100`
-Buttons/Y = `{ctrl_dev}:Button 99` | `Button 99`
-Buttons/ZL = `{ctrl_dev}:Button 102` | `{ctrl_dev}:Button 104` | `Button 102`
-Buttons/ZR = `{ctrl_dev}:Button 103` | `{ctrl_dev}:Button 105` | `Button 103`
-Buttons/Plus = `{ctrl_dev}:Button 108` | `Button 108`
-Buttons/Minus = `{ctrl_dev}:Button 109` | `Button 109`
+Buttons/A = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
+Buttons/B = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
+Buttons/X = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
+Buttons/Y = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
+Buttons/ZL = `{ctrl_dev}:Button 102` | `Android/1/Retroid Pocket Controller:Button 102` | `{ctrl_dev}:Button 104` | `Button 102` | `Button 104`
+Buttons/ZR = `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `{ctrl_dev}:Button 105` | `Button 103` | `Button 105`
+Buttons/Plus = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
+Buttons/Minus = `{ctrl_dev}:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
 Left Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
 Left Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
 Left Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
@@ -520,6 +526,8 @@ output_engine = 0
 resolution-multiplier: {scale}
 {turnip_line}vsync: true
 fullscreen: true
+show-touch-controls: false
+gui-controllers-overlay: false
 """
         local_cfg = self.temp_dir / "config.yml"
         local_cfg.write_text(content, encoding="utf-8")

@@ -30,16 +30,47 @@ This repository is architected for both standalone community gamers and AI-assis
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Tier 1: Standalone 1-Click Community Installer (Zero AI)
-For everyday players and handheld owners who want a perfected retro gaming and Steam setup in minutes:
-1. Connect your Android handheld to your PC via USB-C with **USB Debugging** enabled.
-2. Double-click **`Run_Setup.bat`** (or **`Run_RP5_Setup.bat`** for Retroid Pocket 5).
-3. The runner automatically:
-   * Downloads official Google `platform-tools` (ADB) if not present locally.
-   * Auto-detects your connected handheld model and matches the hardware profile.
-   * Prompts you at the **Play Store breakpoint** if standalone emulators (Dolphin/DuckStation) need installation.
-   * Bootstraps **Steam Big Picture** inside DroidDeck and pauses at the **Steam 2FA breakpoint** for 60-second mobile authentication.
-   * Deploys all low-pass audio filters, shaders, and 4,700+ widescreen patches.
+### Tier 1: Standalone 1-Click Community Installer (Zero AI / Zero CLI Experience)
+
+Designed for everyday gamers and handheld owners across **Windows, macOS, and Linux**. No command-line expertise is needed.
+
+#### Step 1: Enable USB Debugging on Your Handheld (One-Time Setup)
+1. Turn on your handheld (RP5, RP Mini, RP4 Pro, Odin 2).
+2. Open **Settings** -> **About device** (or **System** -> **About phone**).
+3. Scroll to the bottom and tap **Build number** 7 times rapidly until a toast message says: *"You are now a developer!"*
+4. Go back to **Settings** -> **System** -> **Developer options**.
+5. Find **USB debugging** and toggle it **ON**.
+
+#### Step 2: Connect to Your Computer
+1. Connect your handheld to your computer using a USB-C data cable.
+2. Look at the screen of your handheld. If an *"Allow USB debugging?"* pop-up appears, check **"Always allow from this computer"** and tap **Allow**.
+
+#### Step 3: Run the 1-Click Setup
+
+* **On Windows**:
+  - Simply double-click **`Run_Setup.bat`** (or **`Run_RP5_Setup.bat`** for Retroid Pocket 5).
+  - *Note: If Windows SmartScreen appears, click "More info" -> "Run anyway".*
+
+* **On macOS & Linux**:
+  - Open your Terminal in this repository directory and run:
+    ```bash
+    chmod +x Run_Setup.sh && ./Run_Setup.sh
+    ```
+
+#### What the Setup Does Automatically:
+* **Google ADB Platform-Tools**: Automatically downloaded and configured if not already installed.
+* **Hardware Detection**: Automatically detects whether you connected an RP5, RP Mini, RP4 Pro, or Odin 2.
+* **Physical Controller Auto-Binding**: Queries your handheld's input subsystem and binds Dolphin (GameCube Port 1 & Wii Classic Controller), NetherSX2, and RetroArch.
+* **Controller Back-Button Isolation**: Isolates the physical 'B' button from triggering the Dolphin pause drawer so in-game actions (braking, drifting, cancel) work reliably. Safety pause menu is assigned to **L3 + R3** click combo.
+* **Display & CRT Auto-Crop**: Configures NetherSX2 with 16:9 rendering and CRT overscan crop (`Crop = 1`) to eliminate black borders in games like *Gran Turismo 4*.
+* **2D Ultra-Low-Latency Audio/Video**: Injects Vulkan backend, 48ms OpenSLES latency, GBA 5.5kHz IIR low-pass DSP, and Genesis Model 1 LPF.
+* **Steam PC Gaming Ready**: Pre-configures DroidDeck with 720p base rendering, FSR upscaling to 1080p, Mesa Turnip GPU drivers, and pre-seeds your MicroSD Steam library.
+* **4,700+ Community Widescreen Patches**: Streamed live from upstream PCSX2 and Dolphin Gecko repositories.
+
+#### Step 4: Add Games & Play!
+* **ROMs**: Insert your MicroSD card and copy your game files into `/storage/<SD_ID>/ROMs/<system>/` (e.g. `ROMs/ps2/`, `ROMs/wii/`, `ROMs/gc/`, `ROMs/gba/`).
+* **BIOS**: Copy optional PS1/PS2 BIOS files into `/storage/<SD_ID>/bios/`.
+* Open **ES-DE** (EmulationStation Desktop Edition) on your handheld and start playing!
 
 ### Tier 2: Antigravity AI Engine
 For developers, hardware modders, and maintainers using the Antigravity CLI / agentic coding environment:

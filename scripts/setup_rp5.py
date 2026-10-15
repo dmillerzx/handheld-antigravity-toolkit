@@ -362,6 +362,10 @@ class RP5Provisioner:
         # 10. Power / end button behavior (2 = sleep/wake)
         self.shell("settings put system end_button_behavior 2", check=False)
 
+        # 11. Enable Do Not Disturb (Russ & Joey recommendation: silence popups from hijacking input/focus)
+        print("    -> Activating Do Not Disturb (zen_mode=1) to prevent notification focus loss...")
+        self.shell("settings put global zen_mode 1", check=False)
+
         print("    -> System and hardware tuning complete.")
 
     def stage_droiddeck(self) -> None:

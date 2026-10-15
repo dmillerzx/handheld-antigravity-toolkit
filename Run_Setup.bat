@@ -146,13 +146,16 @@ echo ========================================================================
 echo   [OK] Hardware Profile Applied   : !PROFILE!
 echo   [OK] Controller Auto-Bound      : Dynamic input node discovery (Dolphin GC/Classic & PS2)
 echo   [OK] Dolphin Safety Hotkeys     : L3 + R3 toggle pause (Button B back-action isolated)
+echo   [OK] Dolphin Core Enhancements  : Panic handlers suppressed, NTSC fallback forced
 echo   [OK] NetherSX2 Overscan Crop    : Auto-crop active (16:9 full-screen without borders)
 echo   [OK] Upstream Community Patches : Streamed live (Gecko widescreen & PCSX2 pnach)
 echo   [OK] 2D Low-Latency Audio/Video : Vulkan, 48ms OpenSLES, GBA DSP, Genesis LPF
+echo   [OK] RetroArch Community Polish : Instant hotkey quit, 10-state safety buffer, overlay disabled
+echo   [OK] Handheld Hardware Tuning   : Do Not Disturb, auto-rotation locked, dark theme, click sounds muted
 echo   [OK] Canonical Storage Ready    : Internal /sdcard/ and MicroSD /storage/^<SD_ID^>/
 echo   [OK] Steam PC Gaming Ready      : 720p FSR, DroidDeck & MicroSD secondary library
 echo.
-echo   Drop your ROMs into: /storage/^<SD_ID^>/ROMs/ (or /sdcard/ROMs/)
+echo   Drop your ROMs into: /storage/^<SD_ID^>/ROMs/^<system^>/ on your MicroSD card
 echo   and launch ES-DE on your handheld to begin gaming!
 echo ========================================================================
 echo.
