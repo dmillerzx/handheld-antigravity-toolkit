@@ -119,6 +119,9 @@ ChromaSmoothing = true
 [Pad1]
 Type = AnalogController
 AnalogDPadInDigitalMode = true
+
+[Touchscreen]
+ControllerView = None
 """
         local_cfg = self.temp_dir / "duckstation_settings.ini"
         local_cfg.write_text(content, encoding="utf-8")
@@ -149,6 +152,9 @@ EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 ThreadedPresentation = true
 Hacks = 1
+
+[Touchscreen]
+ControllerView = None
 """
         local_cfg = self.temp_dir / "PCSX2.ini"
         local_cfg.write_text(content, encoding="utf-8")
@@ -161,6 +167,7 @@ Hacks = 1
         # Dolphin.ini (GC & Wii Virtual Console Setup)
         wii_widescreen = "True" if self.force_widescreen else "False"
         dolphin_ini = f"""[Core]
+GFXBackend = Vulkan
 Fastmem = True
 DualCore = True
 EnableCheats = True
@@ -182,6 +189,10 @@ Widescreen = {wii_widescreen}
 ProgressiveScan = True
 Language = 1
 PAL60 = True
+
+[Android]
+JoystickRelCenter = False
+ShowInputOverlay = False
 """
         # GFX.ini (Graphics & Performance)
         aspect_ratio = 1 if self.force_widescreen else 0
@@ -297,6 +308,9 @@ BufferMode = 1
 ShowTouchControls = False
 FullScreen = True
 VSyncInterval = 1
+
+[Control]
+ShowTouchControls = False
 """
         local_cfg = self.temp_dir / "ppsspp.ini"
         local_cfg.write_text(content, encoding="utf-8")
