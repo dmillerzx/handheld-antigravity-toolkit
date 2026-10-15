@@ -21,7 +21,10 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_SERIAL = "ff152647"
+
+# Import dynamic device profiling helper
+sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
+from device_profile import detect_storage_targets
 
 BUILDBOT_BASE = "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/"
 ASSETS_BASE = "https://buildbot.libretro.com/assets/frontend/"
@@ -137,12 +140,15 @@ class RetroArchProvisioner:
             target_zip = assets_dir / zip_name
             self.download_file(url, target_zip)
 
-    def deploy_to_device(self, sd_card_id: str = "EEEF-F762") -> None:
+    def deploy_to_device(self, sd_card_id: Optional[str] = None) -> None:
         """Pushes staged cores and assets to canonical MicroSD and internal paths."""
-        print("\n[*] Deploying cores and assets to Retroid Pocket 5 storage...")
+        print("\n[*] Deploying cores and assets to device storage...")
+        internal_root, sd_root, detected_sd_id = detect_storage_targets(self.adb, serial=self.serial, dry_run=self.dry_run)
+        resolved_sd_id = sd_card_id or detected_sd_id
+
         # 1. Push cores
         cores_dir = self.staging_dir / "cores"
-        remote_sd_cores = f"/storage/{sd_card_id}/RetroArch/cores"
+        remote_sd_cores = f"/storage/{resolved_sd_id}/RetroArch/cores" if resolved_sd_id else "/sdcard/RetroArch/cores"
         remote_internal_cores = "/sdcard/Android/data/com.retroarch.aarch64/files/cores"
         remote_download_cores = "/sdcard/Download/retroarch_cores"
 
@@ -157,25 +163,26 @@ class RetroArchProvisioner:
 
         # 2. Extract and push Info and Autoconfig assets
         assets_dir = self.staging_dir / "assets"
+        target_ra = f"/storage/{resolved_sd_id}/RetroArch" if resolved_sd_id else "/sdcard/RetroArch"
         info_zip = assets_dir / "info.zip"
         if info_zip.exists():
             print("    -> Deploying Core Info Files...")
-            self.adb_cmd("push", str(info_zip), f"/storage/{sd_card_id}/RetroArch/info.zip")
-            self.shell(f"mkdir -p /storage/{sd_card_id}/RetroArch/info; unzip -q -o /storage/{sd_card_id}/RetroArch/info.zip -d /storage/{sd_card_id}/RetroArch/info/ && rm /storage/{sd_card_id}/RetroArch/info.zip", check=False)
-            self.shell(f"mkdir -p /sdcard/Android/data/com.retroarch.aarch64/files/info; cp -r /storage/{sd_card_id}/RetroArch/info/* /sdcard/Android/data/com.retroarch.aarch64/files/info/", check=False)
+            self.adb_cmd("push", str(info_zip), f"{target_ra}/info.zip")
+            self.shell(f"mkdir -p '{target_ra}/info'; unzip -q -o '{target_ra}/info.zip' -d '{target_ra}/info/' && rm '{target_ra}/info.zip'", check=False)
+            self.shell(f"mkdir -p /sdcard/Android/data/com.retroarch.aarch64/files/info; cp -r '{target_ra}/info/'* /sdcard/Android/data/com.retroarch.aarch64/files/info/", check=False)
 
         autoconfig_zip = assets_dir / "autoconfig.zip"
         if autoconfig_zip.exists():
             print("    -> Deploying Joypad Autoconfig Profiles...")
-            self.adb_cmd("push", str(autoconfig_zip), f"/storage/{sd_card_id}/RetroArch/autoconfig.zip")
-            self.shell(f"mkdir -p /storage/{sd_card_id}/RetroArch/autoconfig; unzip -q -o /storage/{sd_card_id}/RetroArch/autoconfig.zip -d /storage/{sd_card_id}/RetroArch/autoconfig/ && rm /storage/{sd_card_id}/RetroArch/autoconfig.zip", check=False)
-            self.shell(f"mkdir -p /sdcard/Android/data/com.retroarch.aarch64/files/autoconfig; cp -r /storage/{sd_card_id}/RetroArch/autoconfig/* /sdcard/Android/data/com.retroarch.aarch64/files/autoconfig/", check=False)
+            self.adb_cmd("push", str(autoconfig_zip), f"{target_ra}/autoconfig.zip")
+            self.shell(f"mkdir -p '{target_ra}/autoconfig'; unzip -q -o '{target_ra}/autoconfig.zip' -d '{target_ra}/autoconfig/' && rm '{target_ra}/autoconfig.zip'", check=False)
+            self.shell(f"mkdir -p /sdcard/Android/data/com.retroarch.aarch64/files/autoconfig; cp -r '{target_ra}/autoconfig/'* /sdcard/Android/data/com.retroarch.aarch64/files/autoconfig/", check=False)
 
         shaders_zip = assets_dir / "shaders_slang.zip"
         if shaders_zip.exists():
-            print("    -> Deploying Slang Shaders Suite to MicroSD...")
-            self.adb_cmd("push", str(shaders_zip), f"/storage/{sd_card_id}/RetroArch/shaders/shaders_slang.zip")
-            self.shell(f"cd /storage/{sd_card_id}/RetroArch/shaders && unzip -q -o shaders_slang.zip && rm shaders_slang.zip", check=False)
+            print("    -> Deploying Slang Shaders Suite...")
+            self.adb_cmd("push", str(shaders_zip), f"{target_ra}/shaders/shaders_slang.zip")
+            self.shell(f"mkdir -p '{target_ra}/shaders' && cd '{target_ra}/shaders' && unzip -q -o shaders_slang.zip && rm shaders_slang.zip", check=False)
 
         print("    [OK] RetroArch cores and frontend assets successfully deployed.")
 

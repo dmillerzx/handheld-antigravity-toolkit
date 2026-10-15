@@ -1,0 +1,42 @@
+{
+  "device_id": "rp_mini",
+  "name": "Retroid Pocket Mini",
+  "model_match": ["Retroid Pocket Mini", "RP Mini", "RPMini"],
+  "display": {
+    "width": 1280,
+    "height": 960,
+    "aspect_ratio": "4:3",
+    "type": "OLED",
+    "native_refresh_rate": 60,
+    "panel_supports_120hz": false
+  },
+  "soc": {
+    "name": "Snapdragon 865",
+    "chipset": "SM8250",
+    "gpu_family": "adreno_6xx",
+    "gpu_model": "Adreno 650",
+    "supports_turnip": true,
+    "turnip_driver": "Turnip_v26.0.0_R8.zip"
+  },
+  "controls": {
+    "trigger_mode": 2,
+    "gamepad_type": 0,
+    "has_analog_triggers": true
+  },
+  "emulation": {
+    "force_widescreen": false,
+    "duckstation_resolution_scale": 4,
+    "nethersx2_upscale_multiplier": 2.0,
+    "dolphin_internal_resolution": 2.0,
+    "ppsspp_resolution_scale": 3,
+    "flycast_res_scale": 2,
+    "azahar_resolution_factor": 2,
+    "vita3k_resolution_multiplier": 1.5
+  },
+  "droiddeck": {
+    "render_width": 960,
+    "render_height": 720,
+    "fsr_enabled": true,
+    "dxvk_async": 1
+  }
+}

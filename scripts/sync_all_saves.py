@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Automated Save, Memory Card & State Backup Pipeline for Retroid Pocket 5 (RP5)
-------------------------------------------------------------------------------
+scripts/sync_all_saves.py — Dynamic Save, Memory Card & State Backup Pipeline
+=============================================================================
 Systematically mirrors all active saves, memory cards, and savestates across
 RetroArch, Dolphin, NetherSX2, DuckStation, PPSSPP, Azahar, and Vita3K into
-the canonical MicroSD backup directory:
-    /storage/<SD_ID>/Saves_Backup/latest/
+the canonical backup directory:
+    /storage/<SD_ID>/Saves_Backup/latest/ (or /sdcard/Saves_Backup/latest/ if internal only)
 Protects against Android 13 FUSE external storage file locking corruption.
 """
 
@@ -19,13 +19,15 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_SERIAL = "ff152647"
-DEFAULT_SD_ID = "EEEF-F762"
+
+# Import dynamic device profiling helper
+sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
+from device_profile import detect_storage_targets
 
 SAVE_TARGETS = [
     # (Platform/Emulator, Source Path, Subfolder in Backup)
-    ("RetroArch (Saves)", "/storage/{sd_id}/RetroArch/saves", "retroarch/saves"),
-    ("RetroArch (States)", "/storage/{sd_id}/RetroArch/states", "retroarch/states"),
+    ("RetroArch (Saves)", "{sd_prefix}/RetroArch/saves", "retroarch/saves"),
+    ("RetroArch (States)", "{sd_prefix}/RetroArch/states", "retroarch/states"),
     ("RetroArch (Internal Saves)", "/sdcard/Android/data/com.retroarch.aarch64/files/saves", "retroarch/internal_saves"),
     ("RetroArch (Internal States)", "/sdcard/Android/data/com.retroarch.aarch64/files/states", "retroarch/internal_states"),
     ("Dolphin (GameCube Memcards)", "/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GC", "dolphin/GC"),
@@ -61,15 +63,25 @@ def find_adb(explicit_path: Optional[str] = None) -> str:
 
 
 class SaveSyncPipeline:
-    def __init__(self, adb_path: str, serial: str = DEFAULT_SERIAL, sd_id: str = DEFAULT_SD_ID, dry_run: bool = False):
+    def __init__(
+        self,
+        adb_path: str,
+        serial: Optional[str] = None,
+        sd_id: Optional[str] = None,
+        dry_run: bool = False
+    ):
         self.adb = adb_path
         self.serial = serial
         self.sd_id = sd_id
         self.dry_run = dry_run
-        self.backup_root = f"/storage/{self.sd_id}/Saves_Backup"
+        self.sd_prefix = f"/storage/{self.sd_id}" if self.sd_id else "/sdcard"
+        self.backup_root = f"{self.sd_prefix}/Saves_Backup"
 
     def adb_cmd(self, *args, check: bool = True) -> subprocess.CompletedProcess:
-        cmd = [self.adb, "-s", self.serial] + list(args)
+        cmd = [self.adb]
+        if self.serial:
+            cmd.extend(["-s", self.serial])
+        cmd.extend(list(args))
         if self.dry_run:
             print(f"[DRY-RUN] {' '.join(cmd)}")
             return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
@@ -81,20 +93,20 @@ class SaveSyncPipeline:
 
     def run_backup(self) -> None:
         print("\n" + "=" * 80)
-        print("RETROID POCKET 5 (RP5) - AUTOMATED SAVE BACKUP PIPELINE")
+        print("COMMUNITY TOOLKIT - AUTOMATED SAVE BACKUP PIPELINE")
         print("=" * 80)
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         target_latest = f"{self.backup_root}/latest"
         target_archive = f"{self.backup_root}/archive/{timestamp}"
 
-        print(f"[*] Target backup destination on MicroSD: {target_latest}")
+        print(f"[*] Target backup destination: {target_latest}")
         self.shell(f"mkdir -p '{target_latest}' '{target_archive}'", check=False)
 
         manifest = []
         total_files = 0
 
         for label, raw_src, subpath in SAVE_TARGETS:
-            src = raw_src.format(sd_id=self.sd_id)
+            src = raw_src.format(sd_prefix=self.sd_prefix)
             dest = f"{target_latest}/{subpath}"
 
             # Check if source exists and count files
@@ -111,7 +123,7 @@ class SaveSyncPipeline:
 
         # Write manifest on-device
         manifest_path = f"{target_latest}/backup_manifest.txt"
-        manifest_text = f"Retroid Pocket 5 Save Backup Manifest\\nTimestamp: {timestamp}\\nTotal files: {total_files}\\n"
+        manifest_text = f"Handheld Save Backup Manifest\\nTimestamp: {timestamp}\\nTotal files: {total_files}\\n"
         self.shell(f"echo '{manifest_text}' > '{manifest_path}'", check=False)
 
         print("\n" + "-" * 80)
@@ -120,20 +132,28 @@ class SaveSyncPipeline:
         for label, _, cnt, status in manifest:
             print(f"| {label:<30} | {cnt:<6} | {status:<18} |")
         print("-" * 80)
-        print(f"[*] Complete! Total files safely backed up to MicroSD: {total_files}")
+        print(f"[*] Complete! Total files safely backed up to storage: {total_files}")
         print("=" * 80)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Automated Save & State Backup Pipeline for RP5")
-    parser.add_argument("-s", "--serial", default=DEFAULT_SERIAL, help="Target device serial")
-    parser.add_argument("--sd-id", default=DEFAULT_SD_ID, help="MicroSD volume UUID")
+    parser = argparse.ArgumentParser(description="Automated Save & State Backup Pipeline")
+    parser.add_argument("-s", "--serial", default=None, help="Target device serial")
+    parser.add_argument("--sd-id", default=None, help="MicroSD volume UUID (auto-detected if omitted)")
     parser.add_argument("--adb", default=None, help="Path to ADB binary")
     parser.add_argument("--dry-run", action="store_true", help="Preview sync actions without execution")
     args = parser.parse_args()
 
     adb_path = find_adb(args.adb)
-    pipeline = SaveSyncPipeline(adb_path=adb_path, serial=args.serial, sd_id=args.sd_id, dry_run=args.dry_run)
+    internal_root, sd_root, detected_sd_id = detect_storage_targets(adb_path, serial=args.serial, dry_run=args.dry_run)
+    sd_id = args.sd_id or detected_sd_id
+
+    pipeline = SaveSyncPipeline(
+        adb_path=adb_path,
+        serial=args.serial,
+        sd_id=sd_id,
+        dry_run=args.dry_run
+    )
     pipeline.run_backup()
 
 

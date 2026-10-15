@@ -1,0 +1,42 @@
+{
+  "device_id": "rp5",
+  "name": "Retroid Pocket 5",
+  "model_match": ["Retroid Pocket 5", "RP5", "msmnile"],
+  "display": {
+    "width": 1920,
+    "height": 1080,
+    "aspect_ratio": "16:9",
+    "type": "AMOLED",
+    "native_refresh_rate": 60,
+    "panel_supports_120hz": true
+  },
+  "soc": {
+    "name": "Snapdragon 865",
+    "chipset": "SM8250",
+    "gpu_family": "adreno_6xx",
+    "gpu_model": "Adreno 650",
+    "supports_turnip": true,
+    "turnip_driver": "Turnip_v26.0.0_R8.zip"
+  },
+  "controls": {
+    "trigger_mode": 2,
+    "gamepad_type": 0,
+    "has_analog_triggers": true
+  },
+  "emulation": {
+    "force_widescreen": true,
+    "duckstation_resolution_scale": 5,
+    "nethersx2_upscale_multiplier": 2.25,
+    "dolphin_internal_resolution": 2.5,
+    "ppsspp_resolution_scale": 4,
+    "flycast_res_scale": 2,
+    "azahar_resolution_factor": 3,
+    "vita3k_resolution_multiplier": 2
+  },
+  "droiddeck": {
+    "render_width": 1280,
+    "render_height": 720,
+    "fsr_enabled": true,
+    "dxvk_async": 1
+  }
+}

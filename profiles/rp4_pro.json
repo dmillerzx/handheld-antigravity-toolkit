@@ -1,0 +1,42 @@
+{
+  "device_id": "rp4_pro",
+  "name": "Retroid Pocket 4 Pro",
+  "model_match": ["Retroid Pocket 4 Pro", "RP4 Pro", "RP4Pro", "k6893v1_64"],
+  "display": {
+    "width": 1334,
+    "height": 750,
+    "aspect_ratio": "16:9",
+    "type": "IPS LCD",
+    "native_refresh_rate": 60,
+    "panel_supports_120hz": false
+  },
+  "soc": {
+    "name": "MediaTek Dimensity 1100",
+    "chipset": "MT6891Z",
+    "gpu_family": "mali",
+    "gpu_model": "Mali-G77 MC9",
+    "supports_turnip": false,
+    "turnip_driver": null
+  },
+  "controls": {
+    "trigger_mode": 2,
+    "gamepad_type": 0,
+    "has_analog_triggers": true
+  },
+  "emulation": {
+    "force_widescreen": true,
+    "duckstation_resolution_scale": 3,
+    "nethersx2_upscale_multiplier": 1.75,
+    "dolphin_internal_resolution": 2.0,
+    "ppsspp_resolution_scale": 3,
+    "flycast_res_scale": 2,
+    "azahar_resolution_factor": 2,
+    "vita3k_resolution_multiplier": 1.5
+  },
+  "droiddeck": {
+    "render_width": 1280,
+    "render_height": 720,
+    "fsr_enabled": false,
+    "dxvk_async": 0
+  }
+}

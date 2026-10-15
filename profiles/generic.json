@@ -1,0 +1,42 @@
+{
+  "device_id": "generic",
+  "name": "Generic Android Handheld",
+  "model_match": [],
+  "display": {
+    "width": 1920,
+    "height": 1080,
+    "aspect_ratio": "16:9",
+    "type": "Standard",
+    "native_refresh_rate": 60,
+    "panel_supports_120hz": false
+  },
+  "soc": {
+    "name": "Generic ARM64",
+    "chipset": "Generic",
+    "gpu_family": "generic",
+    "gpu_model": "Generic GPU",
+    "supports_turnip": false,
+    "turnip_driver": null
+  },
+  "controls": {
+    "trigger_mode": 0,
+    "gamepad_type": 0,
+    "has_analog_triggers": false
+  },
+  "emulation": {
+    "force_widescreen": false,
+    "duckstation_resolution_scale": 3,
+    "nethersx2_upscale_multiplier": 1.5,
+    "dolphin_internal_resolution": 1.5,
+    "ppsspp_resolution_scale": 3,
+    "flycast_res_scale": 2,
+    "azahar_resolution_factor": 2,
+    "vita3k_resolution_multiplier": 1.0
+  },
+  "droiddeck": {
+    "render_width": 1280,
+    "render_height": 720,
+    "fsr_enabled": false,
+    "dxvk_async": 0
+  }
+}

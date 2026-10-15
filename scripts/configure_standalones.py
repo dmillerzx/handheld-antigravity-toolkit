@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Automated Standalone 3D Emulator Configuration Script for Retroid Pocket 5 (RP5)
---------------------------------------------------------------------------------
-Injects tuned configurations, controller mappings, Vulkan rendering profiles,
-and audio settings headlessly across DuckStation, NetherSX2, Dolphin, PPSSPP,
-Flycast, Azahar, and Vita3K.
+scripts/configure_standalones.py — Dynamic 3D Emulator Profiling Engine
+========================================================================
+Injects optimized configurations, controller mappings, Vulkan rendering
+profiles, and audio settings headlessly across DuckStation, NetherSX2,
+Dolphin, PPSSPP, Flycast, Azahar, and Vita3K based on dynamic device profiles.
 """
 
 import argparse
@@ -18,8 +18,10 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_SERIAL = "ff152647"
-DEFAULT_SD_ID = "EEEF-F762"
+
+# Import dynamic device profiling helper
+sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
+from device_profile import detect_device_profile, detect_storage_targets, load_profile_by_id
 
 
 def find_adb(explicit_path: Optional[str] = None) -> str:
@@ -39,15 +41,34 @@ def find_adb(explicit_path: Optional[str] = None) -> str:
 
 
 class StandaloneConfigurator:
-    def __init__(self, adb_path: str, serial: str = DEFAULT_SERIAL, sd_id: str = DEFAULT_SD_ID, dry_run: bool = False):
+    def __init__(
+        self,
+        adb_path: str,
+        serial: Optional[str] = None,
+        sd_id: Optional[str] = None,
+        profile: Optional[Dict] = None,
+        dry_run: bool = False
+    ):
         self.adb = adb_path
         self.serial = serial
-        self.sd_id = sd_id
         self.dry_run = dry_run
-        self.temp_dir = Path(tempfile.mkdtemp(prefix="rp5_standalones_"))
+        self.profile = profile or {}
+        self.sd_id = sd_id
+        self.bios_dir = f"/storage/{self.sd_id}/bios" if self.sd_id else "/sdcard/bios"
+        self.temp_dir = Path(tempfile.mkdtemp(prefix="rp_standalones_"))
+
+        # Profile extraction
+        self.emulation = self.profile.get("emulation", {})
+        self.soc = self.profile.get("soc", {})
+        self.controls = self.profile.get("controls", {})
+        self.force_widescreen = self.emulation.get("force_widescreen", True)
+        self.supports_turnip = self.soc.get("supports_turnip", False) and str(self.soc.get("gpu_family", "")).startswith("adreno")
 
     def adb_cmd(self, *args, check: bool = True) -> subprocess.CompletedProcess:
-        cmd = [self.adb, "-s", self.serial] + list(args)
+        cmd = [self.adb]
+        if self.serial:
+            cmd.extend(["-s", self.serial])
+        cmd.extend(list(args))
         if self.dry_run:
             print(f"[DRY-RUN] {' '.join(cmd)}")
             return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
@@ -65,13 +86,14 @@ class StandaloneConfigurator:
 
     # 1. DUCKSTATION (PS1)
     def configure_duckstation(self) -> None:
-        print("\n[*] Configuring DuckStation (PS1 - 1080p Vulkan & Low Latency Audio)...")
+        scale = self.emulation.get("duckstation_resolution_scale", 5)
+        print(f"\n[*] Configuring DuckStation (PS1 - {scale}x Vulkan & Low Latency Audio)...")
         content = f"""[Main]
 AutoHideTouchscreenController = true
 ConfirmPowerOff = false
 
 [BIOS]
-SearchDirectory = /storage/{self.sd_id}/bios
+SearchDirectory = {self.bios_dir}
 
 [Audio]
 Backend = Cubeb
@@ -86,7 +108,7 @@ ShowFPS = false
 
 [GPU]
 Renderer = Vulkan
-ResolutionScale = 5
+ResolutionScale = {scale}
 PGXPEnable = true
 PGXPTextureCorrection = true
 PGXPColorCorrection = true
@@ -104,10 +126,13 @@ AnalogDPadInDigitalMode = true
 
     # 2. NETHERSX2 (PS2)
     def configure_nethersx2(self) -> None:
-        print("\n[*] Configuring NetherSX2 (PS2 - 1080p Vulkan, SPU2 Interpolation & Widescreen)...")
+        scale = self.emulation.get("nethersx2_upscale_multiplier", 2.25)
+        aspect = "1" if self.force_widescreen else "0"
+        ws_patches = "true" if self.force_widescreen else "false"
+        print(f"\n[*] Configuring NetherSX2 (PS2 - {scale}x Vulkan, SPU2 Interpolation & Widescreen={ws_patches})...")
         content = f"""[General]
 Bios = scph70012.bin
-BiosDirectory = /storage/{self.sd_id}/bios
+BiosDirectory = {self.bios_dir}
 WarnAboutUnsafeSettings = false
 
 [SPU2/Mixing]
@@ -117,9 +142,9 @@ SyncMode = 0
 
 [EmuCore/GS]
 Renderer = Vulkan
-UpscaleMultiplier = 2.25
-AspectRatio = 1
-EnableWideScreenPatches = true
+UpscaleMultiplier = {scale}
+AspectRatio = {aspect}
+EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 ThreadedPresentation = true
 Hacks = 1
@@ -130,7 +155,8 @@ Hacks = 1
 
     # 3. DOLPHIN (GameCube / Wii)
     def configure_dolphin(self) -> None:
-        print("\n[*] Configuring Dolphin (GC/Wii - 2.5x 1080p Vulkan, Controls & DSP Audio)...")
+        scale = self.emulation.get("dolphin_internal_resolution", 2.5)
+        print(f"\n[*] Configuring Dolphin (GC/Wii - {scale}x Vulkan, Controller & DSP Audio)...")
         # Dolphin.ini
         dolphin_ini = """[Core]
 Fastmem = True
@@ -149,9 +175,9 @@ ConfirmStop = False
 ShowToolbar = False
 """
         # GFX.ini
-        gfx_ini = """[Settings]
+        gfx_ini = f"""[Settings]
 Backend = Vulkan
-InternalResolution = 2.5
+InternalResolution = {scale}
 AspectRatio = 0
 WideScreenHack = False
 WaitForShadersBeforeStarting = True
@@ -163,7 +189,7 @@ ArbitraryMipmapDetection = True
 ForceTrueColor = True
 MaxAnisotropy = 2
 """
-        # GCPadNew.ini (Standard RP5 Controller mapping with analog triggers)
+        # GCPadNew.ini (Controller mapping)
         gcpad_ini = """[GCPad1]
 Device = Android/0/Retroid Pocket Controller
 Buttons/A = `Button 96`
@@ -194,7 +220,7 @@ Triggers/Threshold = 90.000000
 Triggers/L-Analog = `Axis 23+`
 Triggers/R-Analog = `Axis 22+`
 """
-        # WiimoteNew.ini (Classic controller mapped to RP5)
+        # WiimoteNew.ini (Classic controller mapped)
         wiimote_ini = """[Wiimote1]
 Device = Android/0/Retroid Pocket Controller
 Source = 1
@@ -240,15 +266,16 @@ Triggers/Threshold = 90.000000
 
     # 4. PPSSPP (PSP)
     def configure_ppsspp(self) -> None:
-        print("\n[*] Configuring PPSSPP (PSP - 4x 1080p Vulkan, 16x Anisotropy & Low Latency)...")
-        content = """[Audio]
+        scale = self.emulation.get("ppsspp_resolution_scale", 4)
+        print(f"\n[*] Configuring PPSSPP (PSP - {scale}x Vulkan & Low Latency)...")
+        content = f"""[Audio]
 AudioLatency = 0
 AudioResampler = True
 GlobalVolume = 10
 
 [Graphics]
 GraphicsBackend = 3
-InternalResolution = 4
+InternalResolution = {scale}
 AutoFrameskip = False
 FrameSkip = 0
 AnisotropyLevel = 16
@@ -264,8 +291,10 @@ VSyncInterval = 1
 
     # 5. FLYCAST (Dreamcast)
     def configure_flycast(self) -> None:
-        print("\n[*] Configuring Flycast (Dreamcast - 2x 1080p Vulkan, 16:9 & AICA DSP Audio)...")
-        content = """[aica]
+        scale = self.emulation.get("flycast_res_scale", 2)
+        ws = 1 if self.force_widescreen else 0
+        print(f"\n[*] Configuring Flycast (Dreamcast - {scale}x Vulkan, Widescreen={ws} & AICA DSP Audio)...")
+        content = f"""[aica]
 AutoLatency = yes
 BufferSize = 2822
 DSPEnabled = yes
@@ -273,8 +302,8 @@ GlobalVolume = 100
 
 [rend]
 rend = 2
-res_scale = 2
-widescreen = 1
+res_scale = {scale}
+widescreen = {ws}
 cable = 0
 Fog = 1
 Vsync = 1
@@ -286,13 +315,15 @@ Vsync = 1
 
     # 6. AZAHAR (3DS)
     def configure_azahar(self) -> None:
-        print("\n[*] Configuring Azahar (3DS - 3x 1200p Vulkan, Async Shaders & Mesa Turnip Driver)...")
-        content = """[Renderer]
+        scale = self.emulation.get("azahar_resolution_factor", 3)
+        turnip_line = "custom_driver = /sdcard/Download/drivers/Turnip_v26.0.0_R8.zip\n" if self.supports_turnip else ""
+        driver_desc = "Mesa Turnip Driver" if self.supports_turnip else "System Vulkan Driver"
+        print(f"\n[*] Configuring Azahar (3DS - {scale}x Vulkan, Async Shaders & {driver_desc})...")
+        content = f"""[Renderer]
 graphics_api = 1
-resolution_factor = 3
+resolution_factor = {scale}
 async_shader_compilation = true
-custom_driver = /sdcard/Download/drivers/Turnip_v26.0.0_R8.zip
-use_disk_shader_cache = true
+{turnip_line}use_disk_shader_cache = true
 use_vsync_new = true
 
 [Layout]
@@ -316,11 +347,13 @@ output_engine = 0
 
     # 7. VITA3K (PS Vita)
     def configure_vita3k(self) -> None:
-        print("\n[*] Configuring Vita3K (PS Vita - 2x 1080p Vulkan & Mesa Turnip Driver)...")
-        content = """backend: Vulkan
-resolution-multiplier: 2
-custom-driver: /sdcard/Download/drivers/Turnip_v26.0.0_R8.zip
-vsync: true
+        scale = self.emulation.get("vita3k_resolution_multiplier", 2)
+        turnip_line = "custom-driver: /sdcard/Download/drivers/Turnip_v26.0.0_R8.zip\n" if self.supports_turnip else ""
+        driver_desc = "Mesa Turnip Driver" if self.supports_turnip else "System Vulkan Driver"
+        print(f"\n[*] Configuring Vita3K (PS Vita - {scale}x Vulkan & {driver_desc})...")
+        content = f"""backend: Vulkan
+resolution-multiplier: {scale}
+{turnip_line}vsync: true
 fullscreen: true
 """
         local_cfg = self.temp_dir / "config.yml"
@@ -329,6 +362,10 @@ fullscreen: true
         self.push_file(local_cfg, "/sdcard/Android/data/org.vita3k.emulator/files/config.yml")
 
     def run_all(self) -> None:
+        print(f"\n[Standalone 3D Profiler] Active Profile: {self.profile.get('name', 'Unknown')}")
+        print(f"[Standalone 3D Profiler] MicroSD Root   : {f'/storage/{self.sd_id}' if self.sd_id else 'None (/sdcard/ fallback)'}")
+        print(f"[Standalone 3D Profiler] Widescreen Fix : {self.force_widescreen}")
+        print(f"[Standalone 3D Profiler] Turnip Support : {self.supports_turnip}")
         self.configure_duckstation()
         self.configure_nethersx2()
         self.configure_dolphin()
@@ -343,15 +380,30 @@ fullscreen: true
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Standalone 3D Emulator Configurator for RP5")
-    parser.add_argument("-s", "--serial", default=DEFAULT_SERIAL, help="Target device serial")
-    parser.add_argument("--sd-id", default=DEFAULT_SD_ID, help="MicroSD volume UUID")
+    parser = argparse.ArgumentParser(description="Standalone 3D Emulator Configurator with Dynamic Hardware Profiles")
+    parser.add_argument("-s", "--serial", default=None, help="Target device serial")
+    parser.add_argument("--sd-id", default=None, help="MicroSD volume UUID (auto-detected if omitted)")
+    parser.add_argument("--profile", default=None, help="Override device profile ID (rp5, rp_mini, rp4_pro, odin2, generic)")
     parser.add_argument("--adb", default=None, help="Path to ADB binary")
     parser.add_argument("--dry-run", action="store_true", help="Preview actions without execution")
     args = parser.parse_args()
 
     adb_path = find_adb(args.adb)
-    configurator = StandaloneConfigurator(adb_path=adb_path, serial=args.serial, sd_id=args.sd_id, dry_run=args.dry_run)
+
+    # Dynamic storage detection
+    internal_root, sd_root, detected_sd_id = detect_storage_targets(adb_path, serial=args.serial, dry_run=args.dry_run)
+    sd_id = args.sd_id or detected_sd_id
+
+    # Dynamic profile detection
+    profile, model_name = detect_device_profile(adb_path, serial=args.serial, override_id=args.profile, dry_run=args.dry_run)
+
+    configurator = StandaloneConfigurator(
+        adb_path=adb_path,
+        serial=args.serial,
+        sd_id=sd_id,
+        profile=profile,
+        dry_run=args.dry_run
+    )
     configurator.run_all()
 
 

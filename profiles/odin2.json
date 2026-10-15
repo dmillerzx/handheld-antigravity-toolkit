@@ -1,0 +1,42 @@
+{
+  "device_id": "odin2",
+  "name": "AYN Odin 2",
+  "model_match": ["Odin 2", "Odin2", "AYN Odin 2", "Q9"],
+  "display": {
+    "width": 1920,
+    "height": 1080,
+    "aspect_ratio": "16:9",
+    "type": "IPS LCD",
+    "native_refresh_rate": 60,
+    "panel_supports_120hz": false
+  },
+  "soc": {
+    "name": "Snapdragon 8 Gen 2",
+    "chipset": "SM8550-AB",
+    "gpu_family": "adreno_7xx",
+    "gpu_model": "Adreno 740",
+    "supports_turnip": true,
+    "turnip_driver": "Turnip_v26.0.0_R8.zip"
+  },
+  "controls": {
+    "trigger_mode": 2,
+    "gamepad_type": 0,
+    "has_analog_triggers": true
+  },
+  "emulation": {
+    "force_widescreen": true,
+    "duckstation_resolution_scale": 5,
+    "nethersx2_upscale_multiplier": 3.0,
+    "dolphin_internal_resolution": 3.0,
+    "ppsspp_resolution_scale": 5,
+    "flycast_res_scale": 3,
+    "azahar_resolution_factor": 4,
+    "vita3k_resolution_multiplier": 2.5
+  },
+  "droiddeck": {
+    "render_width": 1280,
+    "render_height": 720,
+    "fsr_enabled": true,
+    "dxvk_async": 1
+  }
+}
