@@ -157,8 +157,9 @@ Hacks = 1
     def configure_dolphin(self) -> None:
         scale = self.emulation.get("dolphin_internal_resolution", 2.5)
         print(f"\n[*] Configuring Dolphin (GC/Wii - {scale}x Vulkan, Controller & DSP Audio)...")
-        # Dolphin.ini
-        dolphin_ini = """[Core]
+        # Dolphin.ini (GC & Wii Virtual Console Setup)
+        wii_widescreen = "True" if self.force_widescreen else "False"
+        dolphin_ini = f"""[Core]
 Fastmem = True
 DualCore = True
 EnableCheats = True
@@ -173,12 +174,20 @@ WASAPIDevice = default
 [Interface]
 ConfirmStop = False
 ShowToolbar = False
+
+[Wii]
+Enable = True
+Widescreen = {wii_widescreen}
+ProgressiveScan = True
+Language = 1
+PAL60 = True
 """
-        # GFX.ini
+        # GFX.ini (Graphics & Performance)
+        aspect_ratio = 1 if self.force_widescreen else 0
         gfx_ini = f"""[Settings]
 Backend = Vulkan
 InternalResolution = {scale}
-AspectRatio = 0
+AspectRatio = {aspect_ratio}
 WideScreenHack = False
 WaitForShadersBeforeStarting = True
 VSync = True
@@ -188,6 +197,10 @@ ShaderCompilationMode = 2
 ArbitraryMipmapDetection = True
 ForceTrueColor = True
 MaxAnisotropy = 2
+
+[Hacks]
+FastDepthCalc = True
+DeferEFBCopies = True
 """
         # GCPadNew.ini (Controller mapping)
         gcpad_ini = """[GCPad1]

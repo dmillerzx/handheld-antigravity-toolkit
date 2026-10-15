@@ -42,7 +42,8 @@ from device_profile import detect_device_profile, detect_storage_targets, load_p
 PCSX2_PATCHES_URL = "https://github.com/PCSX2/pcsx2_patches/releases/latest/download/patches.zip"
 DOLPHIN_REPO_URL = "https://github.com/dolphin-emu/dolphin.git"
 
-RE_169_CODE = re.compile(r"^\$(16:9\s*(?:Widescreen|Aspect Ratio Fix)[^\r\n]*)", re.IGNORECASE)
+RE_169_CODE = re.compile(r"^\$(?:16:9\s*(?:Widescreen|Aspect Ratio Fix)|Widescreen\s*\(16:9\)|Widescreen\s*Fix)[^\r\n]*", re.IGNORECASE)
+RE_DEFLICKER_CODE = re.compile(r"^\$(?:Disable\s*Deflicker|Deflicker\s*Off|No\s*Deflicker|Disable\s*Bloom)[^\r\n]*", re.IGNORECASE)
 
 
 def find_adb(explicit_path: Optional[str] = None) -> str:
@@ -91,6 +92,7 @@ class CommunityPatchEngine:
         # True custom user overrides directories in git repo
         self.ps2_custom_dir = WORKSPACE_ROOT / "patches" / "ps2"
         self.gcn_custom_dir = WORKSPACE_ROOT / "patches" / "gcn"
+        self.wii_custom_dir = WORKSPACE_ROOT / "patches" / "wii"
 
         # Temporary scratch directory (isolated and wiped after execution)
         self.scratch_dir = Path(tempfile.mkdtemp(prefix="rp_stream_patches_"))
@@ -226,6 +228,7 @@ class CommunityPatchEngine:
                 lines = content.splitlines()
                 in_gecko = False
                 widescreen_codes = []
+                deflicker_codes = []
 
                 for line in lines:
                     stripped = line.strip()
@@ -234,22 +237,28 @@ class CommunityPatchEngine:
                     elif in_gecko and stripped.startswith("$"):
                         if RE_169_CODE.match(stripped) or ("16:9" in stripped and "widescreen" in stripped.lower()):
                             widescreen_codes.append(stripped)
+                        elif RE_DEFLICKER_CODE.match(stripped):
+                            deflicker_codes.append(stripped)
 
+                codes_to_enable = []
                 if widescreen_codes:
-                    widescreen_injected_count += 1
                     selected_code = widescreen_codes[0]
                     for c in widescreen_codes:
                         if "normal hud" in c.lower() or c.strip() == "$16:9 Widescreen":
                             selected_code = c
                             break
+                    codes_to_enable.append(selected_code)
+                if deflicker_codes:
+                    codes_to_enable.append(deflicker_codes[0])
 
+                if codes_to_enable:
+                    widescreen_injected_count += 1
                     new_lines = []
                     has_video_settings = False
                     has_gecko_enabled = False
                     in_video_settings = False
                     in_gecko_enabled = False
                     aspect_ratio_set = False
-                    code_enabled = False
 
                     for line in lines:
                         stripped = line.strip()
@@ -258,9 +267,10 @@ class CommunityPatchEngine:
                             if in_video_settings and not aspect_ratio_set:
                                 new_lines.append("AspectRatio = 1")
                                 aspect_ratio_set = True
-                            if in_gecko_enabled and not code_enabled:
-                                new_lines.append(selected_code)
-                                code_enabled = True
+                            if in_gecko_enabled:
+                                for code in codes_to_enable:
+                                    if code not in new_lines:
+                                        new_lines.append(code)
 
                             in_video_settings = (sec == "[video_settings]")
                             in_gecko_enabled = (sec == "[gecko_enabled]")
@@ -273,23 +283,21 @@ class CommunityPatchEngine:
                             if in_video_settings and stripped.startswith("AspectRatio"):
                                 new_lines.append("AspectRatio = 1")
                                 aspect_ratio_set = True
-                            elif in_gecko_enabled and stripped == selected_code:
-                                new_lines.append(line)
-                                code_enabled = True
                             else:
                                 new_lines.append(line)
 
                     if in_video_settings and not aspect_ratio_set:
                         new_lines.append("AspectRatio = 1")
                         aspect_ratio_set = True
-                    if in_gecko_enabled and not code_enabled:
-                        new_lines.append(selected_code)
-                        code_enabled = True
+                    if in_gecko_enabled:
+                        for code in codes_to_enable:
+                            if code not in new_lines:
+                                new_lines.append(code)
 
                     if not has_video_settings:
                         new_lines.extend(["", "[Video_Settings]", "AspectRatio = 1"])
                     if not has_gecko_enabled:
-                        new_lines.extend(["", "[Gecko_Enabled]", selected_code])
+                        new_lines.extend(["", "[Gecko_Enabled]"] + codes_to_enable)
 
                     final_content = "\n".join(new_lines) + "\n"
                 else:
@@ -297,14 +305,24 @@ class CommunityPatchEngine:
 
             (curated_dir / ini_path.name).write_text(final_content, encoding="utf-8")
 
-        # 3. Layer custom local user overrides from patches/gcn/*.ini
+        # 3. Layer custom local user overrides from patches/gcn/*.ini and patches/wii/*.ini
+        custom_gcn_count = 0
         if self.gcn_custom_dir.exists():
             custom_gcn = list(self.gcn_custom_dir.glob("*.ini"))
             for custom_ini in custom_gcn:
-                print(f"    -> Layering custom local Gecko patch override: {custom_ini.name}...")
+                print(f"    -> Layering custom local GameCube Gecko patch override: {custom_ini.name}...")
                 shutil.copy2(custom_ini, curated_dir / custom_ini.name)
+                custom_gcn_count += 1
 
-        print(f"    -> Curation complete: {len(all_inis):,} INIs ({widescreen_injected_count:,} with 16:9 widescreen hooks).")
+        custom_wii_count = 0
+        if self.wii_custom_dir.exists():
+            custom_wii = list(self.wii_custom_dir.glob("*.ini"))
+            for custom_ini in custom_wii:
+                print(f"    -> Layering custom local Wii Gecko patch override: {custom_ini.name}...")
+                shutil.copy2(custom_ini, curated_dir / custom_ini.name)
+                custom_wii_count += 1
+
+        print(f"    -> Curation complete: {len(all_inis):,} INIs ({widescreen_injected_count:,} with 16:9/deflicker hooks, {custom_gcn_count} GCN overrides, {custom_wii_count} Wii overrides).")
 
         # 4. Package into tarball and push to Dolphin GameSettings
         tar_path = self.scratch_dir / "dolphin_gamesettings.tar.gz"

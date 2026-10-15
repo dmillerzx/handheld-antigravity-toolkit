@@ -104,7 +104,7 @@ MicroSD Storage    /storage/<SD_ID>/   (or /sdcard/ fallback)
 | **PlayStation (PS1)** | DuckStation (Standalone) | Cubeb (20ms) Gaussian | 5x (1080p PGXP) | `/storage/<SD_ID>/ROMs/psx` |
 | **PlayStation 2 (PS2)** | NetherSX2 (Standalone) | SPU2 Hermite (Mode 4) | 2.25x (1080p Widescreen) | `/storage/<SD_ID>/ROMs/ps2` |
 | **Nintendo GameCube** | Dolphin (Standalone) | OpenSLES DSP / Analog Triggers | 2.5x (1080p Gecko) | `/storage/<SD_ID>/ROMs/gc` |
-| **Nintendo Wii** | Dolphin (Standalone) | OpenSLES DSP / Classic Pad | 2.5x (1080p) | `/storage/<SD_ID>/ROMs/wii` |
+| **Nintendo Wii** | Dolphin (Standalone) | OpenSLES DSP / Classic Pad | 2.5x (1080p Widescreen & Deflicker Off) | `/storage/<SD_ID>/ROMs/wii` |
 | **Sony PSP** | PPSSPP (Standalone) | Low Latency (Latency=0) | 4x (1080p 16x Aniso) | `/storage/<SD_ID>/ROMs/psp` |
 | **Sega Dreamcast** | Flycast (Standalone) | AICA DSP / AutoLatency | 2x (1080p Widescreen) | `/storage/<SD_ID>/ROMs/dreamcast` |
 | **Nintendo 3DS** | Azahar (Standalone) | Audio Engine 0 / Mesa Turnip | 3x (1080p Async) | `/storage/<SD_ID>/ROMs/n3ds` |
@@ -185,6 +185,7 @@ Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verificat
 │       └── config/mGBA/             # mGBA overrides & GBA LCD grid shader chain
 ├── patches/
 │   ├── gcn/                         # GameCube Gecko widescreen/60fps patches
+│   ├── wii/                         # Wii Gecko widescreen/deflicker/bloom overrides
 │   └── ps2/                         # PS2 PCSX2 master pnach cheats
 └── drivers/                         # Mesa Turnip Adreno 650 drivers (.gitkeep)
 ```

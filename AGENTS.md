@@ -61,6 +61,7 @@ AntigravityWorkingDir/
 ├── roms/                    # Local ROM staging (not versioned)
 ├── patches/
 │   ├── gcn/                 # GameCube widescreen/60fps Gecko patches
+│   ├── wii/                 # Wii widescreen/deflicker/bloom Gecko patches
 │   └── ps2/                 # PS2 PCSX2 master pnach cheats (.gitkeep)
 ├── configs/                 # Device profiles, ES-DE configs & Obtainium templates
 │   ├── rp5_master_obtainium.json
