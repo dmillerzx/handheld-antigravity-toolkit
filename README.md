@@ -152,6 +152,7 @@ Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verificat
 
 ```text
 .
+├── CREDITS.md                       # Comprehensive upstream credits & attributions
 ├── Run_Setup.bat                    # Double-click root standalone launcher (all handhelds)
 ├── Run_RP5_Setup.bat                # Alias launcher for Retroid Pocket 5
 ├── QA_CHECKLIST.md                  # Quality assurance validation test suite
@@ -187,3 +188,10 @@ Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verificat
 │   └── ps2/                         # PS2 PCSX2 master pnach cheats
 └── drivers/                         # Mesa Turnip Adreno 650 drivers (.gitkeep)
 ```
+
+---
+
+## 🤝 Acknowledgments & Credits
+
+This toolkit builds directly upon the incredible work of emulator authors, driver developers, shader artists, and community patch creators. See [CREDITS.md](CREDITS.md) for full attributions and upstream projects.
+
