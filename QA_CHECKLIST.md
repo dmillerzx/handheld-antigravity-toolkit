@@ -108,16 +108,17 @@ This document provides systematic, platform-by-platform validation procedures fo
   - `Crop = 1` successfully trims the analog CRT scanline borders on the top/bottom/sides, enabling the race viewport to cleanly fill the 1080p AMOLED panel.
   - Calibrated RP5 input profile maps face buttons, analog sticks, and triggers accurately.
 
-#### Test Case 3D-03: Dolphin (GameCube / Wii) — Dynamic Controller Discovery & Classic Pad Fallback
-* **Objective:** Validate programmatic input device resolution, Classic Controller scan-code bindings, analog trigger thresholds, and back/pause hotkey safety.
+#### Test Case 3D-03: Dolphin (GameCube / Wii) — Dynamic Controller Discovery & Community Motion Profiles
+* **Objective:** Validate programmatic input device resolution, clean direct token bindings, flat Classic Controller extension, analog trigger thresholds, pause hotkey safety, and the 5 Android-native community Wii motion profiles.
 * **Test Game:** *Mario Kart Wii* and *Super Mario Sunshine* (GC).
 * **Procedure:**
   1. Launch *Mario Kart Wii*.
-  2. Check ADB logs or config files (`GCPadNew.ini`, `WiimoteNew.ini`) to ensure the device node was auto-resolved (e.g. `Android/8/Retroid Pocket Controller`).
-  3. Verify that `WiimoteNew.ini` has `Source = 1` (Emulated), `Extension = Classic`, and `[Classic1]` bound to physical Retroid scan codes.
-  4. Press **Button B** during race and menu navigation.
-  5. Press **L3 + R3** (Left & Right thumbstick click combo).
-  6. Test analog trigger spray modulation in *Super Mario Sunshine*.
+  2. Check ADB logs or config files (`GCPadNew.ini`, `WiimoteNew.ini`) to ensure the device node was auto-resolved (e.g. `Android/1/Retroid Pocket Controller`).
+  3. Verify that `WiimoteNew.ini` has `Source = 1` (Emulated), `Extension = Classic`, flat `Classic/Buttons/*` and `Classic/Left Stick/*` bindings directly inside `[Wiimote1]`, and literal `+` / `-` keys.
+  4. Verify that the 5 Android-native community Wii profiles are staged in `Config/Profiles/Wiimote/` (`Classic_Controller.ini`, `Super_Mario_Galaxy.ini`, `Sideways_Platformer.ini`, `Donkey_Kong_Country.ini`, `Zelda_Metroid_Action.ini`).
+  5. Press **Button B** during race and menu navigation.
+  6. Press **L3 + R3** (Left & Right thumbstick click combo).
+  7. Test analog trigger spray modulation in *Super Mario Sunshine*.
 * **Pass Criteria:**
   - Physical buttons and thumbsticks steer, accelerate, and drift in *Mario Kart Wii* without any manual remapping.
   - Pressing **Button B** acts strictly as an in-game action (drift / cancel / reverse) and **never** opens Dolphin's Android pause navigation drawer.

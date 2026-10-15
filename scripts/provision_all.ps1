@@ -214,7 +214,14 @@ if (-not $NonInteractive -and -not $DryRun) {
 }
 
 # -----------------------------------------------------------------------------
-# 7. Final Completion Banner
+# 7. Automated Pre-Flight Verification & System Health Audit
+# -----------------------------------------------------------------------------
+Write-Host "`n[*] Executing Automated Pre-Flight Verification Audit..." -ForegroundColor Cyan
+$VerifyScript = Join-Path $ScriptDir "verify_deployment.py"
+& $PythonExe $VerifyScript -s $Serial
+
+# -----------------------------------------------------------------------------
+# 8. Final Completion Banner
 # -----------------------------------------------------------------------------
 Write-Host "`n========================================================================" -ForegroundColor Green
 Write-Host "   Handheld Community Provisioning Successfully Completed! (v1.0)       " -ForegroundColor Green

@@ -356,14 +356,231 @@ class CommunityPatchEngine:
         print("    -> Scratch storage wiped cleanly.")
         return len(all_inis)
 
-    def run_all(self, skip_ps2: bool = False, skip_dolphin: bool = False) -> Tuple[int, int]:
+    def get_controller_device_string(self) -> str:
+        """Dynamically queries connected Android InputDevices to resolve Dolphin controller identifier."""
+        try:
+            dumpsys = self.shell("dumpsys input")
+            m = re.search(
+                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNumber:\s*(\d+)',
+                dumpsys,
+                re.MULTILINE | re.DOTALL | re.IGNORECASE
+            )
+            if m:
+                return f"Android/{m.group(2).strip()}/{m.group(1).strip()}"
+            m2 = re.search(
+                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNum:\s*(\d+)',
+                dumpsys,
+                re.MULTILINE | re.DOTALL | re.IGNORECASE
+            )
+            if m2:
+                return f"Android/{m2.group(2).strip()}/{m2.group(1).strip()}"
+        except Exception:
+            pass
+        return "Android/1/Retroid Pocket Controller"
+
+    @staticmethod
+    def convert_to_android_wiimote_profile(content: str, ctrl_dev: str) -> str:
+        """Converts upstream XInput / SDL Dolphin Wiimote profile to Android-native scan-code bindings."""
+        lines = content.splitlines()
+        out = []
+        has_header = False
+
+        sub_map = [
+            ("Button A", "Button 96"),
+            ("Button B", "Button 97"),
+            ("Button X", "Button 99"),
+            ("Button Y", "Button 100"),
+            ("Shoulder L", "Button 102"),
+            ("Button L", "Button 102"),
+            ("Shoulder R", "Button 103"),
+            ("Button R", "Button 103"),
+            ("Trigger L", "Axis 23+"),
+            ("Trigger R", "Axis 22+"),
+            ("Thumb L", "Button 106"),
+            ("Click L", "Button 106"),
+            ("Thumb R", "Button 107"),
+            ("Click R", "Button 107"),
+            ("Back", "Button 109"),
+            ("Select", "Button 109"),
+            ("Start", "Button 108"),
+            ("Guide", "Button 110"),
+            ("Home", "Button 110"),
+            ("Pad N", "Button 19"),
+            ("Pad Up", "Button 19"),
+            ("Pad S", "Button 20"),
+            ("Pad Down", "Button 20"),
+            ("Pad W", "Button 21"),
+            ("Pad Left", "Button 21"),
+            ("Pad E", "Button 22"),
+            ("Pad Right", "Button 22"),
+            ("Left Y+", "Axis 1+"),
+            ("Left Y-", "Axis 1-"),
+            ("Left X+", "Axis 0+"),
+            ("Left X-", "Axis 0-"),
+            ("Right Y+", "Axis 14+"),
+            ("Right Y-", "Axis 14-"),
+            ("Right X+", "Axis 11+"),
+            ("Right X-", "Axis 11-"),
+            ("Cursor Y-", "Axis 14-"),
+            ("Cursor Y+", "Axis 14+"),
+            ("Cursor X-", "Axis 11-"),
+            ("Cursor X+", "Axis 11+"),
+            ("LCONTROL", "Button 102"),
+            ("LSHIFT", "Axis 23+"),
+            ("RETURN", "Button 108"),
+            ("ESCAPE", "Button 109"),
+        ]
+
+        for line in lines:
+            stripped = line.strip()
+            if stripped.lower() == "[profile]":
+                has_header = True
+                out.append("[Profile]")
+                continue
+            elif stripped.startswith("[") and stripped.endswith("]"):
+                out.append(line)
+                continue
+            if not stripped or stripped.startswith("#"):
+                out.append(line)
+                continue
+            if "=" in line:
+                key, val = line.split("=", 1)
+                key_strip = key.strip()
+                val_strip = val.strip()
+
+                if key_strip.endswith("/Plus"):
+                    key_strip = key_strip[:-4] + "+"
+                elif key_strip.endswith("/Minus"):
+                    key_strip = key_strip[:-5] + "-"
+
+                if key_strip.lower() == "device":
+                    out.append(f"{key_strip} = {ctrl_dev}")
+                    continue
+
+                for src, dst in sub_map:
+                    val_strip = re.sub(r"(`)?" + re.escape(src) + r"(`)?", f"`{dst}`", val_strip)
+
+                out.append(f"{key_strip} = {val_strip}")
+            else:
+                out.append(line)
+
+        if not has_header:
+            out.insert(0, "[Profile]")
+        return "\n".join(out) + "\n"
+
+    def stage_wiimote_community_profiles(self) -> int:
+        """Streams, parses, and converts ALL available Wiimote controller profiles from upstream into Android-native keycodes."""
+        print("\n[*] [3/3] Streaming & Converting Community Wiimote Profiles from Upstream...")
+        ctrl_dev = self.get_controller_device_string()
+        print(f"    -> Target Controller Device: {ctrl_dev}")
+
+        prof_scratch = self.scratch_dir / "wiimote_profiles"
+        prof_scratch.mkdir(parents=True, exist_ok=True)
+
+        # 1. Stream iwubcode/DolphinControllerProfiles
+        iwubcode_zip = self.scratch_dir / "iwubcode_profiles.zip"
+        iwubcode_url = "https://github.com/iwubcode/DolphinControllerProfiles/archive/refs/heads/master.zip"
+        print(f"    -> Streaming community game profiles from {iwubcode_url}...")
+        try:
+            req = urllib.request.Request(iwubcode_url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = resp.read()
+            with open(iwubcode_zip, "wb") as f:
+                f.write(data)
+            print(f"    -> Streamed {len(data):,} bytes of community profiles.")
+
+            with zipfile.ZipFile(iwubcode_zip, "r") as z:
+                for member in z.namelist():
+                    if member.endswith(".ini") and "Profiles/" in member:
+                        parts = member.split("Profiles/", 1)[1].split("/")
+                        if len(parts) >= 2:
+                            game_name = parts[0].replace(" ", "_")
+                            var_name = parts[-1].replace(".ini", "").replace(" ", "_")
+                            if var_name.lower() in ["general", "skywardsword_basic"]:
+                                out_filename = f"{game_name}.ini"
+                            else:
+                                out_filename = f"{game_name}_{var_name}.ini"
+                        else:
+                            out_filename = os.path.basename(member).replace(" ", "_")
+
+                        raw_content = z.read(member).decode("utf-8", errors="replace")
+                        converted = self.convert_to_android_wiimote_profile(raw_content, ctrl_dev)
+                        (prof_scratch / out_filename).write_text(converted, encoding="utf-8")
+        except Exception as e:
+            print(f"    [!] Notice: Failed to stream iwubcode profiles: {e}")
+
+        # 2. Stream EmuDeck Wiimote Profiles
+        emudeck_files = [
+            "Wii_base_nunchuck.ini",
+            "Wii_base_nunchuck_with_touchpad.ini",
+            "Wii_classic_controller.ini",
+            "Wii_no_attachment.ini",
+            "Wii_no_attachment_with_touchpad.ini",
+            "Wii_NoController.ini",
+        ]
+        emudeck_base = "https://raw.githubusercontent.com/dragoonDorise/EmuDeck/main/configs/org.DolphinEmu.dolphin-emu/config/dolphin-emu/Profiles/Wiimote/"
+        print("    -> Streaming EmuDeck Wiimote baseline profiles...")
+        for ed_name in emudeck_files:
+            try:
+                ed_url = f"{emudeck_base}{ed_name}"
+                req = urllib.request.Request(ed_url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    raw_ed = resp.read().decode("utf-8", errors="replace")
+                converted_ed = self.convert_to_android_wiimote_profile(raw_ed, ctrl_dev)
+                (prof_scratch / ed_name).write_text(converted_ed, encoding="utf-8")
+            except Exception:
+                pass
+
+        # 3. Layer local custom community profiles
+        local_wiimote_dir = WORKSPACE_ROOT / "configs" / "dolphin" / "profiles" / "Wiimote"
+        if local_wiimote_dir.exists():
+            for loc_prof in local_wiimote_dir.glob("*.ini"):
+                loc_txt = loc_prof.read_text(encoding="utf-8")
+                loc_mod = re.sub(r"Device\s*=\s*[^\r\n]+", f"Device = {ctrl_dev}", loc_txt)
+                (prof_scratch / loc_prof.name).write_text(loc_mod, encoding="utf-8")
+
+        all_profiles = list(prof_scratch.glob("*.ini"))
+        print(f"    -> Ingested and converted {len(all_profiles)} Android-native Wiimote profiles.")
+
+        # 4. Package and push over ADB
+        tar_path = self.scratch_dir / "wiimote_profiles.tar.gz"
+        with tarfile.open(tar_path, "w:gz") as tar:
+            for p in all_profiles:
+                tar.add(p, arcname=p.name)
+
+        remote_tar = "/sdcard/Download/wiimote_profiles.tar.gz"
+        remote_target1 = "/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Profiles/Wiimote"
+        remote_target2 = "/sdcard/dolphin-emu/Config/Profiles/Wiimote"
+
+        self.adb_cmd("push", str(tar_path), remote_tar)
+        extract_cmd = (
+            f"mkdir -p '{remote_target1}' '{remote_target2}' && "
+            f"tar -xzf '{remote_tar}' -C '{remote_target1}/' && "
+            f"tar -xzf '{remote_tar}' -C '{remote_target2}/' && "
+            f"rm '{remote_tar}'"
+        )
+        self.shell(extract_cmd, check=False)
+        print(f"    [OK] Successfully deployed {len(all_profiles)} Wiimote profiles to Dolphin.")
+
+        # 5. Clean up scratch
+        shutil.rmtree(prof_scratch, ignore_errors=True)
+        if iwubcode_zip.exists():
+            iwubcode_zip.unlink()
+        if tar_path.exists():
+            tar_path.unlink()
+        return len(all_profiles)
+
+    def run_all(self, skip_ps2: bool = False, skip_dolphin: bool = False, skip_wiimote: bool = False) -> Tuple[int, int, int]:
         ps2_count = 0
         dolphin_count = 0
+        wiimote_count = 0
         try:
             if not skip_ps2:
                 ps2_count = self.stage_ps2_patches()
             if not skip_dolphin:
                 dolphin_count = self.stage_dolphin_gamesettings()
+            if not skip_wiimote:
+                wiimote_count = self.stage_wiimote_community_profiles()
         finally:
             # Absolute scratch cleanup guarantee
             shutil.rmtree(self.scratch_dir, ignore_errors=True)
@@ -374,9 +591,10 @@ class CommunityPatchEngine:
         print(f"   * Widescreen Injection  : {self.force_widescreen}")
         print(f"   * PS2 (NetherSX2) .pnach Cheats Deployed : {ps2_count:,}")
         print(f"   * Dolphin GameSettings Deployed         : {dolphin_count:,}")
+        print(f"   * Dolphin Wiimote Profiles Deployed     : {wiimote_count:,}")
         print("   * Local Repository Footprint            : Clean (0 Bulk Patches in Git)")
         print("=" * 72)
-        return ps2_count, dolphin_count
+        return ps2_count, dolphin_count, wiimote_count
 
 
 def main() -> None:
@@ -387,6 +605,7 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Preview commands without modifying device")
     parser.add_argument("--skip-ps2", action="store_true", help="Skip PS2 PCSX2 patches")
     parser.add_argument("--skip-dolphin", action="store_true", help="Skip Dolphin GameSettings patches")
+    parser.add_argument("--skip-wiimote", action="store_true", help="Skip Dolphin Wiimote profile streaming")
     args = parser.parse_args()
 
     adb_path = find_adb(args.adb)
@@ -398,8 +617,9 @@ def main() -> None:
         profile=profile,
         dry_run=args.dry_run
     )
-    engine.run_all(skip_ps2=args.skip_ps2, skip_dolphin=args.skip_dolphin)
+    engine.run_all(skip_ps2=args.skip_ps2, skip_dolphin=args.skip_dolphin, skip_wiimote=args.skip_wiimote)
 
 
 if __name__ == "__main__":
     main()
+

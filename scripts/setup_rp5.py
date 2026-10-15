@@ -43,6 +43,7 @@ TARGET_PACKAGES = [
     ("org.es_de.frontend", "ES-DE Frontend"),
     ("com.retroarch.aarch64", "RetroArch (64-bit)"),
     ("com.armsx2", "ARM SX2 (PS2)"),
+    ("come.nanodata.armsx2", "ARM SX2 (PS2, alternate package ID)"),
     ("xyz.aethersx2.android", "NetherSX2 / AetherSX2 (PS2)"),
     ("org.ppsspp.ppsspp", "PPSSPP"),
     ("org.azahar_emu.azahar", "Azahar (3DS)"),
@@ -530,6 +531,16 @@ class RP5Provisioner:
                 cmd.append("--dry-run")
             subprocess.run(cmd, check=False)
 
+    def run_preflight_verification(self) -> None:
+        """Executes verify_deployment.py to audit all subsystems post-provisioning."""
+        script = WORKSPACE_ROOT / "scripts" / "verify_deployment.py"
+        if script.exists():
+            print("\n[*] Executing Automated Pre-Flight Deployment Verification...")
+            cmd = [sys.executable, str(script), "--adb", self.adb]
+            if self.serial:
+                cmd.extend(["-s", self.serial])
+            subprocess.run(cmd, check=False)
+
     def provision_all(self, apks_dir: Optional[Path] = None) -> None:
         """Runs the complete end-to-end community provisioning pipeline."""
         print("\n" + "=" * 72)
@@ -551,6 +562,7 @@ class RP5Provisioner:
         self.run_standalone_config()
         self.run_retroarch_core_download()
         self.run_save_sync()
+        self.run_preflight_verification()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def _write_fallback_obtainium(self, path: Path) -> None:

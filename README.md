@@ -67,6 +67,8 @@ Designed for everyday gamers and handheld owners across **Windows, macOS, and Li
 * **2D Ultra-Low-Latency Audio/Video**: Injects Vulkan backend, 48ms OpenSLES latency, GBA 5.5kHz IIR low-pass DSP, and Genesis Model 1 LPF.
 * **Steam PC Gaming Ready**: Pre-configures DroidDeck with 720p base rendering, FSR upscaling to 1080p, Mesa Turnip GPU drivers, and pre-seeds your MicroSD Steam library.
 * **4,700+ Community Widescreen Patches**: Streamed live from upstream PCSX2 and Dolphin Gecko repositories.
+* **Community Wiimote & Motion Catalog**: Streams, parses, and converts 26+ upstream community Wiimote controller profiles from `iwubcode/DolphinControllerProfiles` and `EmuDeck` into clean Android scan-codes (`Button 96`, `Axis 1-`), enabling immediate dual-stick play on titles like *Mario Kart Wii*, *Super Mario Galaxy*, and *The Legend of Zelda*.
+* **Automated Pre-Flight Verification**: Executes an automated post-provisioning audit inspecting packages, canonical configs, controller descriptors, and storage AppOps to output a green `[READY TO PLAY]` verification report.
 
 #### Step 4: Add Games & Play!
 * **ROMs**: Insert your MicroSD card and copy your game files into `/storage/<SD_ID>/ROMs/<system>/` (e.g. `ROMs/ps2/`, `ROMs/wii/`, `ROMs/gc/`, `ROMs/gba/`).
@@ -204,6 +206,7 @@ Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verificat
 │   ├── setup_rp5.py                 # Core ADB provisioning engine (--all)
 │   ├── configure_standalones.py     # Standalone 3D emulator profile injector
 │   ├── stage_community_patches.py   # Universal PS2 & GameCube/Wii patch engine
+│   ├── verify_deployment.py         # Automated pre-flight verification & readiness auditor
 │   ├── download_retroarch_cores.py  # Headless 2D/Arcade core & asset deployer
 │   └── sync_all_saves.py            # Save, state & memory card backup sync
 ├── configs/
@@ -212,6 +215,8 @@ Refer to [`QA_CHECKLIST.md`](QA_CHECKLIST.md) for platform-by-platform verificat
 │   ├── es_settings.xml              # Headless ES-DE storage & emulator routing
 │   ├── droiddeck_config.json        # DroidDeck 720p/FSR 1080p Turnip profile
 │   ├── libraryfolders.vdf           # Pre-seeded Steam MicroSD library definition
+│   ├── dolphin/                     # Android-native Dolphin controller profiles
+│   │   └── profiles/Wiimote/        # Streamed community Wiimote motion profiles
 │   └── retroarch/                   # Ultra-low-latency 2D RetroArch configuration
 │       ├── retroarch.cfg            # Main config (Vulkan, Ozone, 48ms, hotkeys)
 │       ├── retroarch-core-options.cfg # Low-pass audio & interpolation options

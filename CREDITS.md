@@ -55,10 +55,12 @@ The **Retroid Pocket 5 (RP5) Automated Provisioning Workspace** is made possible
 
 ---
 
-## 5. Community Patch Databases & GameSettings
+## 5. Community Patch Databases & Controller Profiles
 
 * **[PCSX2 Master Patches](https://github.com/PCSX2/pcsx2_patches)** — Curated by the PCSX2 community and patch authors. Over 4,700 `.pnach` files providing widescreen, 60fps, and progressive scan enhancements for PlayStation 2 titles.
 * **[Dolphin GameSettings Repository](https://github.com/dolphin-emu/dolphin/tree/master/Data/Sys/GameSettings)** — Curated by the Dolphin community. Pre-configured game compatibility profiles, widescreen Gecko codes, and performance fixes.
+* **[Dolphin Controller Profiles (iwubcode)](https://github.com/iwubcode/DolphinControllerProfiles)** — Curated by iwubcode and community contributors. Custom Wiimote and GameCube controller profiles for individual Wii titles mapped for standard dual-stick controllers.
+* **[EmuDeck](https://github.com/dragoonDorise/EmuDeck)** — Developed by dragoonDorise and the EmuDeck community. Handheld-optimized controller mappings, motion simulation profiles, and emulator ergonomics.
 
 ---
 

@@ -120,6 +120,7 @@ class StandaloneConfigurator:
         content = f"""[Main]
 AutoHideTouchscreenController = true
 ConfirmPowerOff = false
+FastBoot = true
 
 [BIOS]
 SearchDirectory = {self.bios_dir}
@@ -134,6 +135,7 @@ Sync = true
 OptimalFramePacing = true
 ReduceInputLatency = true
 ShowFPS = false
+Force43For2D = true
 
 [GPU]
 Renderer = Vulkan
@@ -427,115 +429,80 @@ BBoxEnable = False
         # GCPadNew.ini (Controller mapping)
         gcpad_ini = f"""[GCPad1]
 Device = {ctrl_dev}
-Buttons/A = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
-Buttons/B = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
-Buttons/X = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Buttons/Y = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
-Buttons/Z = `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `Button 103`
-Buttons/Start = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
-Main Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
-Main Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
-Main Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
-Main Stick/Right = `{ctrl_dev}:Axis 0+` | `Axis 0+`
+Buttons/A = `Button 96`
+Buttons/B = `Button 97`
+Buttons/X = `Button 99`
+Buttons/Y = `Button 100`
+Buttons/Z = `Button 103`
+Buttons/Start = `Button 108`
+Main Stick/Up = `Axis 1-`
+Main Stick/Down = `Axis 1+`
+Main Stick/Left = `Axis 0-`
+Main Stick/Right = `Axis 0+`
 Main Stick/Modifier = `Shift`
 Main Stick/Modifier/Range = 50.000000
-C-Stick/Up = `{ctrl_dev}:Axis 14-` | `Axis 14-`
-C-Stick/Down = `{ctrl_dev}:Axis 14+` | `Axis 14+`
-C-Stick/Left = `{ctrl_dev}:Axis 11-` | `Axis 11-`
-C-Stick/Right = `{ctrl_dev}:Axis 11+` | `Axis 11+`
+C-Stick/Up = `Axis 14-`
+C-Stick/Down = `Axis 14+`
+C-Stick/Left = `Axis 11-`
+C-Stick/Right = `Axis 11+`
 C-Stick/Modifier = `Control`
 C-Stick/Modifier/Range = 50.000000
-D-Pad/Up = `{ctrl_dev}:Hat 0N` | `{ctrl_dev}:Button 19` | `Hat 0N` | `Button 19`
-D-Pad/Down = `{ctrl_dev}:Hat 0S` | `{ctrl_dev}:Button 20` | `Hat 0S` | `Button 20`
-D-Pad/Left = `{ctrl_dev}:Hat 0W` | `{ctrl_dev}:Button 21` | `Hat 0W` | `Button 21`
-D-Pad/Right = `{ctrl_dev}:Hat 0E` | `{ctrl_dev}:Button 22` | `Hat 0E` | `Button 22`
-Triggers/L = `{ctrl_dev}:Axis 23+` | `{ctrl_dev}:Button 104` | `Axis 23+` | `Button 104`
-Triggers/R = `{ctrl_dev}:Axis 22+` | `{ctrl_dev}:Button 105` | `Axis 22+` | `Button 105`
+D-Pad/Up = `Button 19`
+D-Pad/Down = `Button 20`
+D-Pad/Left = `Button 21`
+D-Pad/Right = `Button 22`
+Triggers/L = `Axis 23+`
+Triggers/R = `Axis 22+`
 Triggers/Threshold = 50.000000
-Triggers/L-Analog = `{ctrl_dev}:Axis 23+` | `Axis 23+`
-Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
+Triggers/L-Analog = `Axis 23+`
+Triggers/R-Analog = `Axis 22+`
 """
-        # WiimoteNew.ini (Classic controller mapped)
+        # WiimoteNew.ini (Classic controller mapped flat inside Wiimote1)
         wiimote_ini = f"""[Wiimote1]
 Device = {ctrl_dev}
 Source = 1
 Extension = Classic
-Classic/Device = {ctrl_dev}
-Buttons/A = `{ctrl_dev}:Button 96` | `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96` | `Button 99`
-Buttons/B = `{ctrl_dev}:Button 97` | `{ctrl_dev}:Button 100` | `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97` | `Button 100` | `Button 103`
-Buttons/1 = `{ctrl_dev}:Button 97` | `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97` | `Button 99`
-Buttons/2 = `{ctrl_dev}:Button 96` | `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96` | `Button 100`
-Buttons/- = `{ctrl_dev}:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
-Buttons/+ = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
-D-Pad/Up = `{ctrl_dev}:Hat 0N` | `{ctrl_dev}:Button 19` | `Hat 0N` | `Button 19`
-D-Pad/Down = `{ctrl_dev}:Hat 0S` | `{ctrl_dev}:Button 20` | `Hat 0S` | `Button 20`
-D-Pad/Left = `{ctrl_dev}:Hat 0W` | `{ctrl_dev}:Button 21` | `Hat 0W` | `Button 21`
-D-Pad/Right = `{ctrl_dev}:Hat 0E` | `{ctrl_dev}:Button 22` | `Hat 0E` | `Button 22`
-Classic/Buttons/A = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
-Classic/Buttons/B = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
-Classic/Buttons/X = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Classic/Buttons/Y = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
-Classic/Buttons/ZL = `{ctrl_dev}:Button 102` | `Android/1/Retroid Pocket Controller:Button 102` | `{ctrl_dev}:Button 104` | `Button 102` | `Button 104`
-Classic/Buttons/ZR = `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `{ctrl_dev}:Button 105` | `Button 103` | `Button 105`
-Classic/Buttons/Plus = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
-Classic/Buttons/Minus = `{ctrl_dev}:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
-Classic/Left Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
-Classic/Left Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
-Classic/Left Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
-Classic/Left Stick/Right = `{ctrl_dev}:Axis 0+` | `Axis 0+`
-Classic/Left Stick/Modifier = `Shift`
-Classic/Left Stick/Modifier/Range = 50.000000
-Classic/Right Stick/Up = `{ctrl_dev}:Axis 14-` | `Axis 14-`
-Classic/Right Stick/Down = `{ctrl_dev}:Axis 14+` | `Axis 14+`
-Classic/Right Stick/Left = `{ctrl_dev}:Axis 11-` | `Axis 11-`
-Classic/Right Stick/Right = `{ctrl_dev}:Axis 11+` | `Axis 11+`
-Classic/Right Stick/Modifier = `Control`
-Classic/Right Stick/Modifier/Range = 50.000000
-Classic/D-Pad/Up = `{ctrl_dev}:Hat 0N` | `{ctrl_dev}:Button 19` | `Hat 0N` | `Button 19`
-Classic/D-Pad/Down = `{ctrl_dev}:Hat 0S` | `{ctrl_dev}:Button 20` | `Hat 0S` | `Button 20`
-Classic/D-Pad/Left = `{ctrl_dev}:Hat 0W` | `{ctrl_dev}:Button 21` | `Hat 0W` | `Button 21`
-Classic/D-Pad/Right = `{ctrl_dev}:Hat 0E` | `{ctrl_dev}:Button 22` | `Hat 0E` | `Button 22`
-Classic/Triggers/L = `{ctrl_dev}:Axis 23+` | `{ctrl_dev}:Button 104` | `Axis 23+` | `Button 104`
-Classic/Triggers/R = `{ctrl_dev}:Axis 22+` | `{ctrl_dev}:Button 105` | `Axis 22+` | `Button 105`
+Buttons/A = `Button 96`
+Buttons/B = `Button 97`
+Buttons/1 = `Button 99`
+Buttons/2 = `Button 100`
+Buttons/- = `Button 109`
+Buttons/+ = `Button 108`
+Buttons/Home = `Button 110`
+D-Pad/Up = `Button 19`
+D-Pad/Down = `Button 20`
+D-Pad/Left = `Button 21`
+D-Pad/Right = `Button 22`
+Classic/Buttons/A = `Button 96`
+Classic/Buttons/B = `Button 97`
+Classic/Buttons/X = `Button 99`
+Classic/Buttons/Y = `Button 100`
+Classic/Buttons/ZL = `Button 102`
+Classic/Buttons/ZR = `Button 103`
+Classic/Buttons/- = `Button 109`
+Classic/Buttons/+ = `Button 108`
+Classic/Buttons/Home = `Button 110`
+Classic/D-Pad/Up = `Button 19`
+Classic/D-Pad/Down = `Button 20`
+Classic/D-Pad/Left = `Button 21`
+Classic/D-Pad/Right = `Button 22`
+Classic/Left Stick/Up = `Axis 1-`
+Classic/Left Stick/Down = `Axis 1+`
+Classic/Left Stick/Left = `Axis 0-`
+Classic/Left Stick/Right = `Axis 0+`
+Classic/Right Stick/Up = `Axis 14-`
+Classic/Right Stick/Down = `Axis 14+`
+Classic/Right Stick/Left = `Axis 11-`
+Classic/Right Stick/Right = `Axis 11+`
+Classic/Triggers/L = `Axis 23+`
+Classic/Triggers/R = `Axis 22+`
 Classic/Triggers/Threshold = 50.000000
-Classic/Triggers/L-Analog = `{ctrl_dev}:Axis 23+` | `Axis 23+`
-Classic/Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
-
-[Classic1]
-Device = {ctrl_dev}
-Buttons/A = `{ctrl_dev}:Button 96` | `Android/1/Retroid Pocket Controller:Button 96` | `Button 96`
-Buttons/B = `{ctrl_dev}:Button 97` | `Android/1/Retroid Pocket Controller:Button 97` | `Button 97`
-Buttons/X = `{ctrl_dev}:Button 99` | `Android/1/Retroid Pocket Controller:Button 99` | `Button 99`
-Buttons/Y = `{ctrl_dev}:Button 100` | `Android/1/Retroid Pocket Controller:Button 100` | `Button 100`
-Buttons/ZL = `{ctrl_dev}:Button 102` | `Android/1/Retroid Pocket Controller:Button 102` | `{ctrl_dev}:Button 104` | `Button 102` | `Button 104`
-Buttons/ZR = `{ctrl_dev}:Button 103` | `Android/1/Retroid Pocket Controller:Button 103` | `{ctrl_dev}:Button 105` | `Button 103` | `Button 105`
-Buttons/Plus = `{ctrl_dev}:Button 108` | `Android/1/Retroid Pocket Controller:Button 108` | `Button 108`
-Buttons/Minus = `{ctrl_dev}:Button 109` | `Android/1/Retroid Pocket Controller:Button 109` | `Button 109`
-Left Stick/Up = `{ctrl_dev}:Axis 1-` | `Axis 1-`
-Left Stick/Down = `{ctrl_dev}:Axis 1+` | `Axis 1+`
-Left Stick/Left = `{ctrl_dev}:Axis 0-` | `Axis 0-`
-Left Stick/Right = `{ctrl_dev}:Axis 0+` | `Axis 0+`
-Left Stick/Modifier = `Shift`
-Left Stick/Modifier/Range = 50.000000
-Right Stick/Up = `{ctrl_dev}:Axis 14-` | `Axis 14-`
-Right Stick/Down = `{ctrl_dev}:Axis 14+` | `Axis 14+`
-Right Stick/Left = `{ctrl_dev}:Axis 11-` | `Axis 11-`
-Right Stick/Right = `{ctrl_dev}:Axis 11+` | `Axis 11+`
-Right Stick/Modifier = `Control`
-Right Stick/Modifier/Range = 50.000000
-D-Pad/Up = `{ctrl_dev}:Hat 0N` | `{ctrl_dev}:Button 19` | `Hat 0N` | `Button 19`
-D-Pad/Down = `{ctrl_dev}:Hat 0S` | `{ctrl_dev}:Button 20` | `Hat 0S` | `Button 20`
-D-Pad/Left = `{ctrl_dev}:Hat 0W` | `{ctrl_dev}:Button 21` | `Hat 0W` | `Button 21`
-D-Pad/Right = `{ctrl_dev}:Hat 0E` | `{ctrl_dev}:Button 22` | `Hat 0E` | `Button 22`
-Triggers/L = `{ctrl_dev}:Axis 23+` | `{ctrl_dev}:Button 104` | `Axis 23+` | `Button 104`
-Triggers/R = `{ctrl_dev}:Axis 22+` | `{ctrl_dev}:Button 105` | `Axis 22+` | `Button 105`
-Triggers/Threshold = 50.000000
-Triggers/L-Analog = `{ctrl_dev}:Axis 23+` | `Axis 23+`
-Triggers/R-Analog = `{ctrl_dev}:Axis 22+` | `Axis 22+`
+Classic/Triggers/L-Analog = `Axis 23+`
+Classic/Triggers/R-Analog = `Axis 22+`
 """
         hotkeys_ini = f"""[Hotkeys]
 Device = {ctrl_dev}
-General/Toggle Pause = `{ctrl_dev}:Button 106` & `{ctrl_dev}:Button 107` | `Button 106` & `Button 107` | F10
+General/Toggle Pause = `Button 106` & `Button 107`
 General/Stop = Escape
 """
         freelook_ini = f"""[FreeLook1]
@@ -559,6 +526,20 @@ Device = {ctrl_dev}
         for f in [f_dol, f_gfx, f_pad, f_wii, f_hot, f_hot2, f_free]:
             self.push_file(f, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/{f.name}")
             self.push_file(f, f"/sdcard/dolphin-emu/Config/{f.name}")
+
+        # Deploy Android-native Wii & GCPad community profiles
+        profiles_dir = WORKSPACE_ROOT / "configs" / "dolphin" / "profiles"
+        if profiles_dir.exists():
+            for prof_file in profiles_dir.rglob("*.ini"):
+                rel_path = prof_file.relative_to(profiles_dir)
+                txt = prof_file.read_text(encoding="utf-8")
+                txt_mod = re.sub(r"Device\s*=\s*[^\r\n]+", f"Device = {ctrl_dev}", txt)
+                tmp_prof = self.temp_dir / prof_file.name
+                tmp_prof.write_text(txt_mod, encoding="utf-8")
+
+                remote_sub = str(rel_path.parent).replace("\\", "/")
+                self.push_file(tmp_prof, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Profiles/{remote_sub}/{prof_file.name}")
+                self.push_file(tmp_prof, f"/sdcard/dolphin-emu/Config/Profiles/{remote_sub}/{prof_file.name}")
 
         # Deploy tuned Mario Kart Wii GameSettings overrides
         for rmc_name in ["RMCE01.ini", "RMC.ini", "RMCP01.ini", "RMCJ01.ini", "RMCEA2.ini", "RMCK01.ini"]:
@@ -620,6 +601,9 @@ widescreen = {ws}
 cable = 0
 Fog = 1
 Vsync = 1
+
+[input]
+VirtualGamepad = 0
 """
         local_cfg = self.temp_dir / "emu.cfg"
         local_cfg.write_text(content, encoding="utf-8")
