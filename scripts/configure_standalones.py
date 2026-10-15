@@ -161,9 +161,9 @@ ControllerView = None
     # 2. NETHERSX2 (PS2)
     def configure_nethersx2(self) -> None:
         scale = self.emulation.get("nethersx2_upscale_multiplier", 2.25)
-        aspect = "1" if self.force_widescreen else "0"
+        aspect = "16:9" if self.force_widescreen else "Auto 4:3/3:2"
         ws_patches = "true" if self.force_widescreen else "false"
-        print(f"\n[*] Configuring NetherSX2 (PS2 - {scale}x Vulkan, SPU2 Interpolation, AspectRatio={aspect}, Crop=1 & Widescreen={ws_patches})...")
+        print(f"\n[*] Configuring NetherSX2 (PS2 - {scale}x Vulkan, SPU2 Interpolation, AspectRatio={aspect}, Crop=1, CropMode=Overscan & Widescreen={ws_patches})...")
         content = f"""[General]
 Bios = scph70012.bin
 BiosDirectory = {self.bios_dir}
@@ -185,6 +185,7 @@ Renderer = Vulkan
 UpscaleMultiplier = {scale}
 AspectRatio = {aspect}
 Crop = 1
+CropMode = Overscan
 HardwareDownloadMode = 1
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
@@ -202,13 +203,15 @@ ControllerView = None
         gt4_ini_content = f"""[EmuCore/GS]
 AspectRatio = {aspect}
 Crop = 1
+CropMode = Overscan
 HardwareDownloadMode = 1
 UpscaleMultiplier = {scale}
 EnableWideScreenPatches = {ws_patches}
+EnableCheats = true
 """
         gt4_cfg = self.temp_dir / "gt4_nethersx2_gamesettings.ini"
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
-        for gt4_id in ["SLUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
+        for gt4_id in ["SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
             self.push_file(gt4_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{gt4_id}")
 
         # Deploy Retroid Pocket 5 calibrated input profile
@@ -223,9 +226,9 @@ EnableWideScreenPatches = {ws_patches}
     # 2b. ARM SX2 (PS2 - Primary Standalone)
     def configure_armsx2(self) -> None:
         scale = self.emulation.get("armsx2_upscale_multiplier", 2.0)
-        aspect = "1" if self.force_widescreen else "0"
+        aspect = "16:9" if self.force_widescreen else "Auto 4:3/3:2"
         ws_patches = "true" if self.force_widescreen else "false"
-        print(f"\n[*] Configuring ARM SX2 (PS2 Primary - {scale}x Vulkan, AspectRatio={aspect}, Crop=1, Disable Readbacks & Widescreen={ws_patches})...")
+        print(f"\n[*] Configuring ARM SX2 (PS2 Primary - {scale}x Vulkan, AspectRatio={aspect}, Crop=1, CropMode=Overscan, Disable Readbacks & Widescreen={ws_patches})...")
 
         # 1. Generate PCSX2-Android.ini
         pcsx2_ini_content = f"""[UI]
@@ -257,6 +260,7 @@ Renderer = Vulkan
 UpscaleMultiplier = {scale}
 AspectRatio = {aspect}
 Crop = 1
+CropMode = Overscan
 HardwareDownloadMode = 1
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
@@ -265,6 +269,9 @@ Hacks = 1
 
 [Touchscreen]
 ControllerView = None
+
+[TouchscreenController]
+Opacity = 0
 """
         local_ini = self.temp_dir / "armsx2_PCSX2-Android.ini"
         local_ini.write_text(pcsx2_ini_content, encoding="utf-8")
@@ -286,7 +293,7 @@ ControllerView = None
         g = settings_data["global"]
         g["renderer"] = "vulkan"
         g["upscaleFloat"] = float(scale)
-        g["aspectRatio"] = int(aspect)
+        g["aspectRatio"] = 1 if self.force_widescreen else 0
         g["enableWideScreenPatches"] = (ws_patches == "true")
         g["enableNoInterlacingPatches"] = True
         g["enableCheats"] = True
@@ -296,6 +303,7 @@ ControllerView = None
         g["accurateBlendingUnit"] = 1
         g["memoryCardSlot1Filename"] = "mcd001.ps2"
         g["memoryCardSlot2Filename"] = "mcd002.ps2"
+        g["touchControllerOpacity"] = 0
 
         local_json = self.temp_dir / "armsx2-settings.json"
         local_json.write_text(json.dumps(settings_data, indent=2), encoding="utf-8")
@@ -310,13 +318,15 @@ ControllerView = None
         gt4_ini_content = f"""[EmuCore/GS]
 AspectRatio = {aspect}
 Crop = 1
+CropMode = Overscan
 HardwareDownloadMode = 1
 UpscaleMultiplier = {scale}
 EnableWideScreenPatches = {ws_patches}
+EnableCheats = true
 """
         gt4_cfg = self.temp_dir / "gt4_armsx2_gamesettings.ini"
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
-        for gt4_id in ["SLUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
+        for gt4_id in ["SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
             self.push_file(gt4_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{gt4_id}")
 
         # 5. Stage BIOS into ARM SX2 internal directory
@@ -645,15 +655,18 @@ output_engine = 0
     # 7. VITA3K (PS Vita)
     def configure_vita3k(self) -> None:
         scale = self.emulation.get("vita3k_resolution_multiplier", 2)
-        turnip_line = "custom-driver: /sdcard/Download/drivers/Turnip_v26.0.0_R8.zip\n" if self.supports_turnip else ""
         driver_desc = "Mesa Turnip Driver" if self.supports_turnip else "System Vulkan Driver"
         print(f"\n[*] Configuring Vita3K (PS Vita - {scale}x Vulkan & {driver_desc})...")
-        content = f"""backend: Vulkan
+        content = f"""initial-setup: false
+pref-path: "/storage/emulated/0/Android/data/org.vita3k.emulator/files/vita"
+backend-renderer: Vulkan
 resolution-multiplier: {scale}
-{turnip_line}vsync: true
+vsync: true
 fullscreen: true
 show-touch-controls: false
 gui-controllers-overlay: false
+overlay-opacity: 0
+overlay-scale: 100
 """
         local_cfg = self.temp_dir / "config.yml"
         local_cfg.write_text(content, encoding="utf-8")

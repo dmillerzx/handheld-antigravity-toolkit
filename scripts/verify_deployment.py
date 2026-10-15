@@ -125,7 +125,10 @@ class PreFlightAuditor:
             ("DuckStation settings.ini", "/sdcard/Android/data/com.github.stenzek.duckstation/files/settings.ini"),
             ("PPSSPP ppsspp.ini", "/sdcard/PSP/SYSTEM/ppsspp.ini"),
             ("ARM SX2 PCSX2.ini", "/sdcard/Android/data/com.armsx2/files/inis/PCSX2.ini"),
+            ("ARM SX2 Settings JSON", "/sdcard/Android/data/com.armsx2/files/armsx2-settings.json"),
             ("NetherSX2 PCSX2.ini", "/sdcard/Android/data/xyz.aethersx2.android/files/inis/PCSX2.ini"),
+            ("Vita3K config.yml", "/sdcard/Android/data/org.vita3k.emulator/files/config.yml"),
+            ("Obtainium Master Config", "/sdcard/Download/rp5_master_obtainium.json"),
             ("ES-DE Settings", "/sdcard/ES-DE/settings/es_settings.xml"),
             ("ES-DE Custom Systems", "/sdcard/ES-DE/custom_systems/es_systems.xml"),
             ("DroidDeck config.json", "/sdcard/DroidDeck/config.json"),
@@ -149,6 +152,28 @@ class PreFlightAuditor:
                     self.add_result("Config", name, "INFO", f"Not staged (app pending)")
                 else:
                     self.add_result("Config", name, "FAIL", f"Missing from {path}")
+
+        # Dedicated Root-Cause Schema Audits
+        # 1. MKWii PadType0 override bug check
+        mkwii_ini = self.shell("cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/RMCEA2.ini 2>/dev/null || true")
+        if "PadType0" in mkwii_ini or "WiimoteProfile1" in mkwii_ini:
+            self.add_result("RootCause", "MKWii PadType Override", "FAIL", "Found conflicting PadType0 or WiimoteProfile1 in RMCEA2.ini!")
+        else:
+            self.add_result("RootCause", "MKWii PadType Override", "PASS", "Clean: inherits global standard controller cleanly")
+
+        # 2. PS2 Widescreen & CropMode check
+        armsx2_ini = self.shell("cat /sdcard/Android/data/com.armsx2/files/inis/PCSX2.ini 2>/dev/null || true")
+        if "AspectRatio = 16:9" in armsx2_ini and "CropMode = Overscan" in armsx2_ini:
+            self.add_result("RootCause", "ARM SX2 16:9 & Crop", "PASS", "AspectRatio = 16:9 and CropMode = Overscan verified")
+        else:
+            self.add_result("RootCause", "ARM SX2 16:9 & Crop", "WARN", "AspectRatio or CropMode not fully matching 16:9 / Overscan")
+
+        # 3. Vita3K Initial-Setup bypass check
+        vita_yml = self.shell("cat /sdcard/Android/data/org.vita3k.emulator/files/config.yml 2>/dev/null || true")
+        if "initial-setup: false" in vita_yml and "backend-renderer: Vulkan" in vita_yml:
+            self.add_result("RootCause", "Vita3K Setup Bypass", "PASS", "initial-setup: false and Vulkan backend active")
+        else:
+            self.add_result("RootCause", "Vita3K Setup Bypass", "WARN", "Vita3K config.yml missing initial-setup or Vulkan backend")
 
     # =========================================================================
     # 3. CONTROLLER DESCRIPTOR & SCHEMA VERIFICATION (5 LAWS AUDIT)

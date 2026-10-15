@@ -15,16 +15,16 @@
     },
     {
       "id": "com.retroarch.aarch64",
-      "url": "https://github.com/libretro/RetroArch",
-      "author": "libretro",
-      "name": "RetroArch (Nightly/Stable)",
+      "url": "https://buildbot.libretro.com/stable",
+      "author": "Libretro",
+      "name": "RetroArch (AArch64)",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"RetroArch_aarch64.apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"RetroArch\",\"appAuthor\":\"libretro\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Multi-system frontend and emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "additionalSettings": "{\"intermediateLink\":[{\"customLinkFilterRegex\":\"\\\\d+\\\\.\\\\d+\\\\.\\\\d+\",\"autoLinkFilterByArch\":false,\"filterByLinkText\":false,\"matchLinksOutsideATags\":false,\"skipSort\":false,\"reverseSort\":false,\"sortByLastLinkSegment\":false},{\"customLinkFilterRegex\":\"android\",\"autoLinkFilterByArch\":false,\"filterByLinkText\":false,\"matchLinksOutsideATags\":false,\"skipSort\":false,\"reverseSort\":false,\"sortByLastLinkSegment\":false}],\"customLinkFilterRegex\":\"aarch64\",\"filterByLinkText\":false,\"matchLinksOutsideATags\":false,\"skipSort\":false,\"reverseSort\":false,\"sortByLastLinkSegment\":false,\"versionExtractWholePage\":false,\"requestHeader\":[{\"requestHeader\":\"User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36\"}],\"defaultPseudoVersioningMethod\":\"partialAPKHash\",\"trackOnly\":false,\"versionExtractionRegEx\":\"(\\\\d+\\\\.\\\\d+\\\\.\\\\d+)\",\"matchGroupToUse\":\"$1_GIT\",\"versionDetection\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"RetroArch (AArch64)\",\"appAuthor\":\"Libretro\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"\",\"refreshBeforeDownload\":false}",
       "categories": [
         "Emulator"
       ],
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "overrideSource": "HTML"
     },
     {
       "id": "xyz.aethersx2.android",

@@ -101,7 +101,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - Automatically discovers the external MicroSD card under `/storage/XXXX-XXXX` and creates canonical directories.
 
 ### C. Staging Obtainium & DroidDeck Configuration
-- Pushes `configs/rp5_master_obtainium.json` directly to `/sdcard/Download/rp5_master_obtainium.json`.
+- Pushes `configs/rp5_master_obtainium.json` directly to `/sdcard/Download/rp5_master_obtainium.json`. Tracks RetroArch (AArch64) using Libretro's stable buildbot (`https://buildbot.libretro.com/stable`) with a 2-level `intermediateLink` chain (`\d+\.\d+\.\d+` -> `android`) and `aarch64` APK regex, avoiding missing release asset errors.
 - Pushes `configs/droiddeck_config.json` (720p base rendering, FSR 1080p, `DXVK_ASYNC=1`, `MESA_VK_WSI_PRESENT_MODE=mailbox`, `TU_DEBUG=noconform`, Turnip driver) to `/sdcard/DroidDeck/config.json`.
 - Deploys `configs/libraryfolders.vdf` mapping `/mnt/bannerlator-sd` and `/storage/<SD_ID>/Games/Steam` (drive `D:\`).
 - Stages Sony PS Vita OS Firmware `PSP2UPDAT.PUP` to `/sdcard/Download/vita3k/`.
@@ -115,7 +115,14 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - Automated fetching of 11 designated 2D/Arcade cores and frontend assets.
 
 ### E. Standalone 3D Emulators Injection
-- Injects optimal profiles for ARM SX2 (2.0x 1080p Vulkan, Turnip T19, No-Readbacks, Crop=1), DuckStation (5x 1080p PGXP, Cubeb 20ms), NetherSX2 (2.25x 1080p SPU2 Hermite, Crop=1), Dolphin (2.5x 1080p OpenSLES DSP, analog triggers), PPSSPP (4x 1080p 16x Aniso), Flycast (2x 1080p Widescreen), Azahar (3x 1080p Turnip), and Vita3K (2x 1080p Turnip).
+- **ARM SX2 (PS2 Primary)**: Direct boot via `%EMULATOR_ARMSX2% %ACTIVITY%=.Main %ACTION%=android.intent.action.VIEW %DATA%=file://%ROM%`. 2.0x 1080p Vulkan, string `AspectRatio = 16:9` (`"aspectRatio": 1` in UI JSON), `Crop = 1`, `CropMode = Overscan`, `HardwareDownloadMode = 1` (Disable Readbacks), and `touchControllerOpacity = 0`.
+- **NetherSX2 (PS2 Fallback)**: 2.25x 1080p SPU2 Hermite interpolation, `AspectRatio = 16:9`, `Crop = 1`, `CropMode = Overscan`.
+- **DuckStation (PS1)**: 5x 1080p PGXP, Cubeb 20ms low latency audio.
+- **Dolphin (GameCube & Wii)**: 2.5x 1080p OpenSLES DSP audio, analog triggers. Global `SIDevice0 = 6`, `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`. Avoids per-game `PadType0` dropdown index conflicts and conflicting `WiimoteProfile1` overrides in Mario Kart Wii (`RMC*.ini`).
+- **PPSSPP (PSP)**: 4x 1080p 16x Anisotropic filtering.
+- **Flycast (Dreamcast)**: 2x 1080p Widescreen.
+- **Azahar (3DS)**: 3x 1080p Mesa Turnip driver, async shader compilation.
+- **Vita3K (PS Vita)**: 2x 1080p Vulkan, `initial-setup: false`, `backend-renderer: Vulkan`, `pref-path: "/storage/emulated/0/Android/data/org.vita3k.emulator/files/vita"`, overlay opacity 0.
 
 ### F. Universal Community Patch Engine (`scripts/stage_community_patches.py`)
 - **PS2 (NetherSX2 / PCSX2)**: Downloads and deploys 4,700+ `.pnach` master cheats to both `patches/` and `cheats/`.
