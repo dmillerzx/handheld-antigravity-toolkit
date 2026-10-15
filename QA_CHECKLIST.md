@@ -11,8 +11,8 @@ This document provides systematic, platform-by-platform validation procedures fo
 | **RetroArch 2D** | Frame Pacing & Run-Ahead | Solid 60.0 fps, 1-frame sub-frame response, Vulkan swapchain | `[PASS]` |
 | **RetroArch Audio** | GBA 5.5kHz DSP & Genesis M1 LPF | Muffled harsh DAC noise eliminated, authentic analog timbre | `[PASS]` |
 | **DuckStation (PS1)** | PGXP 1080p Geometry Precision | No polygon jitter/wobble, 5x native scaling, Cubeb 20ms | `[PASS]` |
-| **NetherSX2 (PS2)** | CRC pnach Widescreen Hooks | Dynamic 16:9 viewport without horizontal stretching | `[PASS]` |
-| **Dolphin (GC/Wii)** | Analog Triggers & Classic Wiimote | Full analog L/R stroke recognized; 2.5x 1080p Vulkan | `[PASS]` |
+| **NetherSX2 (PS2)** | CRC pnach Widescreen & CRT Crop | 16:9 widescreen without stretching; Crop=1 overscan border removal (Verified in GT4 Spec II) | `[PASS]` |
+| **Dolphin (GC/Wii)** | Dynamic Controller Node & Classic Pad | Hardware auto-discovery, Classic mapping & L3+R3 pause hotkeys (Verified in Mario Kart Wii) | `[PASS]` |
 | **Azahar (3DS)** | Mesa Turnip Driver Stability | Vulkan Async shaders compile without pipeline stalls | `[PASS]` |
 | **Vita3K (PS Vita)** | Mesa Turnip 1080p Rendering | Stable 2x scaling without texture corruption or crashing | `[PASS]` |
 | **DroidDeck (Steam)** | 720p FSR & MicroSD Steam Mount | MicroSD library mounted; 60fps UI; native XInput gamepad | `[PASS]` |
@@ -72,23 +72,34 @@ This document provides systematic, platform-by-platform validation procedures fo
      * Audio Backend: **Cubeb** (Buffer: 20ms)
 * **Pass Criteria:** 3D road tracks and character models remain stable without vertex wobble or texture warping; audio stays perfectly synced with 0 crackling.
 
-#### Test Case 3D-02: NetherSX2 (PS2) — CRC pnach Widescreen Hooks
-* **Objective:** Ensure automated master widescreen cheat injection functions without stretching 4:3 viewports.
-* **Test Game:** *Final Fantasy X*, *Kingdom Hearts II*, or *Burnout 3: Takedown*.
+#### Test Case 3D-02: NetherSX2 (PS2) — CRC pnach Widescreen Hooks & CRT Overscan Crop
+* **Objective:** Ensure automated master widescreen cheat injection functions without stretching 4:3 viewports, and eliminate CRT analog overscan blanking borders.
+* **Test Game:** *Gran Turismo 4 Spec II*, *Final Fantasy X*, or *Burnout 3: Takedown*.
 * **Procedure:**
   1. Launch NetherSX2.
-  2. Verify that `Enable Widescreen Patches` is active under **Graphics Settings**.
-  3. Launch game and check in-game geometry (e.g. circles, mini-maps, HUD).
-* **Pass Criteria:** Aspect ratio fills 16:9 display natively with expanded field-of-view; UI mini-map remains circular rather than horizontally distorted. On 4:3 devices (RP Mini), aspect ratio remains 4:3.
+  2. Verify that `Enable Widescreen Patches` is active and `Crop = 1` is configured under `[EmuCore/GS]` in `PCSX2.ini`.
+  3. Launch *Gran Turismo 4 Spec II*. Observe menu navigation and in-race transition.
+* **Pass Criteria:** 
+  - Menus render cleanly in 4:3 pillarboxed format.
+  - Race gameplay seamlessly shifts to native 16:9 widescreen perspective without geometry stretching.
+  - `Crop = 1` successfully trims the analog CRT scanline borders on the top/bottom/sides, enabling the race viewport to cleanly fill the 1080p AMOLED panel.
+  - Calibrated RP5 input profile maps face buttons, analog sticks, and triggers accurately.
 
-#### Test Case 3D-03: Dolphin (GameCube / Wii) — GCPad & Analog Trigger Mapping
-* **Objective:** Validate analog trigger stroke recognition and classic controller Wiimote fallback.
-* **Test Game:** *Super Mario Sunshine* (GC) or *Super Smash Bros. Brawl* (Wii).
+#### Test Case 3D-03: Dolphin (GameCube / Wii) — Dynamic Controller Discovery & Classic Pad Fallback
+* **Objective:** Validate programmatic input device resolution, Classic Controller scan-code bindings, analog trigger thresholds, and back/pause hotkey safety.
+* **Test Game:** *Mario Kart Wii* and *Super Mario Sunshine* (GC).
 * **Procedure:**
-  1. Launch *Super Mario Sunshine*.
-  2. Lightly press the Right Trigger (`Axis 22+`) to spray water while running.
-  3. Fully press the Right Trigger to click the digital threshold (`90%`) to lock Mario in place and spray high-pressure water.
-* **Pass Criteria:** Both analog threshold and digital bottom-out clicks register independently and reliably.
+  1. Launch *Mario Kart Wii*.
+  2. Check ADB logs or config files (`GCPadNew.ini`, `WiimoteNew.ini`) to ensure the device node was auto-resolved (e.g. `Android/8/Retroid Pocket Controller`).
+  3. Verify that `WiimoteNew.ini` has `Source = 1` (Emulated), `Extension = Classic`, and `[Classic1]` bound to physical Retroid scan codes.
+  4. Press **Button B** during race and menu navigation.
+  5. Press **L3 + R3** (Left & Right thumbstick click combo).
+  6. Test analog trigger spray modulation in *Super Mario Sunshine*.
+* **Pass Criteria:**
+  - Physical buttons and thumbsticks steer, accelerate, and drift in *Mario Kart Wii* without any manual remapping.
+  - Pressing **Button B** acts strictly as an in-game action (drift / cancel / reverse) and **never** opens Dolphin's Android pause navigation drawer.
+  - Dolphin's pause menu is triggered strictly via the safety combo (**L3 + R3** / `Button 106 & Button 107`).
+  - Analog trigger threshold (`Axis 22+`, `Axis 23+`) and digital click register accurately.
 
 #### Test Case 3D-04: Azahar (3DS) & Vita3K — Mesa Turnip Driver Stability
 * **Objective:** Confirm Turnip Adreno Vulkan driver stability and shader compilation.

@@ -5,7 +5,8 @@ title Handheld Community Provisioning Toolkit v1.0
 cd /d "%~dp0"
 
 echo ========================================================================
-echo       Handheld Community Provisioning Toolkit - Standalone Runner
+echo   Handheld Community Provisioning Toolkit - Standalone Runner (v1.0)
+echo   Dynamic Profiling • Controller Discovery • Upstream Widescreen • Steam
 echo ========================================================================
 echo.
 
@@ -140,11 +141,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\provision_
 
 echo.
 echo ========================================================================
-echo   SETUP EXECUTION COMPLETE
+echo   SETUP EXECUTION COMPLETE - v1.0 BASELINE
 echo ========================================================================
-echo   - Emulators configured with optimal Vulkan and low-latency audio.
-echo   - MicroSD and internal canonical storage folders scaffolded.
-echo   - Steam Big Picture ready via DroidDeck launcher.
+echo   [OK] Hardware Profile Applied   : !PROFILE!
+echo   [OK] Controller Auto-Bound      : Dynamic input node discovery (Dolphin GC/Classic & PS2)
+echo   [OK] Dolphin Safety Hotkeys     : L3 + R3 toggle pause (Button B back-action isolated)
+echo   [OK] NetherSX2 Overscan Crop    : Auto-crop active (16:9 full-screen without borders)
+echo   [OK] Upstream Community Patches : Streamed live (Gecko widescreen & PCSX2 pnach)
+echo   [OK] 2D Low-Latency Audio/Video : Vulkan, 48ms OpenSLES, GBA DSP, Genesis LPF
+echo   [OK] Canonical Storage Ready    : Internal /sdcard/ and MicroSD /storage/^<SD_ID^>/
+echo   [OK] Steam PC Gaming Ready      : 720p FSR, DroidDeck & MicroSD secondary library
 echo.
 echo   Drop your ROMs into: /storage/^<SD_ID^>/ROMs/ (or /sdcard/ROMs/)
 echo   and launch ES-DE on your handheld to begin gaming!

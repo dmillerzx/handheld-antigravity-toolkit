@@ -90,6 +90,7 @@ class RP5Provisioner:
         self.dry_run = dry_run
         self.profile = profile or {}
         self.device_model: Optional[str] = None
+        self.sd_id: Optional[str] = None
         self.temp_dir = Path(tempfile.mkdtemp(prefix="rp_provision_"))
 
     def _build_adb_cmd(self, *args: str) -> List[str]:
@@ -198,11 +199,11 @@ class RP5Provisioner:
     def scaffold_directories(self) -> None:
         """Creates canonical storage hierarchy: /sdcard/bios and /storage/<SD_ID>/{bios,ROMs,ES-DE}."""
         print("\n[*] [2/4] Scaffolding canonical storage folder structure...")
-        internal, sdcard, sd_id = self.discover_storage_targets()
+        internal, sdcard, self.sd_id = self.discover_storage_targets()
 
         print(f"    -> Internal storage: {internal}")
         if sdcard:
-            print(f"    -> External MicroSD detected: {sdcard} (UUID: {sd_id})")
+            print(f"    -> External MicroSD detected: {sdcard} (UUID: {self.sd_id})")
         else:
             print("    -> Notice: No external MicroSD card detected. Initializing internal fallback.")
 
@@ -451,6 +452,8 @@ class RP5Provisioner:
                 cmd.extend(["-s", self.serial])
             if self.profile.get("device_id"):
                 cmd.extend(["--profile", self.profile["device_id"]])
+            if self.sd_id:
+                cmd.extend(["--sd-id", self.sd_id])
             if self.dry_run:
                 cmd.append("--dry-run")
             subprocess.run(cmd, check=False)
@@ -467,6 +470,8 @@ class RP5Provisioner:
                 cmd.extend(["-s", self.serial])
             if self.profile.get("device_id"):
                 cmd.extend(["--profile", self.profile["device_id"]])
+            if self.sd_id:
+                cmd.extend(["--sd-id", self.sd_id])
             if self.dry_run:
                 cmd.append("--dry-run")
             subprocess.run(cmd, check=False)
@@ -491,6 +496,8 @@ class RP5Provisioner:
             cmd = [sys.executable, str(script), "--adb", self.adb]
             if self.serial:
                 cmd.extend(["-s", self.serial])
+            if self.sd_id:
+                cmd.extend(["--sd-id", self.sd_id])
             if self.dry_run:
                 cmd.append("--dry-run")
             subprocess.run(cmd, check=False)
