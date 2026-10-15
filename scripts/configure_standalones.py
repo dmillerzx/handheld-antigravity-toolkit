@@ -419,7 +419,7 @@ Device = {ctrl_dev}
             self.push_file(f, f"/sdcard/dolphin-emu/Config/{f.name}")
 
         # Deploy tuned Mario Kart Wii GameSettings overrides
-        for rmc_name in ["RMCE01.ini", "RMC.ini", "RMCP01.ini", "RMCJ01.ini"]:
+        for rmc_name in ["RMCE01.ini", "RMC.ini", "RMCP01.ini", "RMCJ01.ini", "RMCEA2.ini", "RMCK01.ini"]:
             local_rmc = WORKSPACE_ROOT / "patches" / "wii" / rmc_name
             if local_rmc.exists():
                 self.push_file(local_rmc, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/{rmc_name}")
