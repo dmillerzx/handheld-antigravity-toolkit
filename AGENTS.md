@@ -127,6 +127,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 ### H. Retroid OS System & Hardware Tuning
 - **Lockscreen**: Disabled (`locksettings set-disabled true`).
 - **Floating Overlay**: Disabled (`settings put system is_show_floatingIcon 0`).
+- **Auto-Rotate**: Disabled (`settings put system accelerometer_rotation 0`) to lock landscape display orientation.
 - **Controller Style**: Xbox mode (`persist.sys.gamepad.type 0`).
 - **Trigger Mode**: Both analog axis + digital button click (`persist.sys.trigger.mode 2`).
 

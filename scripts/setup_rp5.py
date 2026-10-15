@@ -325,6 +325,10 @@ class RP5Provisioner:
         # 2. Disable on-screen floating game assistant icon overlay
         self.shell("settings put system is_show_floatingIcon 0", check=False)
 
+        # 3. Disable accelerometer screen auto-rotation (Retro Game Corps / Russ guideline: lock to landscape)
+        print("    -> Disabling screen auto-rotation (locking orientation to landscape)...")
+        self.shell("settings put system accelerometer_rotation 0", check=False)
+
         controls = self.profile.get("controls", {})
         gamepad_type = controls.get("gamepad_type", 0)
         trigger_mode = controls.get("trigger_mode", 2)
