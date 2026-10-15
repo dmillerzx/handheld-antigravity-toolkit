@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <bool name="AlternativeEmulatorPerGame" value="true" />
-<bool name="BackEventAppExit" value="true" />
+<bool name="BackEventAppExit" value="false" />
 <bool name="CreatePlaceholderSystemDirectories" value="false" />
 <bool name="CustomEventScripts" value="false" />
 <bool name="CustomEventScriptsBrowsing" value="false" />
@@ -159,7 +159,7 @@
 <string name="Scraper" value="screenscraper" />
 <string name="ScraperLanguage" value="en" />
 <string name="ScraperPasswordScreenScraper" value="" />
-<string name="ScraperRegion" value="eu" />
+<string name="ScraperRegion" value="us" />
 <string name="ScraperUsernameScreenScraper" value="" />
 <string name="ScreensaverSlideshowCustomDir" value="" />
 <string name="ScreensaverType" value="video" />

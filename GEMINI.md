@@ -113,3 +113,13 @@ Options available:
 - `--skip-permissions`: Skip the AppOps grants.
 - `--adb <path>`: Explicit path to the adb binary.
 
+---
+
+## 7. YouTube Tutorial & Community Research
+
+To extract metadata, chapters, links, and complete timestamped transcripts from YouTube setup guides (e.g., Retro Game Corps, Joey's Retro Handhelds):
+```powershell
+python scripts/fetch_youtube.py "<url_or_video_id>"
+python scripts/fetch_youtube.py "<url_or_video_id>" -o notes/guide.md
+```
+Powered by `youtube-transcript-api` and `yt-dlp`. Structured skill definition available at `.agents/skills/youtube-research/SKILL.md`.

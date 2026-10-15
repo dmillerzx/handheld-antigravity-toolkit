@@ -325,23 +325,41 @@ class RP5Provisioner:
         # 2. Disable on-screen floating game assistant icon overlay
         self.shell("settings put system is_show_floatingIcon 0", check=False)
 
-        # 3. Disable accelerometer screen auto-rotation (Retro Game Corps / Russ guideline: lock to landscape)
+        # 3. Disable accelerometer screen auto-rotation (Retro Game Corps guideline: lock to landscape)
         print("    -> Disabling screen auto-rotation (locking orientation to landscape)...")
         self.shell("settings put system accelerometer_rotation 0", check=False)
+
+        # 4. Disable UI touch and lockscreen audio click sounds
+        print("    -> Disabling touch clicks and lockscreen sound effects...")
+        self.shell("settings put system sound_effects_enabled 0", check=False)
+        self.shell("settings put system lockscreen_sounds_enabled 0", check=False)
+
+        # 5. Enable System Dark Theme (AMOLED battery & contrast optimization)
+        print("    -> Enforcing System Dark Theme for AMOLED display...")
+        self.shell("cmd uimode night yes", check=False)
+        self.shell("settings put secure ui_night_mode 2", check=False)
+
+        # 6. Ensure screen timeout does not interrupt scraping / downloads (10 min / 600,000ms)
+        self.shell("settings put system screen_off_timeout 600000", check=False)
+
+        # 7. Whitelist emulators and frontends from Android Doze background throttling
+        print("    -> Whitelisting frontends & emulators from Android Doze power throttling...")
+        for pkg in ["org.es_de.frontend", "com.retroarch.aarch64", "com.droiddeck.launcher"]:
+            self.shell(f"dumpsys deviceidle whitelist +{pkg}", check=False)
 
         controls = self.profile.get("controls", {})
         gamepad_type = controls.get("gamepad_type", 0)
         trigger_mode = controls.get("trigger_mode", 2)
 
-        # 3. Gamepad layout
+        # 8. Gamepad layout
         print(f"    -> Setting gamepad controller style (persist.sys.gamepad.type={gamepad_type})...")
         self.shell(f"setprop persist.sys.gamepad.type {gamepad_type}", check=False)
 
-        # 4. Trigger mode
+        # 9. Trigger mode
         print(f"    -> Setting trigger mode (persist.sys.trigger.mode={trigger_mode})...")
         self.shell(f"setprop persist.sys.trigger.mode {trigger_mode}", check=False)
 
-        # 5. Power / end button behavior (2 = sleep/wake)
+        # 10. Power / end button behavior (2 = sleep/wake)
         self.shell("settings put system end_button_behavior 2", check=False)
 
         print("    -> System and hardware tuning complete.")

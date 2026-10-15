@@ -168,11 +168,18 @@ Interpolation = 4
 Latency = 1
 SyncMode = 0
 
+[EmuCore]
+EnableFastBoot = true
+FastBoot = true
+EnableWideScreenPatches = {ws_patches}
+EnableCheats = true
+
 [EmuCore/GS]
 Renderer = Vulkan
 UpscaleMultiplier = {scale}
 AspectRatio = {aspect}
 Crop = 1
+HardwareDownloadMode = 1
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 ThreadedPresentation = true
@@ -215,6 +222,8 @@ WiimoteSource0 = 1
 WiimoteSource1 = 0
 WiimoteSource2 = 0
 WiimoteSource3 = 0
+SlotA = 1
+SlotB = 255
 
 [DSP]
 Backend = OpenSLES
@@ -260,6 +269,8 @@ MaxAnisotropy = 2
 [Hacks]
 FastDepthCalc = True
 DeferEFBCopies = True
+EFBAccessEnable = False
+BBoxEnable = False
 """
         # Resolve dynamic controller device string (e.g. Android/8/Retroid Pocket Controller)
         ctrl_dev = self.get_controller_device_string()
@@ -430,6 +441,13 @@ VSyncInterval = 1
 
 [Control]
 ShowTouchControls = False
+
+[CPU]
+FastMemory = True
+IOTimingMethod = 0
+
+[System]
+FastMemory = True
 """
         local_cfg = self.temp_dir / "ppsspp.ini"
         local_cfg.write_text(content, encoding="utf-8")

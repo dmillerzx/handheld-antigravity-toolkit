@@ -78,6 +78,7 @@ AntigravityWorkingDir/
     ├── configure_standalones.py # Standalone 3D emulator profile injector
     ├── download_retroarch_cores.py # Automated Libretro 2D/Arcade core & asset deployer
     ├── sync_all_saves.py    # Save, savestate & memory card backup sync
+    ├── fetch_youtube.py     # YouTube metadata, chapter & timestamped transcript extractor
     └── run_setup.ps1        # PowerShell helper wrapper ensuring PATH resolution
 ```
 
