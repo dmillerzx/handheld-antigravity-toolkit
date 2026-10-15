@@ -329,6 +329,7 @@ class RP5Provisioner:
         # 3. Disable accelerometer screen auto-rotation (Retro Game Corps guideline: lock to landscape)
         print("    -> Disabling screen auto-rotation (locking orientation to landscape)...")
         self.shell("settings put system accelerometer_rotation 0", check=False)
+        self.shell("settings put system user_rotation 0", check=False)
 
         # 4. Disable UI touch and lockscreen audio click sounds
         print("    -> Disabling touch clicks and lockscreen sound effects...")
