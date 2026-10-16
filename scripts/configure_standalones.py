@@ -217,6 +217,7 @@ EnableCheats = true
     def configure_armsx2(self) -> None:
         scale = self.emulation.get("armsx2_upscale_multiplier", 2.0)
         aspect = "16:9" if self.force_widescreen else "Auto 4:3/3:2"
+        self.shell("am force-stop com.armsx2", check=False)
         ws_patches = "true" if self.force_widescreen else "false"
         print(f"\n[*] Configuring ARM SX2 (PS2 Primary - {scale}x Vulkan, AspectRatio={aspect}, Crop=1, CropMode=Overscan, Disable Readbacks & Widescreen={ws_patches})...")
 
@@ -351,6 +352,7 @@ EnableCheats = true
 
     # 3. DOLPHIN (GameCube / Wii)
     def configure_dolphin(self) -> None:
+        self.shell("am force-stop org.dolphinemu.dolphinemu", check=False)
         scale = self.emulation.get("dolphin_internal_resolution", 2.5)
         print(f"\n[*] Configuring Dolphin (GC/Wii - {scale}x Vulkan, Controller & DSP Audio)...")
         # Dolphin.ini (GC & Wii Virtual Console Setup)
@@ -429,12 +431,12 @@ BBoxEnable = False
         # GCPadNew.ini (Controller mapping)
         gcpad_ini = f"""[GCPad1]
 Device = {ctrl_dev}
-Buttons/A = `Button 96`
-Buttons/B = `Button 97`
-Buttons/X = `Button 99`
-Buttons/Y = `Button 100`
-Buttons/Z = `Button 103`
-Buttons/Start = `Button 108`
+Buttons/A = `Button A`
+Buttons/B = `Button B`
+Buttons/X = `Button X`
+Buttons/Y = `Button Y`
+Buttons/Z = `Button R1`
+Buttons/Start = `Start`
 Main Stick/Up = `Axis 1-`
 Main Stick/Down = `Axis 1+`
 Main Stick/Left = `Axis 0-`
@@ -447,10 +449,10 @@ C-Stick/Left = `Axis 11-`
 C-Stick/Right = `Axis 11+`
 C-Stick/Modifier = `Control`
 C-Stick/Modifier/Range = 50.000000
-D-Pad/Up = `Button 19`
-D-Pad/Down = `Button 20`
-D-Pad/Left = `Button 21`
-D-Pad/Right = `Button 22`
+D-Pad/Up = `Up`
+D-Pad/Down = `Down`
+D-Pad/Left = `Left`
+D-Pad/Right = `Right`
 Triggers/L = `Axis 22+`
 Triggers/R = `Axis 23+`
 Triggers/Threshold = 50.000000
@@ -462,30 +464,30 @@ Triggers/R-Analog = `Axis 23+`
 Device = {ctrl_dev}
 Source = 1
 Extension = Classic
-Buttons/A = `Button 96`
-Buttons/B = `Button 97`
-Buttons/1 = `Button 99`
-Buttons/2 = `Button 100`
-Buttons/- = `Button 109`
-Buttons/+ = `Button 108`
-Buttons/Home = `Button 110`
-D-Pad/Up = `Button 19`
-D-Pad/Down = `Button 20`
-D-Pad/Left = `Button 21`
-D-Pad/Right = `Button 22`
-Classic/Buttons/A = `Button 96`
-Classic/Buttons/B = `Button 97`
-Classic/Buttons/X = `Button 99`
-Classic/Buttons/Y = `Button 100`
-Classic/Buttons/ZL = `Button 102`
-Classic/Buttons/ZR = `Button 103`
-Classic/Buttons/- = `Button 109`
-Classic/Buttons/+ = `Button 108`
-Classic/Buttons/Home = `Button 110`
-Classic/D-Pad/Up = `Button 19`
-Classic/D-Pad/Down = `Button 20`
-Classic/D-Pad/Left = `Button 21`
-Classic/D-Pad/Right = `Button 22`
+Buttons/A = `Button A`
+Buttons/B = `Button B`
+Buttons/1 = `Button X`
+Buttons/2 = `Button Y`
+Buttons/- = `Select`
+Buttons/+ = `Start`
+Buttons/Home = `Mode`
+D-Pad/Up = `Up`
+D-Pad/Down = `Down`
+D-Pad/Left = `Left`
+D-Pad/Right = `Right`
+Classic/Buttons/A = `Button A`
+Classic/Buttons/B = `Button B`
+Classic/Buttons/X = `Button X`
+Classic/Buttons/Y = `Button Y`
+Classic/Buttons/ZL = `Button L1`
+Classic/Buttons/ZR = `Button R1`
+Classic/Buttons/- = `Select`
+Classic/Buttons/+ = `Start`
+Classic/Buttons/Home = `Mode`
+Classic/D-Pad/Up = `Up`
+Classic/D-Pad/Down = `Down`
+Classic/D-Pad/Left = `Left`
+Classic/D-Pad/Right = `Right`
 Classic/Left Stick/Up = `Axis 1-`
 Classic/Left Stick/Down = `Axis 1+`
 Classic/Left Stick/Left = `Axis 0-`
@@ -502,7 +504,7 @@ Classic/Triggers/R-Analog = `Axis 23+`
 """
         hotkeys_ini = f"""[Hotkeys]
 Device = {ctrl_dev}
-General/Toggle Pause = `Button 106` & `Button 107`
+General/Toggle Pause = `Button L3` & `Button R3`
 General/Stop = Escape
 """
         freelook_ini = f"""[FreeLook1]
