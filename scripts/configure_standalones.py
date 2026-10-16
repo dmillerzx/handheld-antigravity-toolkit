@@ -201,7 +201,7 @@ EnableCheats = true
 """
         gt4_cfg = self.temp_dir / "gt4_nethersx2_gamesettings.ini"
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
-        for gt4_id in ["646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
+        for gt4_id in ["646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
             self.push_file(gt4_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{gt4_id}")
 
         # Deploy Retroid Pocket 5 calibrated input profile
@@ -317,7 +317,7 @@ EnableCheats = true
 """
         gt4_cfg = self.temp_dir / "gt4_armsx2_gamesettings.ini"
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
-        for gt4_id in ["646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
+        for gt4_id in ["646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
             self.push_file(gt4_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{gt4_id}")
 
         # 5. Stage BIOS into ARM SX2 internal directory
