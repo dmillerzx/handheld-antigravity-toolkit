@@ -1,0 +1,22 @@
+gametitle=Gran Turismo 4 Spec II [SCUS-97436] (CRC: 646B2E29)
+
+[Widescreen 16:9]
+gsaspectratio=16:9
+description=Widescreen Text Correction & 16:9 FOV
+author=Aero_ & Silent
+patch=1,EE,2033D7DC,extended,3C013F40
+patch=1,EE,2033D7E0,extended,34210000
+
+[No-Interlacing]
+description=Autoboot in 480p Progressive
+author=Silent
+patch=1,EE,20312544,extended,34080001
+patch=1,EE,20312558,extended,AE481718
+
+[Adjusted triggers sensitivity]
+description=Makes throttle/brake more precise when using triggers
+author=Silent & Aero_
+patch=1,EE,10319114,extended,0000005A
+patch=1,EE,20319194,extended,00000000
+patch=1,EE,1031911C,extended,0000005A
+patch=1,EE,203191F0,extended,00000000
