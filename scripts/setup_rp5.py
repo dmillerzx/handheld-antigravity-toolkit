@@ -272,8 +272,9 @@ class RP5Provisioner:
             self.run_cmd("push", str(tmp_xml), dest_sd)
         print("    -> Headless ES-DE configuration staged successfully.")
 
-        # Stage custom_systems/es_systems.xml (Force Standalone 3D Emulators)
+        # Stage custom_systems/es_systems.xml and es_find_rules.xml (Force Standalone 3D Emulators & Custom Rules)
         source_systems = WORKSPACE_ROOT / "configs" / "es_systems.xml"
+        source_find_rules = WORKSPACE_ROOT / "configs" / "es_find_rules.xml"
         if source_systems.exists():
             dest_sys_internal = f"{internal}/ES-DE/custom_systems/es_systems.xml"
             self.shell(f"mkdir -p '{internal}/ES-DE/custom_systems'", check=False)
@@ -284,7 +285,18 @@ class RP5Provisioner:
                 self.shell(f"mkdir -p '{sdcard}/ES-DE/custom_systems'", check=False)
                 print(f"    Pushing {source_systems.name} -> {dest_sys_sd}")
                 self.run_cmd("push", str(source_systems), dest_sys_sd)
-            print("    -> ES-DE custom_systems standalone emulator overrides deployed.")
+
+        if source_find_rules.exists():
+            dest_rules_internal = f"{internal}/ES-DE/custom_systems/es_find_rules.xml"
+            self.shell(f"mkdir -p '{internal}/ES-DE/custom_systems'", check=False)
+            print(f"    Pushing {source_find_rules.name} -> {dest_rules_internal}")
+            self.run_cmd("push", str(source_find_rules), dest_rules_internal)
+            if sdcard:
+                dest_rules_sd = f"{sdcard}/ES-DE/custom_systems/es_find_rules.xml"
+                self.shell(f"mkdir -p '{sdcard}/ES-DE/custom_systems'", check=False)
+                print(f"    Pushing {source_find_rules.name} -> {dest_rules_sd}")
+                self.run_cmd("push", str(source_find_rules), dest_rules_sd)
+            print("    -> ES-DE custom_systems standalone emulator overrides & find rules deployed.")
 
     def stage_turnip_drivers(self, drivers_dir: Optional[Path] = None) -> None:
         """
