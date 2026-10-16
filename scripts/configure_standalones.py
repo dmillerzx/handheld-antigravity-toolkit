@@ -369,10 +369,6 @@ SIDevice0 = 6
 SIDevice1 = 0
 SIDevice2 = 0
 SIDevice3 = 0
-WiimoteSource0 = 1
-WiimoteSource1 = 0
-WiimoteSource2 = 0
-WiimoteSource3 = 0
 SlotA = 1
 SlotB = 255
 
@@ -424,84 +420,16 @@ DeferEFBCopies = True
 EFBAccessEnable = False
 BBoxEnable = False
 """
-        # Resolve dynamic controller device string (e.g. Android/8/Retroid Pocket Controller)
-        ctrl_dev = self.get_controller_device_string()
-        print(f"    -> Resolved Controller Device: {ctrl_dev}")
+        ctrl_dev = "Android/1/Xbox Wireless Controller"
 
-        # GCPadNew.ini (Controller mapping)
-        gcpad_ini = f"""[GCPad1]
-Device = {ctrl_dev}
-Buttons/A = `Button A`
-Buttons/B = `Button B`
-Buttons/X = `Button X`
-Buttons/Y = `Button Y`
-Buttons/Z = `Button R1`
-Buttons/Start = `Start`
-Main Stick/Up = `Axis 1-`
-Main Stick/Down = `Axis 1+`
-Main Stick/Left = `Axis 0-`
-Main Stick/Right = `Axis 0+`
-Main Stick/Modifier = `Shift`
-Main Stick/Modifier/Range = 50.000000
-C-Stick/Up = `Axis 14-`
-C-Stick/Down = `Axis 14+`
-C-Stick/Left = `Axis 11-`
-C-Stick/Right = `Axis 11+`
-C-Stick/Modifier = `Control`
-C-Stick/Modifier/Range = 50.000000
-D-Pad/Up = `Up`
-D-Pad/Down = `Down`
-D-Pad/Left = `Left`
-D-Pad/Right = `Right`
-Triggers/L = `Axis 22+`
-Triggers/R = `Axis 23+`
-Triggers/Threshold = 50.000000
-Triggers/L-Analog = `Axis 22+`
-Triggers/R-Analog = `Axis 23+`
-"""
-        # WiimoteNew.ini (Classic controller mapped flat inside Wiimote1)
-        wiimote_ini = f"""[Wiimote1]
-Device = {ctrl_dev}
-Source = 1
-Extension = Classic
-Buttons/A = `Button A`
-Buttons/B = `Button B`
-Buttons/1 = `Button X`
-Buttons/2 = `Button Y`
-Buttons/- = `Select`
-Buttons/+ = `Start`
-Buttons/Home = `Mode`
-D-Pad/Up = `Up`
-D-Pad/Down = `Down`
-D-Pad/Left = `Left`
-D-Pad/Right = `Right`
-Classic/Buttons/A = `Button A`
-Classic/Buttons/B = `Button B`
-Classic/Buttons/X = `Button X`
-Classic/Buttons/Y = `Button Y`
-Classic/Buttons/ZL = `Button L1`
-Classic/Buttons/ZR = `Button R1`
-Classic/Buttons/- = `Select`
-Classic/Buttons/+ = `Start`
-Classic/Buttons/Home = `Mode`
-Classic/D-Pad/Up = `Up`
-Classic/D-Pad/Down = `Down`
-Classic/D-Pad/Left = `Left`
-Classic/D-Pad/Right = `Right`
-Classic/Left Stick/Up = `Axis 1-`
-Classic/Left Stick/Down = `Axis 1+`
-Classic/Left Stick/Left = `Axis 0-`
-Classic/Left Stick/Right = `Axis 0+`
-Classic/Right Stick/Up = `Axis 14-`
-Classic/Right Stick/Down = `Axis 14+`
-Classic/Right Stick/Left = `Axis 11-`
-Classic/Right Stick/Right = `Axis 11+`
-Classic/Triggers/L = `Axis 22+`
-Classic/Triggers/R = `Axis 23+`
-Classic/Triggers/Threshold = 50.000000
-Classic/Triggers/L-Analog = `Axis 22+`
-Classic/Triggers/R-Analog = `Axis 23+`
-"""
+        # Require authoritative Dolphin controller config files (no inline string fallbacks)
+        cfg_gcpad = WORKSPACE_ROOT / "configs" / "dolphin" / "GCPadNew.ini"
+        if not cfg_gcpad.exists():
+            raise FileNotFoundError(f"Missing required Dolphin config: {cfg_gcpad}")
+        cfg_wiimote = WORKSPACE_ROOT / "configs" / "dolphin" / "WiimoteNew.ini"
+        if not cfg_wiimote.exists():
+            raise FileNotFoundError(f"Missing required Dolphin config: {cfg_wiimote}")
+
         hotkeys_ini = f"""[Hotkeys]
 Device = {ctrl_dev}
 General/Toggle Pause = `Button L3` & `Button R3`
@@ -514,16 +442,6 @@ Device = {ctrl_dev}
         f_dol.write_text(dolphin_ini, encoding="utf-8")
         f_gfx = self.temp_dir / "GFX.ini"
         f_gfx.write_text(gfx_ini, encoding="utf-8")
-        cfg_gcpad = WORKSPACE_ROOT / "configs" / "dolphin" / "GCPadNew.ini"
-        if cfg_gcpad.exists():
-            gcpad_ini = cfg_gcpad.read_text(encoding="utf-8")
-        cfg_wiimote = WORKSPACE_ROOT / "configs" / "dolphin" / "WiimoteNew.ini"
-        if cfg_wiimote.exists():
-            wiimote_ini = cfg_wiimote.read_text(encoding="utf-8")
-        f_pad = self.temp_dir / "GCPadNew.ini"
-        f_pad.write_text(gcpad_ini, encoding="utf-8")
-        f_wii = self.temp_dir / "WiimoteNew.ini"
-        f_wii.write_text(wiimote_ini, encoding="utf-8")
         f_hot = self.temp_dir / "Hotkeys.ini"
         f_hot.write_text(hotkeys_ini, encoding="utf-8")
         f_hot2 = self.temp_dir / "HotKey.ini"
@@ -531,23 +449,24 @@ Device = {ctrl_dev}
         f_free = self.temp_dir / "FreeLookController.ini"
         f_free.write_text(freelook_ini, encoding="utf-8")
 
-        for f in [f_dol, f_gfx, f_pad, f_wii, f_hot, f_hot2, f_free]:
-            self.push_file(f, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/{f.name}")
-            self.push_file(f, f"/sdcard/dolphin-emu/Config/{f.name}")
+        for remote_base in ["/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config", "/sdcard/dolphin-emu/Config"]:
+            self.push_file(f_dol, f"{remote_base}/Dolphin.ini")
+            self.push_file(f_gfx, f"{remote_base}/GFX.ini")
+            self.push_file(cfg_gcpad, f"{remote_base}/GCPadNew.ini")
+            self.push_file(cfg_wiimote, f"{remote_base}/WiimoteNew.ini")
+            self.push_file(f_hot, f"{remote_base}/Hotkeys.ini")
+            self.push_file(f_hot2, f"{remote_base}/HotKey.ini")
+            self.push_file(f_free, f"{remote_base}/FreeLookController.ini")
 
-        # Deploy Android-native Wii & GCPad community profiles
+        # Deploy Android-native Wii & GCPad community profiles (unchanged from repo)
         profiles_dir = WORKSPACE_ROOT / "configs" / "dolphin" / "profiles"
-        if profiles_dir.exists():
-            for prof_file in profiles_dir.rglob("*.ini"):
-                rel_path = prof_file.relative_to(profiles_dir)
-                txt = prof_file.read_text(encoding="utf-8")
-                txt_mod = re.sub(r"Device\s*=\s*[^\r\n]+", f"Device = {ctrl_dev}", txt)
-                tmp_prof = self.temp_dir / prof_file.name
-                tmp_prof.write_text(txt_mod, encoding="utf-8")
-
-                remote_sub = str(rel_path.parent).replace("\\", "/")
-                self.push_file(tmp_prof, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Profiles/{remote_sub}/{prof_file.name}")
-                self.push_file(tmp_prof, f"/sdcard/dolphin-emu/Config/Profiles/{remote_sub}/{prof_file.name}")
+        if not profiles_dir.exists():
+            raise FileNotFoundError(f"Missing required Dolphin profiles directory: {profiles_dir}")
+        for prof_file in profiles_dir.rglob("*.ini"):
+            rel_path = prof_file.relative_to(profiles_dir)
+            remote_sub = str(rel_path.parent).replace("\\", "/")
+            self.push_file(prof_file, f"/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Profiles/{remote_sub}/{prof_file.name}")
+            self.push_file(prof_file, f"/sdcard/dolphin-emu/Config/Profiles/{remote_sub}/{prof_file.name}")
 
         # Deploy tuned Mario Kart Wii GameSettings overrides
         for rmc_name in ["RMCE01.ini", "RMC.ini", "RMCP01.ini", "RMCJ01.ini", "RMCEA2.ini", "RMCK01.ini"]:
