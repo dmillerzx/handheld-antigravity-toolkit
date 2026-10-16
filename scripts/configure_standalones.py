@@ -514,6 +514,12 @@ Device = {ctrl_dev}
         f_dol.write_text(dolphin_ini, encoding="utf-8")
         f_gfx = self.temp_dir / "GFX.ini"
         f_gfx.write_text(gfx_ini, encoding="utf-8")
+        cfg_gcpad = WORKSPACE_ROOT / "configs" / "dolphin" / "GCPadNew.ini"
+        if cfg_gcpad.exists():
+            gcpad_ini = cfg_gcpad.read_text(encoding="utf-8")
+        cfg_wiimote = WORKSPACE_ROOT / "configs" / "dolphin" / "WiimoteNew.ini"
+        if cfg_wiimote.exists():
+            wiimote_ini = cfg_wiimote.read_text(encoding="utf-8")
         f_pad = self.temp_dir / "GCPadNew.ini"
         f_pad.write_text(gcpad_ini, encoding="utf-8")
         f_wii = self.temp_dir / "WiimoteNew.ini"
