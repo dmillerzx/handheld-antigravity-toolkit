@@ -27,31 +27,32 @@ This document outlines the resolved fixes and the remaining outstanding items ac
 
 ---
 
-## 2. Outstanding Items for Claude Review & Assistance
+## 2. Items Resolved from Claude's Review (2026-10-16)
 
 ### Item A: ES-DE Dolphin Activity Find Rule
-- In `configs/es_systems.xml` / `es_find_rules.xml`, Claude noted:
-  > *"The Dolphin find rule lists only `org.dolphinemu.dolphinemu/.ui.main.TvMainActivity` (the Android TV activity). Compare it against stock ES-DE's `es_find_rules.xml` for the handheld activity."*
-- **Action Needed**: Check if ES-DE on Android handhelds should target `org.dolphinemu.dolphinemu/org.dolphinemu.dolphinemu.activities.EmulationActivity` or `.ui.main.MainActivity` rather than `.ui.main.TvMainActivity`.
+- **Resolution**: No change needed. Stock ES-DE's own `es_find_rules.xml` uses `org.dolphinemu.dolphinemu/.ui.main.TvMainActivity`. Verified valid.
 
-### Item B: ARM SX2 Per-Game Settings File Naming Convention
-- In PCSX2 source (`VMManager.cpp`, `GetGameSettingsPath`), per-game settings files are named `<SERIAL>_<CRC>.ini` (e.g. `SCUS-97436_646B2E29.ini`), whereas patches can use `<SERIAL>_<CRC>.pnach` or `<CRC>.pnach`.
-- We currently push `646B2E29.ini` to `gamesettings/`.
-- **Action Needed**: Verify if ARM SX2 reads `646B2E29.ini` or strictly requires `SCUS-97436_646B2E29.ini`. If the latter, rename `646B2E29.ini` and `646B2E29.pnach` to include the serial prefix.
+### Item C: Mario Kart Wii Control Mode
+- **Resolution**: Settled. Kept the exact working state from the device (`[Core] SIDevice0 = 6`, `[Controls] WiimoteSource0 = 0`, GameCube mode). Pulled and committed as source of truth.
 
-### Item C: Mario Kart Wii Preferred Mode (GameCube vs. Classic Controller)
-- Right now, `RMC.ini` sets `SIDevice0 = 6` (GameCube controller) and `WiimoteSource0 = 0` (Wii Remote off).
-- Both the GameCube profile (`Standard_Controller.ini`) and the Classic Controller profile (`Classic_Controller.ini`) now have 100% identical physical hardware mappings.
-- **Action Needed**: Confirm with Doug whether he prefers playing MKWii with GameCube mechanics (B = brake, R = drift) or Classic Controller mechanics (A = gas, B = drift, L/ZL = item). If Classic Controller is preferred, update `RMC.ini` to:
-  ```ini
-  [Controls]
-  PadType0 = 0
-  WiimoteSource0 = 1
-  WiimoteProfile1 = Classic_Controller
-  ```
-
-### Item D: Single Source of Truth Cleanup (Claude Review Item 4)
-- Remove duplicate/stale copies of configs in `configs/templates/dolphin/` and ensure all scripts deploy exclusively from `configs/dolphin/`.
+### Item D: Single Source of Truth Cleanup
+- **Resolution**: Completed in commit `4770a4d`.
+  - Deleted `configs/templates/dolphin/` (all 9 files).
+  - Deleted obsolete root `configs/GCPadNew.ini` and `configs/WiimoteNew.ini`.
+  - Removed fallback inline `gcpad_ini` and `wiimote_ini` strings in `scripts/configure_standalones.py`; script now raises `FileNotFoundError` if repo files are missing.
+  - Stopped regex rewriting `Device =` in profiles; captured profiles are deployed unchanged.
+  - Removed unused `WiimoteSource0..3` from `dolphin_ini` `[Core]` section.
 
 ### Item E: Automated Verification Script (`verify_deployment.py`)
-- Formalize a standalone verification script that runs `am force-stop`, pulls all active emulator configs from the device, diffs them against repository templates, and prints a clean pass/fail audit table.
+- **Resolution**: Completed in commit `e5b794a`.
+  - Created `scripts/verify_deployment.py` to force-stop emulators, pull device configs, parse sections/keys/values, and compare key-value pairs (handling float formatting, backticks, comments, and repeated keys).
+  - Live hardware test result: **100% PASS** across all 9 target files (7 Dolphin, 2 ARM SX2).
+
+---
+
+## 3. Remaining Low-Priority Tracking
+
+### Item B: ARM SX2 Per-Game Settings File Naming Convention
+- emulog.txt confirms ARM SX2 found `646B2E29.pnach` by CRC.
+- Global `armsx2-settings.json` already sets 16:9, progressive scan, and `hardwareDownloadMode = 1`.
+- Per-game settings lookup can be checked next time Doug opens GT4 per-game properties in ARM SX2 UI to see if ARM SX2 generates `<SERIAL>_<CRC>.ini` or `<CRC>.ini`. Low priority.
