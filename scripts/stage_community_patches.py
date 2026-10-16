@@ -361,22 +361,16 @@ class CommunityPatchEngine:
         try:
             dumpsys = self.shell("dumpsys input")
             m = re.search(
-                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNumber:\s*(\d+)',
+                r'Device \d+:\s+(Xbox Wireless Controller|Retroid Pocket Controller).*?ControllerNum:\s*(\d+)',
                 dumpsys,
-                re.MULTILINE | re.DOTALL | re.IGNORECASE
+                re.DOTALL | re.IGNORECASE
             )
             if m:
                 return f"Android/{m.group(2).strip()}/{m.group(1).strip()}"
-            m2 = re.search(
-                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNum:\s*(\d+)',
-                dumpsys,
-                re.MULTILINE | re.DOTALL | re.IGNORECASE
-            )
-            if m2:
-                return f"Android/{m2.group(2).strip()}/{m2.group(1).strip()}"
         except Exception:
             pass
-        return "Android/1/Retroid Pocket Controller"
+        return "Android/1/Xbox Wireless Controller"
+
 
     @staticmethod
     def convert_to_android_wiimote_profile(content: str, ctrl_dev: str) -> str:

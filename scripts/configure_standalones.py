@@ -91,28 +91,17 @@ class StandaloneConfigurator:
         try:
             dumpsys = self.shell("dumpsys input")
             m = re.search(
-                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNumber:\s*(\d+)',
+                r'Device \d+:\s+(Xbox Wireless Controller|Retroid Pocket Controller).*?ControllerNum:\s*(\d+)',
                 dumpsys,
-                re.MULTILINE | re.DOTALL | re.IGNORECASE
+                re.DOTALL | re.IGNORECASE
             )
             if m:
-                dev_name = m.group(1).strip()
-                controller_num = m.group(2).strip()
-                return f"Android/{controller_num}/{dev_name}"
-
-            m2 = re.search(
-                r'^\s*(?:Device\s+)?\d+:\s+([^\r\n]*(?:Controller|Gamepad|Joystick)[^\r\n]*).*?ControllerNum:\s*(\d+)',
-                dumpsys,
-                re.MULTILINE | re.DOTALL | re.IGNORECASE
-            )
-            if m2:
-                dev_name = m2.group(1).strip()
-                controller_num = m2.group(2).strip()
-                return f"Android/{controller_num}/{dev_name}"
+                return f"Android/{m.group(2).strip()}/{m.group(1).strip()}"
         except Exception:
             pass
 
-        return "Android/1/Retroid Pocket Controller"
+        return "Android/1/Xbox Wireless Controller"
+
 
     # 1. DUCKSTATION (PS1)
     def configure_duckstation(self) -> None:
