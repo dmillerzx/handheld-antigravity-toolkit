@@ -126,6 +126,20 @@ FastDepthCalc = True
 ```
 - Duplicate controller blocks have been removed from all regional files (`RMCE01.ini`, `RMCEA2.ini`, `RMCJ01.ini`, `RMCP01.ini`) so that `RMC.ini` is the single source of truth.
 
+### B. Active Control Mode on Device: GameCube Controller
+Read directly from the working device's `files/GameSettings/RMC.ini`:
+- **Active Mode**: Standard GameCube Controller (`[Core] SIDevice0 = 6`).
+- **Emulated Wiimote**: Disabled (`[Controls] WiimoteSource0 = 0`).
+- **In-Game Behavior**: Mario Kart Wii detects a physical GameCube controller in Port 1. Controls match the GameCube layout:
+  - Gas: `Button A`
+  - Brake / Reverse: `Button B`
+  - Steering: `Axis 0` / `Axis 1` (Left Stick)
+  - Hop / Drift: `Axis 18+`&`Axis 22+` (Right Trigger / R)
+  - Use Item: `Button R1` (Z) or `Axis 17+`&`Axis 23+` (Left Trigger / L)
+  - Wheelie / Tricks: `Axis 16` / `Axis 15` (D-Pad)
+  - Pause: `Start`
+- **Wii Classic Controller State**: The Classic Controller profile (`WiimoteNew.ini` and `Classic_Controller.ini`) has also been captured and mirrored with identical physical hardware bindings for any Wii title that uses the Classic Controller.
+
 ---
 
 ## 3. ARM SX2 & Gran Turismo 4 Spec II Widescreen Status
