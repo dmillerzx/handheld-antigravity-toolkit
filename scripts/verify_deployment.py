@@ -179,12 +179,12 @@ class PreFlightAuditor:
         else:
             self.add_result("RootCause", "Vita3K Setup Bypass", "WARN", "Vita3K config.yml missing initial-setup or Vulkan backend")
 
-        # 4. ARM SX2 ES-DE direct boot intent check
+        # 4. ARM SX2 ES-DE intent check
         es_sys = self.shell("cat /sdcard/ES-DE/custom_systems/es_systems.xml 2>/dev/null || true")
-        if "%EMULATOR_ARMSX2%" in es_sys and ("file://%ROM%" in es_sys or "%DATA%=%ROM%" in es_sys):
-            self.add_result("RootCause", "ARM SX2 ES-DE Intent", "PASS", "Configured with file://%ROM% direct launch")
+        if "%EMULATOR_ARMSX2%" in es_sys and "%DATA%=%ROMSAF%" in es_sys:
+            self.add_result("RootCause", "ARM SX2 ES-DE Intent", "PASS", "Configured with %DATA%=%ROMSAF% content-URI")
         else:
-            self.add_result("RootCause", "ARM SX2 ES-DE Intent", "WARN", "ARM SX2 command not yet using file://%ROM%")
+            self.add_result("RootCause", "ARM SX2 ES-DE Intent", "WARN", "ARM SX2 command not yet using %ROMSAF%")
 
 
     # =========================================================================
