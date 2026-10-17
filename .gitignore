@@ -42,5 +42,6 @@ Thumbs.db
 task-*.log
 scratch/
 backups/
+snapshots/
 .idea/
 .vscode/

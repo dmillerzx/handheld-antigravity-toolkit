@@ -19,6 +19,18 @@ PROFILES_DIR = WORKSPACE_ROOT / "profiles"
 SD_UUID_REGEX = re.compile(r"^[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}$")
 
 
+def get_connected_serial(adb_path: str = "adb") -> str:
+    """Discovers the first connected and authorized ADB device serial dynamically."""
+    try:
+        out = subprocess.check_output([str(adb_path), "devices"], text=True)
+        lines = [line.strip() for line in out.splitlines() if line.strip() and not line.startswith("List of devices")]
+        if lines:
+            return lines[0].split()[0]
+    except Exception:
+        pass
+    return ""
+
+
 def list_available_profiles() -> List[Dict]:
     """Returns all available device profiles loaded from profiles/*.json."""
     profiles = []

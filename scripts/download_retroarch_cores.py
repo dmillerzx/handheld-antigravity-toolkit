@@ -24,7 +24,7 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 
 # Import dynamic device profiling helper
 sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
-from device_profile import detect_storage_targets
+from device_profile import detect_storage_targets, get_connected_serial
 
 BUILDBOT_BASE = "https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/"
 ASSETS_BASE = "https://buildbot.libretro.com/assets/frontend/"
@@ -67,15 +67,18 @@ def find_adb(explicit_path: Optional[str] = None) -> str:
 
 
 class RetroArchProvisioner:
-    def __init__(self, adb_path: str, serial: str = DEFAULT_SERIAL, dry_run: bool = False):
+    def __init__(self, adb_path: str, serial: Optional[str] = None, dry_run: bool = False):
         self.adb = adb_path
-        self.serial = serial
+        self.serial = serial or get_connected_serial(adb_path)
         self.dry_run = dry_run
         self.staging_dir = WORKSPACE_ROOT / "scratch" / "retroarch_staging"
         self.staging_dir.mkdir(parents=True, exist_ok=True)
 
     def adb_cmd(self, *args, check: bool = True) -> subprocess.CompletedProcess:
-        cmd = [self.adb, "-s", self.serial] + list(args)
+        cmd = [self.adb]
+        if self.serial:
+            cmd.extend(["-s", self.serial])
+        cmd.extend(list(args))
         if self.dry_run:
             print(f"[DRY-RUN] {' '.join(cmd)}")
             return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
@@ -222,7 +225,7 @@ class RetroArchProvisioner:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="RetroArch Cores & Assets Provisioner for RP5")
-    parser.add_argument("-s", "--serial", default=DEFAULT_SERIAL, help="Target device serial")
+    parser.add_argument("-s", "--serial", default=None, help="Target device serial (auto-detects if omitted)")
     parser.add_argument("--adb", default=None, help="Path to ADB binary")
     parser.add_argument("--skip-download", action="store_true", help="Skip downloading from buildbot if cached")
     parser.add_argument("--skip-ui", action="store_true", help="Skip ADB UI interaction")
@@ -230,7 +233,8 @@ def main() -> None:
     args = parser.parse_args()
 
     adb_path = find_adb(args.adb)
-    provisioner = RetroArchProvisioner(adb_path=adb_path, serial=args.serial, dry_run=args.dry_run)
+    target_serial = args.serial or get_connected_serial(adb_path)
+    provisioner = RetroArchProvisioner(adb_path=adb_path, serial=target_serial, dry_run=args.dry_run)
 
     if not args.skip_download:
         provisioner.fetch_designated_cores()

@@ -529,7 +529,10 @@ class RP5Provisioner:
                 cmd.extend(["-s", self.serial])
             if self.dry_run:
                 cmd.append("--dry-run")
-            subprocess.run(cmd, check=False)
+            res = subprocess.run(cmd, check=False)
+            if res.returncode != 0:
+                print(f"\n[!] ERROR: download_retroarch_cores.py failed with returncode {res.returncode}")
+                raise RuntimeError("RetroArch core and asset provisioning failed")
 
     def run_save_sync(self) -> None:
         """Executes sync_all_saves.py with dynamic storage detection."""

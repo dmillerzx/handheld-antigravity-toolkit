@@ -26,6 +26,7 @@
   "emulation": {
     "force_widescreen": true,
     "duckstation_resolution_scale": 5,
+    "armsx2_upscale_multiplier": 3.0,
     "nethersx2_upscale_multiplier": 3.0,
     "dolphin_internal_resolution": 3.0,
     "ppsspp_resolution_scale": 5,
