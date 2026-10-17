@@ -156,7 +156,7 @@ To run the master orchestrator directly from PowerShell or terminal:
 .\scripts\provision_all.ps1
 
 # Target a specific device serial and force a profile
-.\scripts\provision_all.ps1 -Serial ff152647 -Profile rp5
+.\scripts\provision_all.ps1 -Serial <SERIAL> -Profile rp5
 
 # Dry-run execution to preview commands without modifying device
 .\scripts\provision_all.ps1 -DryRun
@@ -165,7 +165,7 @@ To run the master orchestrator directly from PowerShell or terminal:
 Or via Python:
 
 ```powershell
-python scripts/setup_rp5.py --serial ff152647 --profile rp5 --all
+python scripts/setup_rp5.py --serial <SERIAL> --profile rp5 --all
 ```
 
 ---
