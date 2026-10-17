@@ -37,10 +37,10 @@
 | **OB.6** | Keep Daijishō in catalog per Doug's confirmation | Note #7 | ✅ **Done & Pushed** | Commits [`43e9f97`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/43e9f97), [`6d4a6cd`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/6d4a6cd) |
 | **OB.7** | Verify RetroArch Libretro buildbot stable HTML scraper intermediate links | Note #7 | ✅ **Done & Pushed** | Commits [`43e9f97`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/43e9f97), [`6d4a6cd`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/6d4a6cd) |
 | **OB.8** | Export verified on-device configs to `configs/obtainium_export.json` & sync master | Note #7 | ✅ **Done & Pushed** | Commits [`43e9f97`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/43e9f97), [`6d4a6cd`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/6d4a6cd) |
-| **B.1** | Fix Vita3K Obtainium update tracking (`Vita3K-builds`) & capture working config | Note #8 | ✅ **Done Locally** | Updated `rp5_master_obtainium.json` & captured `configs/vita3k/config.yml` |
-| **B.2** | Live save restore test with game confirmation | Note #8 | 🔄 **Step B.2** | Verified restore byte-for-byte; pending user in-game load confirmation |
+| **B.1** | Fix Vita3K Obtainium update tracking (`Vita3K-builds`) & capture working config | Note #8 | ✅ **Done & Pushed** | Commit [`e8bbef3`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/e8bbef3) |
+| **B.2** | Live save restore test with game confirmation | Note #8 | 🔄 **Step B.2** | Full backup created (`20261017_081954`); ready for user save selection & restore |
 | **B.3** | Replace remaining `EEEF-F762` in `configs/` (`es_settings.xml`, mGBA, DroidDeck, etc.) & update `inspect_save_paths.py` | Note #8 | ✅ **Done & Pushed** | Commit [`1d6235e`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/1d6235e) |
-| **B.4** | Phase 4 Device Improvements (RetroArch hotkeys, standalones, drivers, etc.) | Notes #6 & #8 | ✅ **Done Locally** | Dolphin 3x 1080p tested on hardware; PS2 readbacks scoped to GT4; hotkeys pushed in [`1d6235e`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/1d6235e) |
+| **B.4** | Phase 4 Device Improvements (RetroArch hotkeys, standalones, drivers, etc.) | Notes #6 & #8 | ✅ **Done & Pushed** | Commits [`1d6235e`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/1d6235e), [`e8bbef3`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/e8bbef3) |
 | **B.5** | Write `notes/FINDINGS.md` (plain-language community findings from testing) | Notes #6 & #8 | ✅ **Done & Pushed** | Commit [`1d6235e`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/1d6235e) |
 | **C.1** | Write `docs/RELEASE_PLAN.md` (automation taxonomy, RJNY comparison, OS unification, v0.2 capture mode) | Note #8 | ✅ **Done & Pushed** | Commit [`1d6235e`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/1d6235e) |
 
@@ -48,10 +48,7 @@
 
 ## 🔍 Current Git Working Tree
 
-- **HEAD Commit**: `1d6235e` (*feat(release-prep): sanitize SD placeholders, capture device hotkeys & Vita3K hash, document findings and release plan*)
+- **HEAD Commit**: `e8bbef3` (*feat(emulators): deploy verified Vita3K config & Obtainium builds tracking, update Dolphin 3x profile, and scope PS2 readbacks*)
 - **Status vs `origin/main`**: Up to date (no unpushed commits)
-- **Local Unstaged Changes**:
-  - `configs/rp5_master_obtainium.json`: Switched Vita3K tracking to `Vita3K/Vita3K-builds` (eliminates continuous update loop natively matching RJNY pack).
-  - `profiles/rp5.json`: Updated `dolphin_internal_resolution` to 3 (1080p native) tested on hardware by Doug.
-  - `scripts/configure_standalones.py`: Scoped PS2 `HardwareDownloadMode: 0` globally (with 1 strictly preserved for GT4); enabled Dolphin `WaitForShadersBeforeStarting = True`; deployed authoritative `configs/vita3k/config.yml` (fixed `show-gui: true` and `overlay-scale: 1.0`).
-  - `configs/vita3k/config.yml`: Authoritative config captured from hardware with `initial-setup: false`.
+- **Local Unstaged Changes**: None (clean working tree)
+
