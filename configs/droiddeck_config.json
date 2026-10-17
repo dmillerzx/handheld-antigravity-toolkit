@@ -19,6 +19,6 @@
   },
   "storage": {
     "prefix_root": "/sdcard/DroidDeck/prefixes/default",
-    "steam_library": "/storage/EEEF-F762/Games/Steam"
+    "steam_library": "/storage/<SD_ID>/Games/Steam"
   }
 }

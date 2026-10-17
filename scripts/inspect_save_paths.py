@@ -1,12 +1,35 @@
+#!/usr/bin/env python3
+"""
+scripts/inspect_save_paths.py — Diagnostic Scanner for Emulator Saves & States
+=============================================================================
+Dynamically queries all on-device save, savestate, and memory card directories
+across internal storage and external MicroSD storage.
+"""
+
+import os
 import subprocess
 import sys
+from pathlib import Path
+
+WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
+from device_profile import detect_storage_targets, get_connected_serial  # type: ignore
 
 sys.stdout.reconfigure(encoding="utf-8")
-serial = "ff152647"
 
-targets = [
-    ("RetroArch (MicroSD Saves)", "/storage/EEEF-F762/RetroArch/saves"),
-    ("RetroArch (MicroSD States)", "/storage/EEEF-F762/RetroArch/states"),
+adb_bin = WORKSPACE_ROOT / "platform-tools" / ("adb.exe" if os.name == "nt" else "adb")
+serial = get_connected_serial(adb_bin)
+_, _, sd_id = detect_storage_targets(str(adb_bin), serial=serial)
+
+targets = []
+
+if sd_id:
+    targets.extend([
+        ("RetroArch (MicroSD Saves)", f"/storage/{sd_id}/RetroArch/saves"),
+        ("RetroArch (MicroSD States)", f"/storage/{sd_id}/RetroArch/states"),
+    ])
+
+targets.extend([
     ("RetroArch (Internal Root Saves)", "/sdcard/RetroArch/saves"),
     ("RetroArch (Internal Root States)", "/sdcard/RetroArch/states"),
     ("RetroArch (App Data Saves)", "/sdcard/Android/data/com.retroarch.aarch64/files/saves"),
@@ -28,15 +51,20 @@ targets = [
     ("Azahar (App Data States)", "/sdcard/Android/data/org.azahar_emu.azahar/files/states"),
     ("Flycast (Root Saves/VMU)", "/sdcard/Flycast"),
     ("Flycast (App Data)", "/sdcard/Android/data/com.flycast.emulator/files"),
-    ("Vita3K (Savedata)", "/sdcard/Android/data/org.vita3k.emulator/files/vita/ux0/user/00/savedata")
-]
+    ("Vita3K (Savedata)", "/sdcard/Android/data/org.vita3k.emulator/files/vita/ux0/user/00/savedata"),
+])
 
 print("=" * 100)
+print(f"Device Serial: {serial or 'None'} | MicroSD: {sd_id or 'None'}")
 print(f"{'Target Name':<35} | {'Status / File Count':<25} | {'Path'}")
 print("=" * 100)
 
 for name, path in targets:
-    res = subprocess.run(["platform-tools/adb.exe", "-s", serial, "shell", f"if [ -d '{path}' ]; then find '{path}' -type f | wc -l; else echo 'NOT_FOUND'; fi"], capture_output=True, text=True)
+    cmd = [str(adb_bin)]
+    if serial:
+        cmd.extend(["-s", serial])
+    cmd.extend(["shell", f"if [ -d '{path}' ]; then find '{path}' -type f | wc -l; else echo 'NOT_FOUND'; fi"])
+    res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     out = res.stdout.strip()
     if out == "NOT_FOUND":
         status = "Not Found"

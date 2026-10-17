@@ -117,7 +117,7 @@ subprocess.run(["platform-tools/adb.exe", "-s", serial, "shell", "input tap 960 
 time.sleep(2)
 
 # 8. Pull latest export
-res = subprocess.run(["platform-tools/adb.exe", "-s", serial, "shell", "ls -lat /storage/EEEF-F762/Downloads/obtainium*"], capture_output=True, text=True)
+res = subprocess.run(["platform-tools/adb.exe", "-s", serial, "shell", "ls -lat /storage/<SD_ID>/Downloads/obtainium*"], capture_output=True, text=True)
 lines = [l.strip() for l in res.stdout.splitlines() if "obtainium-export" in l]
 if lines:
     latest_export_remote = lines[0].split()[-1]

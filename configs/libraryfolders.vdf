@@ -26,7 +26,7 @@
 	}
 	"2"
 	{
-		"path"		"/storage/EEEF-F762/Games/Steam"
+		"path"		"/storage/<SD_ID>/Games/Steam"
 		"label"		"MicroSD Steam"
 		"contentid"		"3903766020842695482"
 		"total_size"		"0"
