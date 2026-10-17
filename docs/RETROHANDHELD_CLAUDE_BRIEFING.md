@@ -1,7 +1,7 @@
 # RETROHANDHELD AUTOMATION STATUS & TROUBLESHOOTING DOSSIER
 **Prepared for**: Claude Integration & Cross-Agent Hand-off  
 **Date**: October 16, 2026  
-**Target Device**: Retroid Pocket 5 (RP5) — Serial `ff152647`  
+**Target Device**: Retroid Pocket 5 (RP5) — Serial `<SERIAL>`  
 **Repository**: [dmillerzx/handheld-antigravity-toolkit](https://github.com/dmillerzx/handheld-antigravity-toolkit) (branch: `main`)
 
 ---
@@ -24,23 +24,23 @@ This document details the exact hardware state, root causes identified during li
 |---|---|
 | **Device Model** | Retroid Pocket 5 (RP5) |
 | **SoC / GPU** | Qualcomm Snapdragon 865 (SM8250) / Adreno 650 GPU |
-| **ADB Connection** | USB / Wi-Fi (`-s ff152647`) |
+| **ADB Connection** | USB / Wi-Fi (`-s <SERIAL>`) |
 | **Operating System** | Android 13 (Retroid OS, AOSP) |
 | **Display** | 5.5" AMOLED, 1920x1080 (16:9 native), 60Hz |
 | **Gamepad Mode** | **Xbox Mode** (`persist.sys.gamepad.type 0`) |
 | **Trigger Mode** | **Both** (`persist.sys.trigger.mode 2` — analog axes + digital click) |
 | **Android Input Device**| `Device 10: Xbox Wireless Controller` |
-| **Canonical MicroSD UUID** | `/storage/EEEF-F762/` |
+| **Canonical MicroSD UUID** | `/storage/<SD_ID>/` |
 
 ### Canonical Storage Rules (Strict)
 The filesystem on the device is strictly standardized. Any deviation causes broken paths:
 - **Internal Storage**: `/sdcard/bios/` (staging and fallback BIOS only).
-- **MicroSD Card**: `/storage/EEEF-F762/`
-  - `/storage/EEEF-F762/bios/` (Shared master BIOS for all emulators)
-  - `/storage/EEEF-F762/ROMs/<system>/` (All game ROMs; e.g. `ps2/`, `gc/`, `wii/`)
-  - `/storage/EEEF-F762/ES-DE/` (Frontend metadata and configs)
-  - `/storage/EEEF-F762/RetroArch/` (RetroArch cores, configs, audio filters)
-  - `/storage/EEEF-F762/Saves_Backup/latest/` (Systematic save backups)
+- **MicroSD Card**: `/storage/<SD_ID>/`
+  - `/storage/<SD_ID>/bios/` (Shared master BIOS for all emulators)
+  - `/storage/<SD_ID>/ROMs/<system>/` (All game ROMs; e.g. `ps2/`, `gc/`, `wii/`)
+  - `/storage/<SD_ID>/ES-DE/` (Frontend metadata and configs)
+  - `/storage/<SD_ID>/RetroArch/` (RetroArch cores, configs, audio filters)
+  - `/storage/<SD_ID>/Saves_Backup/latest/` (Systematic save backups)
 - **Forbidden Paths**: Do not create or push to `/sdcard/ROMs`, `/sdcard/roms`, `Games/`, or `Emulation/`.
 
 ---
@@ -54,7 +54,7 @@ When launching Mario Kart Wii (`RMCE01` or `RMCEA2` Deluxe X) through ES-DE or d
 - After recent automated config pushes, holding buttons to bring up the Dolphin in-game side drawer was also unresponsive.
 
 ### B. Root Cause Breakdown
-Through live ADB inspection of Dolphin configuration files on device `ff152647`, four distinct causes were identified:
+Through live ADB inspection of Dolphin configuration files on device `<SERIAL>`, four distinct causes were identified:
 
 #### 1. Invalid Section Name in GameSettings (`[Controls]` vs `[Core]`)
 In `/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/RMCE01.ini` and `RMCEA2.ini`, the automation script had written:
@@ -227,7 +227,7 @@ However:
 - **Dolphin GameSettings**: `/sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings/`
 - **ARM SX2 Data**: `/sdcard/Android/data/com.armsx2/files/`
 - **ES-DE Configs**: `/sdcard/ES-DE/settings/`
-- **Canonical MicroSD**: `/storage/EEEF-F762/`
+- **Canonical MicroSD**: `/storage/<SD_ID>/`
 
 ---
 
@@ -236,15 +236,15 @@ However:
 To execute provisions on the device:
 ```powershell
 # From workspace root
-.\scripts\run_setup.ps1 --serial ff152647 --all
+.\scripts\run_setup.ps1 --serial <SERIAL> --all
 ```
 Or directly with Python:
 ```powershell
-python scripts/setup_rp5.py --serial ff152647 --all
+python scripts/setup_rp5.py --serial <SERIAL> --all
 ```
 
 To test input and dump live logs:
 ```powershell
-.\platform-tools\adb.exe -s ff152647 shell dumpsys input
-.\platform-tools\adb.exe -s ff152647 shell logcat -d | Select-String -Pattern "dolphin|armsx2|es-de"
+.\platform-tools\adb.exe -s <SERIAL> shell dumpsys input
+.\platform-tools\adb.exe -s <SERIAL> shell logcat -d | Select-String -Pattern "dolphin|armsx2|es-de"
 ```

@@ -1,7 +1,7 @@
 # Hardware-Antigravity Provisioning Status Report (2026-10-16)
 
 ## Executive Summary
-This report summarizes the ground-truth hardware state, controller mappings, GameSettings overrides, and widescreen status for the Retroid Pocket 5 handheld (`serial: ff152647`).
+This report summarizes the ground-truth hardware state, controller mappings, GameSettings overrides, and widescreen status for the Retroid Pocket 5 handheld (`serial: <SERIAL>`).
 
 ---
 
