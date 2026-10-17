@@ -3,9 +3,12 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-with open("configs/obtainium_export.json", "r", encoding="utf-8") as f:
+target_file = sys.argv[1] if len(sys.argv) > 1 else "new_export.json"
+
+with open(target_file, "r", encoding="utf-8") as f:
     data = json.load(f)
 
+print(f"Reading: {target_file}")
 print(f"Total apps in export: {len(data['apps'])}")
 print(f"Exported at: {data.get('exportedAt')}")
 print("=" * 140)

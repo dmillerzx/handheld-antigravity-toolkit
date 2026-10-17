@@ -1,121 +1,188 @@
 {
   "apps": [
     {
-      "id": "dev.imranr.obtainium",
-      "url": "https://github.com/ImranR98/Obtainium",
-      "author": "ImranR98",
-      "name": "Obtainium",
-      "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"arm64-v8a|universal\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Obtainium\",\"appAuthor\":\"ImranR98\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"App updates directly from the source\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
-      "categories": [
-        "Utility"
-      ],
-      "allowIdChange": false,
-      "overrideSource": "GitHub"
-    },
-    {
-      "id": "com.retroarch.aarch64",
-      "url": "https://buildbot.libretro.com/stable",
-      "author": "Libretro",
-      "name": "RetroArch (AArch64)",
-      "preferredApkIndex": 0,
-      "additionalSettings": "{\"intermediateLink\":[{\"customLinkFilterRegex\":\"\\\\d+\\\\.\\\\d+\\\\.\\\\d+\",\"autoLinkFilterByArch\":false,\"filterByLinkText\":false,\"matchLinksOutsideATags\":false,\"skipSort\":false,\"reverseSort\":false,\"sortByLastLinkSegment\":false},{\"customLinkFilterRegex\":\"android\",\"autoLinkFilterByArch\":false,\"filterByLinkText\":false,\"matchLinksOutsideATags\":false,\"skipSort\":false,\"reverseSort\":false,\"sortByLastLinkSegment\":false}],\"customLinkFilterRegex\":\"aarch64\",\"filterByLinkText\":false,\"matchLinksOutsideATags\":false,\"skipSort\":false,\"reverseSort\":false,\"sortByLastLinkSegment\":false,\"versionExtractWholePage\":false,\"requestHeader\":[{\"requestHeader\":\"User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36\"}],\"defaultPseudoVersioningMethod\":\"partialAPKHash\",\"trackOnly\":false,\"versionExtractionRegEx\":\"(\\\\d+\\\\.\\\\d+\\\\.\\\\d+)\",\"matchGroupToUse\":\"$1_GIT\",\"versionDetection\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"RetroArch (AArch64)\",\"appAuthor\":\"Libretro\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"\",\"refreshBeforeDownload\":false}",
-      "categories": [
-        "Emulator"
-      ],
-      "allowIdChange": false,
-      "overrideSource": "HTML"
-    },
-    {
-      "id": "xyz.aethersx2.android",
-      "url": "https://github.com/Trixarian/NetherSX2-patch",
-      "author": "Trixarian",
-      "name": "NetherSX2",
-      "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"NetherSX2\",\"appAuthor\":\"Trixarian\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation 2 Emulator (Community Patch)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
-      "categories": [
-        "Emulator"
-      ],
-      "allowIdChange": false,
-      "overrideSource": "GitHub"
-    },
-    {
       "id": "com.armsx2",
       "url": "https://github.com/ARMSX2/ARMSX2",
       "author": "ARMSX2",
       "name": "ARM SX2",
+      "installedVersion": "2.8.3",
+      "latestVersion": "2.8.3",
+      "apkUrls": "[]",
+      "otherAssetUrls": "[]",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"a13-armv8.2-sdk33|a13.*apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"ARM SX2\",\"appAuthor\":\"ARMSX2\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation 2 Emulator (ARM SX2 Community Fork)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"a13-armv8.2-sdk33|a13.*apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"ARM SX2\",\"appAuthor\":\"ARMSX2\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation 2 Emulator (ARM SX2 Community Fork)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792207047677521,
+      "pinned": false,
       "categories": [
         "Emulator"
       ],
+      "releaseDate": 0,
+      "changeLog": "",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "pendingRepoRenameUrl": null
     },
     {
-      "id": "org.ppsspp.ppsspp",
-      "url": "https://github.com/hrydgard/ppsspp",
-      "author": "hrydgard",
-      "name": "PPSSPP",
+      "id": "com.magneticchen.daijishou",
+      "url": "https://github.com/magneticchen/Daijishou",
+      "author": "magneticchen",
+      "name": "Daijish\u014d",
+      "installedVersion": "v1.5.0",
+      "latestVersion": "v1.5.0",
+      "apkUrls": "[[\"416.apk\",\"https://api.github.com/repos/TapiocaFox/Daijishou/releases/assets/341151320\"]]",
+      "otherAssetUrls": "[[\"v1.5.0.tar.gz\",\"https://api.github.com/repos/TapiocaFox/Daijishou/tarball/v1.5.0\"],[\"v1.5.0.zip\",\"https://api.github.com/repos/TapiocaFox/Daijishou/zipball/v1.5.0\"]]",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"PPSSPP\",\"appAuthor\":\"hrydgard\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation Portable (PSP) Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Daijisho\",\"appAuthor\":\"magneticchen\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Retro gaming launcher and frontend\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792189932360366,
+      "pinned": false,
       "categories": [
-        "Emulator"
+        "Frontend"
       ],
+      "releaseDate": 1768515995000000,
+      "changeLog": "**\u26a0\ufe0f  The APK aims for universal distribution.**\r\n\r\n# 1.5.0\r\n\ud83e\udee7 Add remove title from games (Settings > Appearance).\r\n\ud83e\udee7 Add square game box arts (Settings > Appearance).\r\n\ud83e\udee7 Add live wallpapers [GIF] (Settings > Appearance).\r\n\ud83e\udee7 Add double tap top/bottom bars to lock screen.\r\n\ud83e\udee7 Add \"Visual Novels\" Categories.\r\n\r\n\ud83e\udee7 Fix/Improve wiki scraper (wrong descriptions).\r\n\ud83e\udee7 Fix missing video button for games.\r\n\ud83e\udee7 Fix missing box arts when syncing.\r\n\ud83e\udee7 Fix RA breaking changes.\r\n\r\n1.5.0 changes were made by @official-wizard.",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "pendingRepoRenameUrl": null
     },
     {
       "id": "org.azahar_emu.azahar",
       "url": "https://github.com/azahar-emu/azahar",
       "author": "azahar-emu",
       "name": "Azahar",
-      "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"azahar-android-vanilla.*apk|android.*apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Azahar\",\"appAuthor\":\"azahar-emu\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Nintendo 3DS Emulator (Azahar / Lime3DS continuation)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "installedVersion": "2126.2",
+      "latestVersion": "2126.2",
+      "apkUrls": "[[\"azahar-android-googleplay-2126.2.apk\",\"https://api.github.com/repos/azahar-emu/azahar/releases/assets/623253570\"],[\"azahar-android-vanilla-2126.2.apk\",\"https://api.github.com/repos/azahar-emu/azahar/releases/assets/623254401\"]]",
+      "otherAssetUrls": "[[\"azahar-android-googleplay-2126.2.aab\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-android-googleplay-2126.2.aab\"],[\"azahar-android-vanilla-2126.2.aab\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-android-vanilla-2126.2.aab\"],[\"azahar-libretro-android-arm64-v8a-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-android-arm64-v8a-2126.2.zip\"],[\"azahar-libretro-ios-arm64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-ios-arm64-2126.2.zip\"],[\"azahar-libretro-linux-x86_64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-linux-x86_64-2126.2.zip\"],[\"azahar-libretro-macos-arm64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-macos-arm64-2126.2.zip\"],[\"azahar-libretro-macos-x86_64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-macos-x86_64-2126.2.zip\"],[\"azahar-libretro-tvos-arm64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-tvos-arm64-2126.2.zip\"],[\"azahar-libretro-windows-x86_64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-libretro-windows-x86_64-2126.2.zip\"],[\"azahar-macos-arm64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-macos-arm64-2126.2.zip\"],[\"azahar-macos-universal-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-macos-universal-2126.2.zip\"],[\"azahar-macos-x86_64-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-macos-x86_64-2126.2.zip\"],[\"azahar-room-arm64-2126.2.dockerimage\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-room-arm64-2126.2.dockerimage\"],[\"azahar-room-x86_64-2126.2.dockerimage\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-room-x86_64-2126.2.dockerimage\"],[\"azahar-unified-source-2126.2.tar.xz\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-unified-source-2126.2.tar.xz\"],[\"azahar-unified-source-2126.2.tar.xz.sha256sum\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-unified-source-2126.2.tar.xz.sha256sum\"],[\"azahar-windows-msvc-2126.2-installer.exe\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-windows-msvc-2126.2-installer.exe\"],[\"azahar-windows-msvc-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-windows-msvc-2126.2.zip\"],[\"azahar-windows-msys2-2126.2-installer.exe\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-windows-msys2-2126.2-installer.exe\"],[\"azahar-windows-msys2-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-windows-msys2-2126.2.zip\"],[\"azahar-windows-mxe-2126.2-installer.exe\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-windows-mxe-2126.2-installer.exe\"],[\"azahar-windows-mxe-2126.2.zip\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar-windows-mxe-2126.2.zip\"],[\"azahar.AppImage\",\"https://github.com/azahar-emu/azahar/releases/download/2126.2/azahar.AppImage\"],[\"2126.2.tar.gz\",\"https://api.github.com/repos/azahar-emu/azahar/tarball/2126.2\"],[\"2126.2.zip\",\"https://api.github.com/repos/azahar-emu/azahar/zipball/2126.2\"]]",
+      "preferredApkIndex": 1,
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":false,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"azahar-android-vanilla.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Azahar\",\"appAuthor\":\"azahar-emu\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Nintendo 3DS Emulator (Azahar / Lime3DS continuation)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792189932648610,
+      "pinned": false,
       "categories": [
         "Emulator"
       ],
+      "releaseDate": 1791501139000000,
+      "changeLog": "This a minor release for the 2126 branch which primarily addresses a reported security advisory.\r\nIt also includes several newly backported improvements and fixes from the master branch.\r\n\r\nUsers are advised to update as soon as is convenient.\r\n\r\n---\r\n\r\n# Azahar 2126.2 Changelog\r\n\r\n# All\r\n\r\n- Addressed an oversight which allowed specially-crafted CIA files to execute arbitrary code in the host environment when locally installed by a user. | @PabloMK7 #2648 \r\n  - Addresses the following GHSA report: https://github.com/azahar-emu/azahar/security/advisories/GHSA-h74v-5mw8-qg8r\r\n- Fixed an issue where the xBRZ texture filter would be applied incorrectly when using the Vulkan renderer, resulting in an incorrect appearance. | @OpenSauce04 #2647 \r\n- Handling of large HTTP downloads within emulated 3DS applications has been improved, improving memory efficiency and stability. | @PabloMK7 #2515 \r\n   - Fixes downloading large games from the eShop. \r\n- Added a new 3GX loader flag `allow_homebrew_load`, which allows loading 3GX plugins for homebrew apps if the plugin supports it. | @PabloMK7 #2649\r\n\r\n# Desktop\r\n\r\n- Various improvements to GDB and RPC servers, fixing certain issues and improving functionality. | @PabloMK7 #2631, #2640, #2633\r\n  - For additional info, see individual PR descriptions.\r\n  - Script developers will need to update the RPC client as this is a breaking change. \r\n\r\n# Android\r\n\r\n- Fixed a crash which could occur if the `gpu_drivers` directory contained a subdirectory. | @ygordreyer #2592\r\n\r\n# Technical\r\n\r\n- Creating a copy of the kernel shared and config pages using svcMapProcessMemoryEx is now possible.\r\n  - This is a technical accuracy change. Little to no end-user impact.",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "pendingRepoRenameUrl": null
     },
     {
-      "id": "org.vita3k.emulator",
-      "url": "https://github.com/Vita3K/Vita3K-Android",
-      "author": "Vita3K",
-      "name": "Vita3K",
-      "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Vita3K\",\"appAuthor\":\"Vita3K\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation Vita Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "id": "dev.imranr.obtainium",
+      "url": "https://github.com/ImranR98/Obtainium",
+      "author": "ImranR98",
+      "name": "Obtainium",
+      "installedVersion": "v1.6.17",
+      "latestVersion": "v1.6.17",
+      "apkUrls": "[[\"app-arm64-v8a-fdroid-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678225\"],[\"app-arm64-v8a-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678264\"]]",
+      "otherAssetUrls": "[[\"app-arm64-v8a-fdroid-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-arm64-v8a-fdroid-release.apk.idsig\"],[\"app-arm64-v8a-fdroid-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-arm64-v8a-fdroid-release.apk.sha256\"],[\"app-arm64-v8a-fdroid-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-arm64-v8a-fdroid-release.apk.sha256.sig\"],[\"app-arm64-v8a-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-arm64-v8a-release.apk.idsig\"],[\"app-arm64-v8a-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-arm64-v8a-release.apk.sha256\"],[\"app-arm64-v8a-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-arm64-v8a-release.apk.sha256.sig\"],[\"app-armeabi-v7a-fdroid-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678342\"],[\"app-armeabi-v7a-fdroid-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-armeabi-v7a-fdroid-release.apk.idsig\"],[\"app-armeabi-v7a-fdroid-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-armeabi-v7a-fdroid-release.apk.sha256\"],[\"app-armeabi-v7a-fdroid-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-armeabi-v7a-fdroid-release.apk.sha256.sig\"],[\"app-armeabi-v7a-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678386\"],[\"app-armeabi-v7a-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-armeabi-v7a-release.apk.idsig\"],[\"app-armeabi-v7a-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-armeabi-v7a-release.apk.sha256\"],[\"app-armeabi-v7a-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-armeabi-v7a-release.apk.sha256.sig\"],[\"app-fdroid-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678409\"],[\"app-fdroid-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-fdroid-release.apk.idsig\"],[\"app-fdroid-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-fdroid-release.apk.sha256\"],[\"app-fdroid-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-fdroid-release.apk.sha256.sig\"],[\"app-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678451\"],[\"app-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-release.apk.idsig\"],[\"app-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-release.apk.sha256\"],[\"app-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-release.apk.sha256.sig\"],[\"app-x86_64-fdroid-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678523\"],[\"app-x86_64-fdroid-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-x86_64-fdroid-release.apk.idsig\"],[\"app-x86_64-fdroid-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-x86_64-fdroid-release.apk.sha256\"],[\"app-x86_64-fdroid-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-x86_64-fdroid-release.apk.sha256.sig\"],[\"app-x86_64-release.apk\",\"https://api.github.com/repos/ImranR98/Obtainium/releases/assets/561678554\"],[\"app-x86_64-release.apk.idsig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-x86_64-release.apk.idsig\"],[\"app-x86_64-release.apk.sha256\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-x86_64-release.apk.sha256\"],[\"app-x86_64-release.apk.sha256.sig\",\"https://github.com/ImranR98/Obtainium/releases/download/v1.6.17/app-x86_64-release.apk.sha256.sig\"],[\"v1.6.17.tar.gz\",\"https://api.github.com/repos/ImranR98/Obtainium/tarball/v1.6.17\"],[\"v1.6.17.zip\",\"https://api.github.com/repos/ImranR98/Obtainium/zipball/v1.6.17\"]]",
+      "preferredApkIndex": 1,
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"^app-arm64-v8a-release\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Obtainium\",\"appAuthor\":\"ImranR98\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"App updates directly from the source\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792189932295656,
+      "pinned": false,
       "categories": [
-        "Emulator"
+        "Utility"
       ],
+      "releaseDate": 1789322906000000,
+      "changeLog": "## What's Changed\r\n* Update ru.json by @solokot in https://github.com/ImranR98/Obtainium/pull/3314\r\n* Translation: Update hu.json by @summoner001 in https://github.com/ImranR98/Obtainium/pull/3315\r\n* Restore track-only pseudo-version controls on the app page by @ImranR98 in https://github.com/ImranR98/Obtainium/pull/3316\r\n* Translation: Update hu.json by @summoner001 in https://github.com/ImranR98/Obtainium/pull/3317\r\n* Update ja.json by @bluefly000 in https://github.com/ImranR98/Obtainium/pull/3318\r\n* Update zh.json translations by @Jursin in https://github.com/ImranR98/Obtainium/pull/3319\r\n* docs: Initial documentation for Contributing policies and procedures by @master-bob in https://github.com/ImranR98/Obtainium/pull/3216\r\n\r\nPlus all changes from [v1.6.16](https://github.com/ImranR98/Obtainium/releases/tag/v1.6.16) which was marked as pre-release.\r\n\r\n**Full Changelog**: https://github.com/ImranR98/Obtainium/compare/v1.6.16...v1.6.17",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "pendingRepoRenameUrl": null
     },
     {
       "id": "com.flycast.emulator",
       "url": "https://github.com/flyinghead/flycast",
       "author": "flyinghead",
       "name": "Flycast",
+      "installedVersion": "v2.7",
+      "latestVersion": "v2.7",
+      "apkUrls": "[[\"flycast-2.7.apk\",\"https://api.github.com/repos/flyinghead/flycast/releases/assets/520813416\"]]",
+      "otherAssetUrls": "[[\"flycast-2.7.appx\",\"https://github.com/flyinghead/flycast/releases/download/v2.7/flycast-2.7.appx\"],[\"flycast-2.7.nro\",\"https://github.com/flyinghead/flycast/releases/download/v2.7/flycast-2.7.nro\"],[\"flycast-macOS-2.7.zip\",\"https://github.com/flyinghead/flycast/releases/download/v2.7/flycast-macOS-2.7.zip\"],[\"flycast-win64-2.7.zip\",\"https://github.com/flyinghead/flycast/releases/download/v2.7/flycast-win64-2.7.zip\"],[\"flycast-x86_64-2.7.AppImage\",\"https://github.com/flyinghead/flycast/releases/download/v2.7/flycast-x86_64-2.7.AppImage\"],[\"v2.7.tar.gz\",\"https://api.github.com/repos/flyinghead/flycast/tarball/v2.7\"],[\"v2.7.zip\",\"https://api.github.com/repos/flyinghead/flycast/zipball/v2.7\"]]",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"flycast.*apk|.*apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Flycast\",\"appAuthor\":\"flyinghead\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Sega Dreamcast / Naomi / Atomiswave Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":false,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"flycast.*apk|.*apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Flycast\",\"appAuthor\":\"flyinghead\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Sega Dreamcast / Naomi / Atomiswave Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792189931552590,
+      "pinned": false,
       "categories": [
         "Emulator"
       ],
+      "releaseDate": 1787140029000000,
+      "changeLog": "## New features\r\n* Frame rate detection and pacing\r\n* Localization (fr, hu, jp, pt_BR, sv)\r\n* Multiscreen support for Airline Pilot, Sega Strike Fighter and Derby Owners Club\r\n* Improved modem emulation\r\n* improved DreamPicoPort and DreamPotato support by @RikkiGibson, @Tails86 and @nexus382\r\n* Android: Google Auto Backup support for VMU saves and non-volatile memory\r\n\r\n## Fixed Games\r\n* Airline Pilot (Naomi, multiscreen)\r\n* Cyber Troopers Virtual-On: Oratorio Tangram (JP, online features)\r\n* Derby Owners Club (new)\r\n* Dinosaur King (ZH, new)\r\n* DreamParaPara by @dakrk (new)\r\n* F355 Challenge (JP, online features)\r\n* Fish Life (new)\r\n* Love & Berry 3 (ZH, new)\r\n* NFL 2K1, NFL 2K2, NBA 2K1, NBA 2K2 (freeze)\r\n* Power Smash (online lag)\r\n* Rune Jade (online features)\r\n* Samba de Amigo (Naomi, inputs)\r\n* Sega Strike Fighter (Naomi, multiscreen)\r\n\r\n## New Contributors\r\n* @Windsurf7 made their first contribution in https://github.com/flyinghead/flycast/pull/2229\r\n* @Kyuyrii made their first contribution in https://github.com/flyinghead/flycast/pull/2236\r\n* @eadmaster made their first contribution in https://github.com/flyinghead/flycast/pull/2252\r\n* @PLCodingStuff made their first contribution in https://github.com/flyinghead/flycast/pull/2274\r\n* @marcgardent made their first contribution in https://github.com/flyinghead/flycast/pull/2318\r\n* @AurisDSP made their first contribution in https://github.com/flyinghead/flycast/pull/2333\r\n* @engdyn made their first contribution in https://github.com/flyinghead/flycast/pull/2383\r\n\r\n**Full Changelog**: https://github.com/flyinghead/flycast/compare/v2.6...v2.7",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "pendingRepoRenameUrl": null
     },
     {
-      "id": "com.magneticchen.daijishou",
-      "url": "https://github.com/magneticchen/Daijishou",
-      "author": "magneticchen",
-      "name": "Daijisho",
+      "id": "com.retroarch.aarch64",
+      "url": "https://github.com/libretro/RetroArch",
+      "author": "libretro",
+      "name": "RetroArch (AArch64)",
+      "installedVersion": "1.22.2_GIT",
+      "latestVersion": "Unknown",
+      "apkUrls": "[[\"placeholder\",\"placeholder\"]]",
+      "otherAssetUrls": "[]",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Daijisho\",\"appAuthor\":\"magneticchen\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Retro gaming launcher and frontend\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"RetroArch_aarch64.apk\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"RetroArch\",\"appAuthor\":\"libretro\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Multi-system frontend and emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792190845356906,
+      "pinned": false,
       "categories": [
-        "Frontend"
+        "Emulator"
       ],
+      "releaseDate": null,
+      "changeLog": null,
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "overrideSource": "GitHub"
+      "pendingRepoRenameUrl": null
+    },
+    {
+      "id": "xyz.aethersx2.android",
+      "url": "https://github.com/Trixarian/NetherSX2-patch",
+      "author": "Trixarian",
+      "name": "NetherSX2",
+      "installedVersion": "2.2n",
+      "latestVersion": "2.2n",
+      "apkUrls": "[[\"NetherSX2-v2.2n-4248.apk\",\"https://api.github.com/repos/Trixarian/NetherSX2-patch/releases/assets/332820163\"]]",
+      "otherAssetUrls": "[[\"2.2n.tar.gz\",\"https://api.github.com/repos/Trixarian/NetherSX2-patch/tarball/2.2n\"],[\"2.2n.zip\",\"https://api.github.com/repos/Trixarian/NetherSX2-patch/zipball/2.2n\"]]",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":false,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"NetherSX2\",\"appAuthor\":\"Trixarian\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation 2 Emulator (Community Patch)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792189931576980,
+      "pinned": false,
+      "categories": [
+        "Emulator"
+      ],
+      "releaseDate": 1766665332000000,
+      "changeLog": "Merry Christmas, Happy Holidays and a Happy New Year everyone!\r\n\r\nThis update adds experimental Online Multiplayer to NetherSX2 along with the usual updates!\r\nThanks to [IamLupo](https://github.com/IamLupo) for adding it to ARMSX2, and [zakilj3](https://www.youtube.com/user/zakilj3) for discovering the same settings work with NetherSX2!\r\n\r\n[VirusTotal Scan Report](https://www.virustotal.com/gui/file/2029e30dcc1ba1ecb8d73313f18b429b40e6044c7785c52af08b948ef94b3ddf)\r\n\r\n## How to use Online Multiplayer\r\n1. Go to your App Settings --> Settings and toggle on Enable DEV9 Ethernet\r\n2. Set API to Sockets, and Device to how you want to connect online with the default being WiFi. Set this to VPN if your phone uses a VPN, and to one of the two SIM DATA options if you want to use your Mobile Data Plan instead\r\n3. That should be enough to get you online using a guide like [this](https://youtu.be/dcOnZzzcbSc?si=WOf01r0Ln5ZVQkpf&t=278) by LogicalMacrochip\r\n\r\nYou can use the [Official List of PlayStation 2 Online Games (2024)](https://docs.google.com/spreadsheets/d/15pfhL36qmC-iKr8MNjNXNLwgacG4VOmkfvwVxV5vGzo/edit?gid=0#gid=0) to figure out what games work, get their DNAS bypass codes if needed and which private server you should be using\r\n\r\nFor more advanced options (or you want to use the second method from the guide by LogicalMacrochip), you can do the following:\r\n1. Set DNS1 Mode to Manual\r\n2. Under DNS1 select either [PS2 Online](https://ps2online.com) (called Cristian in the Official list) or [PSRewired](https://psrewired.com)\r\nNote: This can also be changed on a Per Game Settings and more servers will be added soon\r\nTo turn it off just set DNS1 Mode to Auto and DNS1 to 0.0.0.0\r\n\r\n[zakilj3](https://www.youtube.com/user/zakilj3) created a more [comprehensive guide](https://www.youtube.com/watch?v=uZzEXvNXUUU) to make it easier for people\r\n\r\n## Changelog\r\n* Bumped version to v2.2n\r\n* Added Networking section to System Settings\r\n### GameDB (converted from [PCSX2](https://pcsx2.net))\r\n* All-Star Fighters - Fixed inverted or broken character textures\r\n* Battle Gear 3 - Fixed broken splitscreen mode\r\n* Blokus Club with Bumpy Trot - Fixed channel shuffles, menu graphics, motion blur, aligned effects and improved post effects\r\n* Bomberman Kart DX - Fixed specific level infinite load screen\r\n* Castlevania: Curse of Darkness - Fixed post-processing alignment\r\n* Cool Girl - Fixed post-processing alignment\r\n* Coraline - Fixed post-processing alignment\r\n* Cy Girls - Fixed post-processing alignment\r\n* Final Fantasy X-2 - Fixed broken FMVs\r\n* George of the Jungle - Fixed post-processing alignment\r\n* George of the Jungle and the Search for the Secret - Fixed post-processing alignment\r\n* Guitar Hero: Greatest Hits - Fixed broken rainbow rendering, edge garbage, shadow definition and aligns post-processing\r\n* Harley-Davidson: Race to the Rally - Fixed post-processing alignment\r\n* Heatseeker - Fixed misalignment issues and lens flares going through objects\r\n* Iris no Atelier: Eternal Mana - Fixed horizontal lines in FMV and character portraits when upscaling\r\n* Killzone - Fixed internal FPS detection\r\n* Next Generation Tennis - Fixed broken pause menu graphics and image alignment\r\n* Ore no Shita de Agake - Fixed incorrect rendering and some missing text\r\n* PachiPara 13 & 14 - Fixed channel shuffles, menu graphics, motion blur, aligned effects and improved post effects\r\n* Raw Danger - Fixed menu graphics, channel shuffles and improved post-processing effects\r\n* Red Ninja: End of Honor - Fixed post-processing alignment\r\n* Silent Hill 3 - Fixed brightness menu transparency effects and text \r\n* Steambot Chronicles - Fixed menu graphics, channel shuffles and improved post-processing effect\r\n* TimeSplitters: Future Perfect - Aligned bloom of distant objects\r\n* US OPEN 2002: A USTA EVENT - Fixed broken pause menu graphics\r\n* Wacky Races - Fixed interlace wobble\r\n* Yakuza 1 & 2 - Improved brightness and banding\r\n### ControllerDB (from [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB))\r\n* 8BitDo Pro 3\r\n* 8BitDo Ultimate 2C\r\n* icedragon.io STAC Dance Pad\r\n* Logitech Cordless RumblePad\r\n* PlayStation VR2 Sense Controllers\r\n* Ultimate Atari Fight Stick\r\n* XinMo Dual Arcade\r\n* ZhiXu GuliKit D\r\n### No interlacing and Widescreen Patches (Thanks [Saramagrean](https://github.com/Saramagrean/NetherSX2-cheats)!)\r\n#### No Interlacing\r\n* Grand Theft Auto: San Andreas\r\n* Hot Shots Golf 3\r\n* Mystic Nights\r\n* Shadow Hearts\r\n* Tales of Destiny - Director's Cut\r\n#### Widescreen\r\n* Grand Theft Auto: San Andreas\r\n* Jackie Chan Adventures\r\n* Metal Gear Solid 2 - Substance\r\n* Mystic Nights\r\n* Pro Evolution Soccer 2014\r\n* The Great Escape\r\n* Tales Of The Abyss",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
+      "allowIdChange": false,
+      "pendingRepoRenameUrl": null
+    },
+    {
+      "id": "org.vita3k.emulator",
+      "url": "https://github.com/Vita3K/Vita3K",
+      "author": "Vita3K",
+      "name": "Vita3K",
+      "installedVersion": "v12",
+      "latestVersion": "v12",
+      "apkUrls": "[[\"vita3k-android-release-12.apk\",\"https://api.github.com/repos/Vita3K/Vita3K-Android/releases/assets/172343968\"]]",
+      "otherAssetUrls": "[[\"v12.tar.gz\",\"https://api.github.com/repos/Vita3K/Vita3K-Android/tarball/v12\"],[\"v12.zip\",\"https://api.github.com/repos/Vita3K/Vita3K-Android/zipball/v12\"]]",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"continuous\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":true,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":false,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"android-latest\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Vita3K\",\"appAuthor\":\"Vita3K\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation Vita Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "lastUpdateCheck": 1792189931563833,
+      "pinned": false,
+      "categories": [
+        "Emulator"
+      ],
+      "releaseDate": 1717706169000000,
+      "changeLog": "Vita3K Android release 12 Changelog (non exhaustive list):\r\n- SD card support: Allow any folder to be specified as the OS/game data folder (inspired by the PR from nurunuruslime)\r\n- Allow the overlay to be used at the same time as the touchscreen\r\n- Fix black bands appearing sometimes at the top and bottom of the application on some devices\r\n- Fix bug causing game installation to be 10x slower than expected\r\n- Fix accelerometer and gyroscope on android game consoles\r\n- Some crash fixes\r\n- Add controller opacity (dima)\r\n\r\n\r\n\r\nRebase on PC version:\r\n- Fix audio regression (bookmist)\r\n- Code cleanup, refractoring and small optimisations (bookmist, Nishinji and GermanAizek)\r\n- Improved error messages (croden)\r\n- GUI improvements (Zangetsu)\r\n- Improve depth-stencil retrieval, fix Ratchet and Clank (Macdu)\r\n- Add support for module unloading/reloading, allows FFX to be playable (Macdu)\r\n- Improve ffmpeg dependency (KhoraLee)\r\n- Improve Transfer downscale/copy, fix graphical issues in Phantasy Star Nova (Macdu)\r\n- Improve Polish localization (mavethee)",
+      "releaseUrl": null,
+      "overrideSource": "GitHub",
+      "allowIdChange": false,
+      "pendingRepoRenameUrl": null
     }
   ]
 }
