@@ -18,7 +18,7 @@ Your primary interface to the device is **ADB (Android Debug Bridge)** over USB 
 - **Local Platform Tools**: `C:\Users\dmill\Documents\AntigravityWorkingDir\platform-tools\adb.exe`
 - **Installed Python**: `C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe`
 - **Git Binary**: `C:\Program Files\Git\cmd\git.exe`
-- **RP5 serial**: `ff152647` (a second device, the Konkr Pocket Advance, may also be attached - always use `adb -s <serial>`)
+- **RP5 serial**: Read dynamically via `adb devices` (multiple devices may be attached - always use `adb -s <serial>`)
 - When running commands in Windows PowerShell where PATH might not be reloaded in inherited subprocesses, ensure ADB and Python are referenced cleanly using environment refreshes or absolute fallbacks.
 
 ---
@@ -93,11 +93,11 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 
 To run the complete zero-touch provisioning pipeline:
 ```powershell
-.\scripts\provision_all.ps1 -Serial ff152647
+.\scripts\provision_all.ps1 -Serial <SERIAL>
 ```
 Or directly via Python:
 ```powershell
-python scripts/setup_rp5.py --serial ff152647 --all
+python scripts/setup_rp5.py --serial <SERIAL> --all
 ```
 Options available:
 - `--all`: Execute complete community provisioning pipeline (hardware tuning, storage, Obtainium, DroidDeck, Vita firmware, RetroArch low-pass engine, standalone 3D profiles, widescreen patches, and save backup sync).

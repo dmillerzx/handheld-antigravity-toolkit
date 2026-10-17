@@ -448,11 +448,13 @@ class RP5Provisioner:
             if not src.exists():
                 return
             txt = src.read_text(encoding="utf-8", errors="replace")
-            # Replace any hardcoded EEEF-F762 with dynamic sd_id or /sdcard
+            # Replace any hardcoded SD_ID or EEEF-F762 with dynamic sd_id or /sdcard
             if sd_id:
-                txt = txt.replace("EEEF-F762", sd_id)
+                txt = txt.replace("<SD_ID>", sd_id).replace("EEEF-F762", sd_id)
             else:
+                txt = txt.replace("/storage/<SD_ID>/RetroArch", "/sdcard/RetroArch")
                 txt = txt.replace("/storage/EEEF-F762/RetroArch", "/sdcard/RetroArch")
+                txt = txt.replace("/storage/<SD_ID>/bios", "/sdcard/bios")
                 txt = txt.replace("/storage/EEEF-F762/bios", "/sdcard/bios")
             tmp_f = self.temp_dir / src.name
             tmp_f.write_text(txt, encoding="utf-8")

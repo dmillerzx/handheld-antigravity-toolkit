@@ -57,7 +57,6 @@ class StandaloneConfigurator:
         self.sd_id = sd_id
         self.bios_dir = f"/storage/{self.sd_id}/bios" if self.sd_id else "/sdcard/bios"
         self.temp_dir = Path(tempfile.mkdtemp(prefix="rp_standalones_"))
-        self.templates_dir = WORKSPACE_ROOT / "configs" / "templates"
 
         # Profile extraction
         self.emulation = self.profile.get("emulation", {})

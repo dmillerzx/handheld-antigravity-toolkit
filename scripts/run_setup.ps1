@@ -18,7 +18,6 @@ if ((Test-Path $PlatformTools) -and ($env:Path -notlike "*$PlatformTools*")) {
 
 # Resolve real Python executable, avoiding WindowsApps execution alias stub
 $KnownPythons = @(
-    "C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe",
     (Join-Path $env:LOCALAPPDATA "Programs\Python\Python312\python.exe"),
     (Join-Path $env:LOCALAPPDATA "Programs\Python\Python311\python.exe"),
     (Join-Path $env:ProgramFiles "Python312\python.exe")

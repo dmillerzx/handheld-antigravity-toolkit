@@ -169,17 +169,17 @@ To verify permissions, directory integrity, and active settings in one command o
 
 ```powershell
 # Verify Canonical Scaffolding
-.\platform-tools\adb.exe -s ff152647 shell "ls -d /sdcard/bios /storage/*/ROMs /storage/*/ES-DE /storage/*/RetroArch"
+.\platform-tools\adb.exe -s <SERIAL> shell "ls -d /sdcard/bios /storage/*/ROMs /storage/*/ES-DE /storage/*/RetroArch"
 
 # Verify AppOps MANAGE_EXTERNAL_STORAGE Grants
-.\platform-tools\adb.exe -s ff152647 shell "appops get org.es_de.frontend MANAGE_EXTERNAL_STORAGE; appops get com.retroarch.aarch64 MANAGE_EXTERNAL_STORAGE"
+.\platform-tools\adb.exe -s <SERIAL> shell "appops get org.es_de.frontend MANAGE_EXTERNAL_STORAGE; appops get com.retroarch.aarch64 MANAGE_EXTERNAL_STORAGE"
 
 # Verify Android 13 Phantom Process Limit Bypass
-.\platform-tools\adb.exe -s ff152647 shell "/system/bin/device_config get activity_manager max_phantom_processes"
+.\platform-tools\adb.exe -s <SERIAL> shell "/system/bin/device_config get activity_manager max_phantom_processes"
 
 # Verify Screen Auto-Rotate Disabled (Locked Landscape) & Dark Theme
-.\platform-tools\adb.exe -s ff152647 shell "settings get system accelerometer_rotation; settings get secure ui_night_mode; settings get system sound_effects_enabled"
+.\platform-tools\adb.exe -s <SERIAL> shell "settings get system accelerometer_rotation; settings get secure ui_night_mode; settings get system sound_effects_enabled"
 
 # Verify Doze Whitelist for Frontends & Emulators
-.\platform-tools\adb.exe -s ff152647 shell "dumpsys deviceidle whitelist | grep -E 'es_de|retroarch|droiddeck'"
+.\platform-tools\adb.exe -s <SERIAL> shell "dumpsys deviceidle whitelist | grep -E 'es_de|retroarch|droiddeck'"
 ```

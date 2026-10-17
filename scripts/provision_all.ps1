@@ -55,7 +55,6 @@ if (-not $AdbExe) {
 # 2. Resolve Python 3.10+ Executable
 # -----------------------------------------------------------------------------
 $KnownPythons = @(
-    "C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe",
     (Join-Path $env:LOCALAPPDATA "Programs\Python\Python312\python.exe"),
     (Join-Path $env:LOCALAPPDATA "Programs\Python\Python311\python.exe"),
     (Join-Path $env:LOCALAPPDATA "Programs\Python\Python310\python.exe"),

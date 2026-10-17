@@ -21,7 +21,7 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 CONFIGS_DIR = WORKSPACE_ROOT / "configs"
 OBTAINIUM_CONFIG = CONFIGS_DIR / "rp5_master_obtainium.json"
 
-DEFAULT_SERIAL = "ff152647"
+DEFAULT_SERIAL = ""
 
 CORE_PACKAGES = [
     ("dev.imranr.obtainium", "Obtainium App Updater", "Obtainium"),
@@ -259,7 +259,7 @@ def find_adb() -> Optional[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Retroid Pocket 5 On-Device UI Automation")
-    parser.add_argument("-s", "--serial", default=DEFAULT_SERIAL, help="Target device serial (default: ff152647)")
+    parser.add_argument("-s", "--serial", default=DEFAULT_SERIAL, help="Target device serial")
     parser.add_argument("--adb", default=None, help="Explicit path to adb binary")
     parser.add_argument("--skip-playstore", action="store_true", help="Skip Google Play Store automation")
     parser.add_argument("--skip-obtainium", action="store_true", help="Skip Obtainium import automation")

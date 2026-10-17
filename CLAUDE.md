@@ -7,7 +7,7 @@ This repository is the **Retroid Pocket 5 (RP5) Automated Provisioning Workspace
 ## 1. Hardware & System Context
 
 - **Device**: Retroid Pocket 5 (RP5)
-- **Serial**: `ff152647` (Always specify `-s ff152647` with ADB; a secondary Konkr Pocket Advance may be connected)
+- **Serial**: `<SERIAL>` (Always pass `-s <serial>` with ADB at runtime)
 - **SoC**: Qualcomm Snapdragon 865 (SM8250)
 - **GPU**: Adreno 650 (supports custom Turnip/Mesa drivers via Vulkan)
 - **OS**: Android 13 (Retroid OS, AOSP-based)
@@ -18,16 +18,16 @@ This repository is the **Retroid Pocket 5 (RP5) Automated Provisioning Workspace
   - Android Input Name: `Xbox Wireless Controller` (registered as Device 10 in Android `dumpsys input`)
 - **Canonical Storage Layout**:
   - Internal: `/sdcard/bios/`
-  - MicroSD: `/storage/EEEF-F762/`
-    - `/storage/EEEF-F762/bios/` (Canonical BIOS shared by all emulators)
-    - `/storage/EEEF-F762/ROMs/<system>/` (Canonical ROM root; NO ROMs on internal storage)
-    - `/storage/EEEF-F762/ES-DE/` (Frontend data)
-    - `/storage/EEEF-F762/RetroArch/` (Configs, cores, filters, shaders)
-    - `/storage/EEEF-F762/Saves_Backup/latest/` (Save mirror)
-    - `/storage/EEEF-F762/Games/Steam/` (DroidDeck Steam library)
+  - MicroSD: `/storage/<SD_ID>/`
+    - `/storage/<SD_ID>/bios/` (Canonical BIOS shared by all emulators)
+    - `/storage/<SD_ID>/ROMs/<system>/` (Canonical ROM root; NO ROMs on internal storage)
+    - `/storage/<SD_ID>/ES-DE/` (Frontend data)
+    - `/storage/<SD_ID>/RetroArch/` (Configs, cores, filters, shaders)
+    - `/storage/<SD_ID>/Saves_Backup/latest/` (Save mirror)
+    - `/storage/<SD_ID>/Games/Steam/` (DroidDeck Steam library)
 
 > [!CAUTION]
-> **Canonical Storage Rules**: Never create or push to `Games/BIOS`, `BIOS/`, `roms/` (lowercase), `Emulation/`, or `/sdcard/ROMs`. ROMs strictly reside in `/storage/EEEF-F762/ROMs/<system>/`.
+> **Canonical Storage Rules**: Never create or push to `Games/BIOS`, `BIOS/`, `roms/` (lowercase), `Emulation/`, or `/sdcard/ROMs`. ROMs strictly reside in `/storage/<SD_ID>/ROMs/<system>/`.
 
 ---
 
@@ -85,7 +85,7 @@ The previous agent sessions made major progress (ES-DE direct booting ARM SX2 wi
 - **Agent Directives & Storage Laws**: [AGENTS.md](AGENTS.md) and [GEMINI.md](GEMINI.md)
 - **Quality Checklist**: [QA_CHECKLIST.md](QA_CHECKLIST.md)
 - **Automation Scripts**:
-  - `scripts/setup_rp5.py`: Master setup script (`--serial ff152647 --all`)
+  - `scripts/setup_rp5.py`: Master setup script (`--serial <SERIAL> --all`)
   - `scripts/configure_standalones.py`: Standalone 3D emulator config injector
   - `scripts/stage_community_patches.py`: PS2 & Dolphin patch engine
 
@@ -94,7 +94,7 @@ The previous agent sessions made major progress (ES-DE direct booting ARM SX2 wi
 ## 4. Execution Guidance for Claude
 
 1. **Working Directory**: `C:\Users\dmill\Documents\AntigravityWorkingDir`
-2. **Local ADB Binary**: `.\platform-tools\adb.exe -s ff152647`
+2. **Local ADB Binary**: `.\platform-tools\adb.exe -s <SERIAL>`
 3. **Local Python**: `python` (Python 3.12)
 4. **Git Remote**: `origin` -> `https://github.com/dmillerzx/handheld-antigravity-toolkit.git` (branch `main`)
 5. **Always Verify with Live Hardware Inspections**: Test actual files on device with `adb shell cat` and verify input with `dumpsys input`.

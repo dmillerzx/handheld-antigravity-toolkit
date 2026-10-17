@@ -57,7 +57,7 @@ def detect_storage_targets(adb_path: str, serial: Optional[str] = None, dry_run:
     
     Returns:
         (internal_root, external_root, sd_id)
-        e.g. ("/sdcard", "/storage/EEEF-F762", "EEEF-F762")
+        e.g. ("/sdcard", "/storage/1234-5678", "1234-5678")
         or ("/sdcard", None, None) if no external MicroSD is mounted.
     """
     internal_root = "/sdcard"

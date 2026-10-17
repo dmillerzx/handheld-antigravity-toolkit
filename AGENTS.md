@@ -13,7 +13,7 @@ Welcome to the **Retroid Pocket 5 (RP5) Automated Provisioning Workspace**. This
 - **Display**: 5.5-inch 1080p AMOLED (1920x1080), 60Hz
 - **Storage**:
   - Internal: `/sdcard` or `/storage/emulated/0`
-  - External: `/storage/XXXX-XXXX/` (MicroSD FAT32/exFAT UUID; currently `EEEF-F762`)
+  - External: `/storage/<SD_ID>/` (MicroSD FAT32/exFAT UUID)
 - **Connectivity**: USB-C with ADB debugging enabled
 
 ---
@@ -151,10 +151,10 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 
 ## 5. Operational Best Practices for Agents
 
-1. **Master Runner**: Execute `.\scripts\provision_all.ps1 -Serial ff152647` or `python scripts/setup_rp5.py --serial ff152647 --all`.
-2. **Device State Verification**: Always check `adb devices` before executing device commands. If status is `unauthorized`, prompt the user to accept the USB debugging prompt on the RP5 screen.
+1. **Master Runner**: Execute `.\scripts\provision_all.ps1 -Serial <SERIAL>` or `python scripts/setup_rp5.py --serial <SERIAL> --all`.
+2. **Device State Verification**: Always check `adb devices` before executing device commands. If status is `unauthorized`, prompt the user to accept the USB debugging prompt on the device screen.
 3. **Safe Storage Handling**: Do not write large binary files directly to version control. Validate paths before issuing `adb push` commands, and only push to the canonical paths in Section 2.
-4. **Multiple Devices**: A Konkr Pocket Advance may also be attached. Always pass `-s <serial>` explicitly; the RP5 serial is `ff152647`.
+4. **Multiple Devices**: Multiple devices may be attached. Always query `adb devices` at runtime and pass `-s <serial>` explicitly.
 
 ---
 

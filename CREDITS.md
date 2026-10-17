@@ -70,3 +70,16 @@ The **Retroid Pocket 5 (RP5) Automated Provisioning Workspace** is made possible
 * **[Daijishō](https://github.com/Magneticchen/Daijishou)** — Developed by TapiocaFox. Modern retro launcher frontend for Android.
 * **[Obtainium](https://github.com/ImranR98/Obtainium)** — Developed by ImranR98. Seamless open-source package manager fetching APK releases directly from upstream repositories.
 * **[Retro Game Corps](https://retrogamecorps.com/)** — Authored by Russ. Benchmark analyses, handheld setup methodologies, and community hotkey mapping standards.
+
+---
+
+## 7. Video Tutorials & Community Setup Guides
+
+* **Joey's Retro Handhelds**:
+  * [Retroid Pocket 5/Mini/Flip 2 Starter Setup Guide](https://www.youtube.com/watch?v=iw1QdieBE0A)
+* **Retro Game Corps**:
+  * [Retroid Pocket 5 In-Depth Review](https://www.youtube.com/watch?v=ZFTrwWQOe5Y)
+  * [Retroid Pocket 5 (and Mini) Starter Guide](https://www.youtube.com/watch?v=-CJ9WVFmYXc)
+  * [PS2 Emulation on Android Has LEVELED UP (ARM SX2 Guide)](https://www.youtube.com/watch?v=noFBhUGmSYU)
+* **Rowdy**:
+  * [The BEST Gran Turismo 4 Emulation Settings For 2024/2025! (PCSX2)](https://www.youtube.com/watch?v=KO0DIwszjlI)

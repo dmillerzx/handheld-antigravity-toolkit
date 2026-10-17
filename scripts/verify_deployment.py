@@ -24,7 +24,17 @@ from typing import Any, Dict, List, Tuple
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 
 DEFAULT_ADB = WORKSPACE_ROOT / "platform-tools" / ("adb.exe" if os.name == "nt" else "adb")
-DEFAULT_SERIAL = "ff152647"
+
+
+def get_connected_serial(adb_path: Path) -> str:
+    try:
+        out = subprocess.check_output([str(adb_path), "devices"], text=True)
+        lines = [line.strip() for line in out.splitlines() if line.strip() and not line.startswith("List of devices")]
+        if lines:
+            return lines[0].split()[0]
+    except Exception:
+        pass
+    return ""
 
 DOLPHIN_PKG = "org.dolphinemu.dolphinemu"
 ARMSX2_PKG = "com.armsx2"
@@ -215,10 +225,11 @@ class DeploymentVerifier:
 def main():
     parser = argparse.ArgumentParser(description="Verify on-device configurations against repository source of truth.")
     parser.add_argument("--adb", default=str(DEFAULT_ADB), help="Path to adb executable")
-    parser.add_argument("--serial", "-s", default=DEFAULT_SERIAL, help="Target device serial")
+    parser.add_argument("--serial", "-s", default="", help="Target device serial (auto-detects if omitted)")
     args = parser.parse_args()
 
-    verifier = DeploymentVerifier(Path(args.adb), args.serial)
+    serial = args.serial or get_connected_serial(Path(args.adb))
+    verifier = DeploymentVerifier(Path(args.adb), serial)
     success = verifier.verify()
     sys.exit(0 if success else 1)
 
