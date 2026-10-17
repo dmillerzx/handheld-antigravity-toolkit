@@ -28,7 +28,7 @@
     "duckstation_resolution_scale": 5,
     "armsx2_upscale_multiplier": 2.0,
     "nethersx2_upscale_multiplier": 2.25,
-    "dolphin_internal_resolution": 2.5,
+    "dolphin_internal_resolution": 3,
     "ppsspp_resolution_scale": 4,
     "flycast_res_scale": 2,
     "azahar_resolution_factor": 3,

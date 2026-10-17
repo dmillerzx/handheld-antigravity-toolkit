@@ -175,7 +175,7 @@ UpscaleMultiplier = {scale}
 AspectRatio = {aspect}
 Crop = 1
 CropMode = Overscan
-HardwareDownloadMode = 1
+HardwareDownloadMode = 0
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 ThreadedPresentation = true
@@ -251,7 +251,7 @@ UpscaleMultiplier = {scale}
 AspectRatio = {aspect}
 Crop = 1
 CropMode = Overscan
-HardwareDownloadMode = 1
+HardwareDownloadMode = 0
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 ThreadedPresentation = true
@@ -288,7 +288,7 @@ Opacity = 0
         g["enableNoInterlacingPatches"] = True
         g["enableCheats"] = True
         g["enableFastBoot"] = True
-        g["hardwareDownloadMode"] = 1  # Disable GS Readbacks (eliminates GT4 tunnel/night lag)
+        g["hardwareDownloadMode"] = 0  # Accurate (GT4 per-game override uses 1)
         g["antiBlur"] = True
         g["accurateBlendingUnit"] = 1
         g["memoryCardSlot1Filename"] = "mcd001.ps2"
@@ -404,7 +404,7 @@ Backend = Vulkan
 InternalResolution = {scale}
 AspectRatio = {aspect_ratio}
 WideScreenHack = False
-WaitForShadersBeforeStarting = False
+WaitForShadersBeforeStarting = True
 VSync = True
 ShaderCompilationMode = 2
 
@@ -573,7 +573,12 @@ output_engine = 0
         scale = self.emulation.get("vita3k_resolution_multiplier", 2)
         driver_desc = "Mesa Turnip Driver" if self.supports_turnip else "System Vulkan Driver"
         print(f"\n[*] Configuring Vita3K (PS Vita - {scale}x Vulkan & {driver_desc})...")
-        content = f"""initial-setup: false
+        self.shell("am force-stop org.vita3k.emulator", check=False)
+        cfg_source = WORKSPACE_ROOT / "configs" / "vita3k" / "config.yml"
+        if cfg_source.exists():
+            content = cfg_source.read_text(encoding="utf-8")
+        else:
+            content = f"""initial-setup: false
 pref-path: "/storage/emulated/0/Android/data/org.vita3k.emulator/files/vita"
 backend-renderer: Vulkan
 resolution-multiplier: {scale}
@@ -582,7 +587,8 @@ fullscreen: true
 show-touch-controls: false
 gui-controllers-overlay: false
 overlay-opacity: 0
-overlay-scale: 100
+overlay-scale: 1.0
+show-gui: true
 """
         local_cfg = self.temp_dir / "config.yml"
         local_cfg.write_text(content, encoding="utf-8")

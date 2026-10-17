@@ -163,26 +163,16 @@
     },
     {
       "id": "org.vita3k.emulator",
-      "url": "https://github.com/Vita3K/Vita3K",
+      "url": "https://github.com/Vita3K/Vita3K-builds",
       "author": "Vita3K",
       "name": "Vita3K",
-      "installedVersion": "v12",
-      "latestVersion": "continuous",
-      "apkUrls": "[[\"android-latest.apk\",\"https://api.github.com/repos/Vita3K/Vita3K/releases/assets/649979789\"]]",
-      "otherAssetUrls": "[[\"macos-arm64-latest.dmg\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/macos-arm64-latest.dmg\"],[\"macos-latest.dmg\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/macos-latest.dmg\"],[\"ubuntu-aarch64-latest.zip\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/ubuntu-aarch64-latest.zip\"],[\"ubuntu-latest.zip\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/ubuntu-latest.zip\"],[\"Vita3K-aarch64.AppImage\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/Vita3K-aarch64.AppImage\"],[\"Vita3K-aarch64.AppImage.zsync\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/Vita3K-aarch64.AppImage.zsync\"],[\"Vita3K-x86_64.AppImage\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/Vita3K-x86_64.AppImage\"],[\"Vita3K-x86_64.AppImage.zsync\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/Vita3K-x86_64.AppImage.zsync\"],[\"windows-arm64-latest.zip\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-arm64-latest.zip\"],[\"windows-latest.zip\",\"https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip\"],[\"continuous.tar.gz\",\"https://api.github.com/repos/Vita3K/Vita3K/tarball/continuous\"],[\"continuous.zip\",\"https://api.github.com/repos/Vita3K/Vita3K/zipball/continuous\"]]",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":true,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":false,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"android-latest\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Vita3K\",\"appAuthor\":\"Vita3K\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation Vita Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\",\"defaultPseudoVersioningMethod\":\"partialAPKHash\"}",
-      "lastUpdateCheck": 1792236682486870,
-      "pinned": false,
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":true,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"github-creds\":\"\",\"GHReqPrefix\":\"\",\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Vita3K\",\"appAuthor\":\"Vita3K\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"PlayStation Vita Emulator\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\"}",
       "categories": [
         "Emulator"
       ],
-      "releaseDate": 1792225984000000,
-      "changeLog": "Corresponding commit: fab6bfc768af03c563f4082e58029da336dc918c\nVita3K Build: 4190",
-      "releaseUrl": null,
-      "overrideSource": "GitHub",
       "allowIdChange": false,
-      "pendingRepoRenameUrl": null
+      "overrideSource": "GitHub"
     }
   ]
 }
