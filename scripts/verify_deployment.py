@@ -272,7 +272,7 @@ class DeploymentVerifier:
                 ra_text = ra_cfg_path.read_text(encoding="utf-8", errors="replace")
                 checks = [
                     ('video_driver = "vulkan"', "Vulkan video backend"),
-                    ('audio_driver = "opensles"', "OpenSLES low-latency audio"),
+                    ('audio_driver = "opensl"', "OpenSL low-latency audio"),
                     ('audio_latency = "48"', "48ms audio buffer"),
                 ]
                 ra_errors = []

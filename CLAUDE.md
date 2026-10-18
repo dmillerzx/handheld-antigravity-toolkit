@@ -47,15 +47,20 @@ The following issues and components have been completely resolved and verified v
 4. **Apotris Native Android Port**:
    - Upstream ARM64 build (`com.apotris.android`) installed with ES-DE launcher at `/storage/<SD_ID>/ROMs/ports/Apotris.app`.
    - Verified running at silky-smooth native 60fps with full controller support, rendering GBA emulation obsolete.
-5. **PokeMMO 5-Region Staging**:
-   - Clean retail ROMs for all 5 generations/regions (*Black*, *White*, *HeartGold*, *SoulSilver*, *Platinum*, plus *FireRed* & *Emerald*) extracted and staged to `/sdcard/Download/pokemmo_roms/` and internal sandbox `/sdcard/Android/data/eu.pokemmo.client/files/roms/`.
+5. **PokeMMO 5-Region In-Game Setup (100% Verified)**:
+   - Fixed Scoped Storage access by granting `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions via `pm grant`.
+   - Loaded all 5 regional ROMs through on-device Client Management SAF picker:
+     - NDS Base: *Pokemon Black* (`pokemon_black.nds`)
+     - GBA Regions: *Pokemon FireRed* (`Pokemon FireRed Version (USA) (Rev-A).gba`), *Pokemon Emerald* (`Pokemon Emerald Version (USA).gba`)
+     - NDS Visual Overhauls: *Pokemon Platinum* (`pokemon_platinum.nds`), *Pokemon HeartGold* (`pokemon_heartgold.nds`)
+   - Verified live in-game: Client Management confirms header `NDS: POKEMON B, POKEMON PL, POKEMON HG | GBA: BPRE v1.1, BPEE v1.0` and boots cleanly into the live animated cloud login screen (`pokemmo_login_form.png`).
 6. **Dreamcast Duplicate Cleanup**:
    - Confirmed single clean CDI format for *Arcade Racing Legends - Road Trip Edition*; duplicate CHD safely removed.
 7. **GoldenEye 007 (Recomp)**:
    - Resolved asset path issue: `default.xex` and game files were previously placed in `files/assets/` rather than the root `files/` directory, causing "Game files not found (default.xex is missing)".
-   - Relocated files directly to `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` and verified on-device: game boots, loads full Twycross/Rare intro, and advances to the iconic James Bond gunbarrel animation.
-8. **Active Verified Native Ports (14 Titles Live on Device)**:
-   - Super Mario 64 / Star Fox 64 (Starship) / Mario Kart 64 (SpaghettiKart) / Ocarina of Time (Ship of Harkinian) / Majora's Mask (2 Ship 2 Harkinian) / Zelda 3 (A Link to the Past) / GoldenEye 007 (Recomp) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Balatro / Space Cadet 3D Pinball / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6 + 100% save).
+   - Relocated files directly to `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` and verified on-device: game boots, loads full Twycross/Rare intro, and advances to the iconic James Bond gunbarrel animation (`ge_live.png`).
+8. **Active Verified Native Ports (16 Titles Live on Device)**:
+   - GoldenEye 007 (Recomp) / Ship of Harkinian (OOT) / 2 Ship 2 Harkinian (MM) / Mario Kart 64 (SpaghettiKart) / Star Fox 64 (Starship) / Zelda 3 (A Link to the Past) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Space Cadet 3D Pinball / Balatro / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6) / Apotris / PokeMMO (all 5 regions) / OutRun 2006 (Coast 2 Coast in DroidDeck).
 
 ---
 

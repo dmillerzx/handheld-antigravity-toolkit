@@ -45,3 +45,6 @@ backups/
 snapshots/
 .idea/
 .vscode/
+
+# Extracted native port binary assets (OTR, O2R)
+assets/
