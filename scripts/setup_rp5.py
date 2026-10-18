@@ -72,6 +72,15 @@ TARGET_PACKAGES = [
     ("com.fexed.spacecadetpinball", "Space Cadet 3D Pinball"),
     ("com.unofficial.balatro", "Balatro (Native Mobile)"),
     ("com.example.megamanxregenesis", "Mega Man X Regenesis"),
+    ("org.godotengine.rockmanx816bitdemakemod", "Mega Man X8 16-bit Demake"),
+    ("com.dishii.soh", "Ship of Harkinian (OOT)"),
+    ("com.dishii.mm", "2 Ship 2 Harkinian (MM)"),
+    ("com.starship.android", "Star Fox 64 (Starship)"),
+    ("com.dishii.zelda3", "Zelda 3 (A Link to the Past)"),
+    ("com.izzy.kart", "Mario Kart 64 (SpaghettiKart)"),
+    ("com.perfectdark.port", "Perfect Dark"),
+    ("com.sunjaycy.goldeneye", "GoldenEye 007 (Recomp)"),
+    ("io.github.thatguymcd.dkrr.preview", "Diddy Kong Racing (DKR-R)"),
 ]
 
 # Additional AppOps granted beyond MANAGE_EXTERNAL_STORAGE
@@ -410,7 +419,9 @@ class RP5Provisioner:
 
             print(f"    -> Pushing DroidDeck config (Steam library -> {steam_target})...")
             self.run_cmd("push", str(tmp_cfg), "/sdcard/DroidDeck/config.json")
+            self.run_cmd("push", str(tmp_cfg), "/sdcard/DroidDeck/settings.json")
             self.run_cmd("push", str(tmp_cfg), "/sdcard/Android/data/com.droiddeck.launcher/files/config.json")
+            self.run_cmd("push", str(tmp_cfg), "/sdcard/Android/data/com.droiddeck.launcher/files/settings.json")
 
         vdf_source = WORKSPACE_ROOT / "configs" / "libraryfolders.vdf"
         if vdf_source.exists():
