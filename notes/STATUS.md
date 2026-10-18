@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | **P0.1** | Make GitHub repository private | Note #6 | ⏳ **Waiting for Doug** | User action (GitHub Settings ➔ Danger Zone) |
 | **P0.2** | Remove copyrighted video transcripts from `notes/` & update `CREDITS.md` | Note #6 | ✅ **Done & Pushed** | Commit [`7af289f`](https://github.com/.../handheld-antigravity-toolkit/commit/7af289f) |
-| **P0.3** | Scrub device serial (`<SERIAL>`), MicroSD UUID (`<SD_ID>`) & user paths from repo | Note #6 | ⏳ **In Progress** | Reopened; active scrub across docs & scripts, pre-commit leak check hook |
+| **P0.3** | Scrub device serial (`<SERIAL>`), MicroSD UUID (`<SD_ID>`) & user paths from repo | Note #6 | ✅ **Done & Pushed** | Commit [`5e016ba`](https://github.com/dmillerzx/handheld-antigravity-toolkit/commit/5e016ba); git history still holds past values (do not rewrite history); pre-commit leak check hook active |
 | **P0.4** | Remove hardcoded Python paths from PowerShell runner scripts | Note #6 | ✅ **Done & Pushed** | Commit [`bfffbc2`](https://github.com/.../handheld-antigravity-toolkit/commit/bfffbc2) |
 | **P0.5** | Delete redundant and divergent `configs/templates/` directory | Note #6 | ✅ **Done & Pushed** | Commit [`7af289f`](https://github.com/.../handheld-antigravity-toolkit/commit/7af289f) |
 | **P1.1** | Discover MicroSD volume UUID dynamically at runtime | Note #6 | ✅ **Done & Pushed** | Commit [`c91236d`](https://github.com/.../handheld-antigravity-toolkit/commit/c91236d) |
@@ -48,7 +48,7 @@
 
 ## 🔍 Current Git Working Tree
 
-- **HEAD Commit**: `e8bbef3` (*feat(emulators): deploy verified Vita3K config & Obtainium builds tracking, update Dolphin 3x profile, and scope PS2 readbacks*)
+- **HEAD Commit**: `67d9c64` (*fix(audio): align audio keys and schemas for RetroArch, PPSSPP, Flycast, DuckStation, and NetherSX2*)
 - **Status vs `origin/main`**: Up to date (no unpushed commits)
 - **Local Unstaged Changes**: None (clean working tree)
 
