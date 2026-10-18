@@ -51,7 +51,10 @@ The following issues and components have been completely resolved and verified v
    - Clean retail ROMs for all 5 generations/regions (*Black*, *White*, *HeartGold*, *SoulSilver*, *Platinum*, plus *FireRed* & *Emerald*) extracted and staged to `/sdcard/Download/pokemmo_roms/` and internal sandbox `/sdcard/Android/data/eu.pokemmo.client/files/roms/`.
 6. **Dreamcast Duplicate Cleanup**:
    - Confirmed single clean CDI format for *Arcade Racing Legends - Road Trip Edition*; duplicate CHD safely removed.
-7. **Active Verified Native Ports (14 Titles Live on Device)**:
+7. **GoldenEye 007 (Recomp)**:
+   - Resolved asset path issue: `default.xex` and game files were previously placed in `files/assets/` rather than the root `files/` directory, causing "Game files not found (default.xex is missing)".
+   - Relocated files directly to `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` and verified on-device: game boots, loads full Twycross/Rare intro, and advances to the iconic James Bond gunbarrel animation.
+8. **Active Verified Native Ports (14 Titles Live on Device)**:
    - Super Mario 64 / Star Fox 64 (Starship) / Mario Kart 64 (SpaghettiKart) / Ocarina of Time (Ship of Harkinian) / Majora's Mask (2 Ship 2 Harkinian) / Zelda 3 (A Link to the Past) / GoldenEye 007 (Recomp) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Balatro / Space Cadet 3D Pinball / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6 + 100% save).
 
 ---
