@@ -144,7 +144,16 @@ To guarantee emulator stability and prevent input or configuration regressions:
 ## 9. Markdown Clipboard Staging Protocol
 
 When providing markdown text intended for the user to copy/paste to external sites (e.g., GitHub comments, issues, PR discussions, Discord, forums):
-1. **Always stage directly into Windows clipboard**: Use PowerShell `Get-Content <file> -Raw | Set-Clipboard` so the user can immediately paste with `Ctrl+V`.
+1. **Always stage directly into Windows clipboard**: Use PowerShell `.\scripts\stage_clipboard.ps1 -FilePath <file>` or `Get-Content <file> -Raw | Set-Clipboard` so the user can immediately paste with `Ctrl+V`.
 2. **Strict Flush-Left Formatting**: Ensure zero leading indentation (no 4-space indentations) so GitHub Markdown does not parse text, headers, lists, or HTML `<details>` drawers as indented code blocks.
+
+---
+
+## 10. OLED Display Sleep Invariant (Burn-in Prevention)
+
+Whenever finishing automation tasks, concluding a conversation turn, or awaiting user input:
+1. **Power down display**: Execute `adb -s <serial> shell input keyevent 26`.
+2. **Verify sleep status**: Execute `adb -s <serial> shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"` to ensure `mHoldingDisplaySuspendBlocker=false` and `mWakefulness=Dozing`.
+
 
 

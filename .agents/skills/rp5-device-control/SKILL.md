@@ -1,0 +1,83 @@
+---
+name: rp5-device-control
+description: >-
+  Deterministic hardware and UI interaction runbook for the Retroid Pocket 5 (RP5).
+  Covers OLED display sleep management, UIAutomator XML element interaction (scripts/android_ui.py),
+  and kernel evdev controller injection (/dev/input/event8) inside gamescope/PRoot containers.
+---
+
+# Retroid Pocket 5 Device Control Skill
+
+This skill provides deterministic commands and protocols for interacting with physical RP5 hardware, preventing screen burn-in, automating Android UI elements without coordinate guessing, and injecting gamepad input into containers.
+
+---
+
+## 1. OLED Display Sleep Management (Burn-in Prevention)
+
+The Retroid Pocket 5 features a 5.5-inch 1080p AMOLED display. To prevent burn-in, the screen must always be powered down when work finishes or when waiting on user input.
+
+### Check Screen State:
+```powershell
+.\platform-tools\adb.exe -s <SERIAL> shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"
+```
+* **Asleep / Safe**: `mWakefulness=Dozing` or `mWakefulness=Asleep`, and `mHoldingDisplaySuspendBlocker=false`.
+* **Awake**: `mHoldingDisplaySuspendBlocker=true`.
+
+### Power Down the Screen:
+```powershell
+.\platform-tools\adb.exe -s <SERIAL> shell "input keyevent 26"
+```
+Always verify with `dumpsys power` that `mHoldingDisplaySuspendBlocker=false`.
+
+---
+
+## 2. Deterministic Android UI Automation (`scripts/android_ui.py`)
+
+Do not guess pixel coordinates. Use `scripts/android_ui.py` to parse UIAutomator XML hierarchies and calculate exact bounding-box centroids:
+
+```powershell
+# 1. Dump visible hierarchy with text, IDs, and bounding boxes
+python scripts/android_ui.py --dump
+
+# 2. Click elements by exact text or substring
+python scripts/android_ui.py --click-text "Play Steam"
+python scripts/android_ui.py --click-contains "Compatibility"
+
+# 3. Deterministically pick files in Android DocumentsUI / SAF pickers
+python scripts/android_ui.py --select-file "oot.otr"
+
+# 4. Tap specific centroid and immediately re-dump hierarchy
+python scripts/android_ui.py --tap-and-dump 500 500
+```
+
+---
+
+## 3. Container & Gamescope Input: Kernel Evdev Injection
+
+Inside containerized environments (DroidDeck, Steam Big Picture, Wine/Proton, Gamescope, Xwayland), standard Android `input tap` commands often fail to reach game surfaces. Use direct Linux kernel input injection via the RP5's controller event node:
+
+* **Input Node**: `/dev/input/event8` (`Xbox Wireless Controller`)
+* **Button A (South / Confirm)**:
+  ```bash
+  sendevent /dev/input/event8 1 304 1; sendevent /dev/input/event8 0 0 0; sleep 0.15; sendevent /dev/input/event8 1 304 0; sendevent /dev/input/event8 0 0 0
+  ```
+* **Button B (East / Back)**:
+  ```bash
+  sendevent /dev/input/event8 1 305 1; sendevent /dev/input/event8 0 0 0; sleep 0.15; sendevent /dev/input/event8 1 305 0; sendevent /dev/input/event8 0 0 0
+  ```
+* **D-Pad Left**:
+  ```bash
+  sendevent /dev/input/event8 3 16 -1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 16 0; sendevent /dev/input/event8 0 0 0
+  ```
+* **D-Pad Right**:
+  ```bash
+  sendevent /dev/input/event8 3 16 1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 16 0; sendevent /dev/input/event8 0 0 0
+  ```
+* **D-Pad Down**:
+  ```bash
+  sendevent /dev/input/event8 3 17 1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 17 0; sendevent /dev/input/event8 0 0 0
+  ```
+* **D-Pad Up**:
+  ```bash
+  sendevent /dev/input/event8 3 17 -1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 17 0; sendevent /dev/input/event8 0 0 0
+  ```
