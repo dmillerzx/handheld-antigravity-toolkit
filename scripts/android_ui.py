@@ -252,7 +252,8 @@ def main():
     parser = argparse.ArgumentParser(description="Deterministic Android UI Automator")
     parser.add_argument("--serial", "-s", help="Target device serial")
     parser.add_argument("--adb", default="platform-tools/adb.exe", help="ADB binary path")
-    parser.add_argument("--dump", action="store_true", help="Print all visible UI elements")
+    parser.add_argument("--tap", nargs=2, type=int, metavar=("X", "Y"), help="Tap absolute screen coordinates (X Y)")
+    parser.add_argument("--tap-and-dump", nargs=2, type=int, metavar=("X", "Y"), help="Tap coordinates, wait, and dump hierarchy")
     parser.add_argument("--click-text", help="Click element with exact text")
     parser.add_argument("--click-contains", help="Click element containing text")
     parser.add_argument("--click-id", help="Click element matching resource ID")
@@ -268,12 +269,32 @@ def main():
         print(f"Screenshot saved to {args.screencap}")
         return
 
+    if args.tap:
+        x, y = args.tap
+        print(f"Tapping screen coordinates ({x}, {y})...")
+        ui.tap(x, y)
+        return
+
+    if args.tap_and_dump:
+        x, y = args.tap_and_dump
+        print(f"Tapping screen coordinates ({x}, {y}) and dumping hierarchy...")
+        ui.tap(x, y)
+        time.sleep(2.0)
+        elems = ui.find_all()
+        print(f"Total UI Elements after tap: {len(elems)}")
+        for e in elems:
+            if e.text or e.resource_id or e.content_desc:
+                cls = e.class_name.split(".")[-1] if e.class_name else "View"
+                print(f"  [{e.x1},{e.y1}][{e.x2},{e.y2}] [{cls}]: text='{e.text}' desc='{e.content_desc}' id='{e.resource_id}'")
+        return
+
     if args.dump:
         elems = ui.find_all()
         print(f"Total UI Elements: {len(elems)}")
         for e in elems:
             if e.text or e.resource_id or e.content_desc:
-                print(f"  {e}")
+                cls = e.class_name.split(".")[-1] if e.class_name else "View"
+                print(f"  [{e.x1},{e.y1}][{e.x2},{e.y2}] [{cls}]: text='{e.text}' desc='{e.content_desc}' id='{e.resource_id}'")
         return
 
     if args.click_text:
