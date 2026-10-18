@@ -30,14 +30,17 @@ Internal storage   /sdcard/bios
 MicroSD            /storage/<SD_ID>/bios
                    /storage/<SD_ID>/ROMs
                    /storage/<SD_ID>/ES-DE
+                   /storage/<SD_ID>/RetroArch
+                   /storage/<SD_ID>/Saves_Backup
+                   /storage/<SD_ID>/Games/Steam
 ```
 
 **Forbidden - never create, push to, or document these on the device:**
 
-- `Games/`, `Games/BIOS`, `BIOS/`, `Bios/`
+- `Games/BIOS`, `BIOS/` (upper-case), `Bios/`
 - `roms/` (lower-case), `Emulation/`, `Emulation/roms`, `Emulation/bios`
 - `/sdcard/ROMs`, `/sdcard/roms`, `/sdcard/Emulation` (no ROM directories on internal storage)
-- Any other new top-level directory on `/storage/<SD_ID>/` besides `bios`, `ROMs`, `ES-DE`
+- Any other new top-level directory on `/storage/<SD_ID>/` besides `bios`, `ROMs`, `ES-DE`, `RetroArch`, `Saves_Backup`, `Games/Steam`
 
 If a task seems to require a different path, stop and ask the user instead of creating a new folder variant. `AGENTS.md` Section 2 is the source of truth.
 

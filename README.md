@@ -1,12 +1,12 @@
 # Retroid Pocket 5 Provisioning & Backup Toolkit
 
-Automated ADB configuration, configuration snapshotting, save synchronization, and verification toolkit tailored for the **Retroid Pocket 5 (RP5)** running Android 13 (Qualcomm Snapdragon 865 / Adreno 650).
+Automated ADB configuration, configuration snapshotting, save synchronization, native source port deployment, and verification toolkit tailored for the **Retroid Pocket 5 (RP5)** running Android 13 (Qualcomm Snapdragon 865 / Adreno 650).
 
 ---
 
 ## 🎯 Purpose & Scope
 
-This repository serves as a deterministic backup, restore, snapshot, and provisioning repository for the Retroid Pocket 5. It automates device setup over ADB from a Windows host PC, eliminating manual emulator configuration, verifying settings against repo baselines, and backing up irreplaceable game saves and memory cards.
+This repository serves as a deterministic backup, restore, snapshot, and provisioning repository for the Retroid Pocket 5. It automates device setup over ADB from a Windows host PC, eliminating manual emulator configuration, verifying settings against repo baselines, managing native Android source ports and static recompilations, and backing up irreplaceable game saves and memory cards.
 
 - **Target Device**: Retroid Pocket 5 (RP5)
 - **SoC & GPU**: Qualcomm Snapdragon 865 (SM8250) / Adreno 650
@@ -38,19 +38,39 @@ This repository serves as a deterministic backup, restore, snapshot, and provisi
   python scripts/sync_all_saves.py --restore --restore-target all
   ```
 
-### 4. Upstream App Tracking via Obtainium (`configs/rp5_master_obtainium.json`)
-- Manages 8 open-source emulators and utilities directly from upstream GitHub releases and buildbots:
+### 4. Native Android Ports & Decompilations Ecosystem
+- Manages 14+ native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app`:
+  - **Zelda N64**: Ship of Harkinian (OOT) + 3DS Link/Young Link HD models, 2 Ship 2 Harkinian (MM)
+  - **Retro 2D**: Zelda 3 (A Link to the Past), Apotris (Native GBA engine rewrite, 60fps), Sonic 3 A.I.R., Sonic Robo Blast 2 (SRB2)
+  - **N64 Classics**: Mario Kart 64 (SpaghettiKart), Star Fox 64 (Starship), GoldenEye 007 (Recomp), Perfect Dark
+  - **Fan Overhauls**: Mega Man X: Regenesis (SNES timeline), Mega Man X8 16-Bit Demake (Touch Mod v1.6 + 100% save)
+  - **Modern Decomps**: Balatro (1080p 60fps AMOLED), Space Cadet 3D Pinball, PokeMMO (All 5 generations staged)
+
+### 5. DroidDeck Steam PC Integration & Optimization
+- Automates staging and configuration for DroidDeck (`com.droiddeck.launcher`):
+  - Pre-seeds `/sdcard/DroidDeck/config.json` with 720p base rendering, 1080p AMD FSR upscaling, `DXVK_ASYNC=1`, `MESA_VK_WSI_PRESENT_MODE=mailbox`, and Turnip drivers.
+  - Multi-mount VDF synchronizer maps `/mnt/bannerlator-sd`, `/storage/<SD_ID>/Games/Steam`, and `D:\`.
+  - Stages verified Windows PC titles (e.g., **OutRun 2006: Coast 2 Coast** with widescreen, 60Hz physics fix, and `WINEDLLOVERRIDES="dinput8=n,b"`).
+
+### 6. Deterministic Android UI Automator (`scripts/android_ui.py`)
+- Eliminates visual coordinate guessing and blind tapping during setup:
+  - Dumps live UIAutomator XML hierarchy directly from ADB.
+  - Resolves elements by text, resource ID, or content description and computes true geometric centroids.
+  - Automates complex Android Storage Access Framework (DocumentsUI) file pickers with search-and-select routines.
+
+### 7. Upstream App Tracking via Obtainium (`configs/rp5_master_obtainium.json`)
+- Manages open-source emulators and utilities directly from upstream GitHub releases and buildbots:
   - **ARM SX2** (Stable 2.8.3 arm64)
   - **NetherSX2** (Builder APK)
   - **Vita3K** (Continuous automatic CI builds)
   - **Azahar 3DS** (Vanilla build filter)
   - **Flycast** (Stable GitHub releases)
   - **RetroArch AArch64** (Libretro buildbot stable HTML scraper)
-  - **Daijishō** (Kept for optional frontend configuration)
+  - **Daijishō** (Frontend)
   - **Obtainium** (Clean arm64 release regex)
 
-### 5. Automated RetroArch 2D Engine Provisioning (`scripts/download_retroarch_cores.py`)
-- Downloads 11 designated 2D and arcade Libretro cores (Mesen, Snes9x, Gambatte, mGBA, Genesis Plus GX, PicoDrive, Beetle PCE Fast, Beetle NeoPop, Beetle Cygne, FBNeo, Stella) from the official Libretro buildbot.
+### 8. Automated RetroArch 2D Engine Provisioning (`scripts/download_retroarch_cores.py`)
+- Downloads 11 designated 2D and arcade Libretro cores from the official Libretro buildbot.
 - Deploys Core Info files, Joypad autoconfigs, and Slang shaders headlessly over ADB.
 
 ---
@@ -66,12 +86,15 @@ Internal Storage   /sdcard/
 MicroSD Storage    /storage/<SD_ID>/
 ├── bios/                          # Canonical BIOS files (shared across emulators)
 ├── ROMs/                          # Game ROMs organized by system subfolder
-│   ├── gba/
-│   ├── gc/
-│   ├── ps2/
-│   ├── psx/
-│   ├── snes/
-│   └── wii/
+│   ├── gba/                       # Full verified GBA library (.zip)
+│   ├── gc/                        # GameCube games (.rvz)
+│   ├── n64/                       # Full N64 Best Set (.n64.zip)
+│   ├── nds/                       # Nintendo DS (.zip)
+│   ├── ports/                     # Native Android port launchers (*.app)
+│   ├── ps2/                       # PlayStation 2 (.chd)
+│   ├── psx/                       # PlayStation 1 (.chd)
+│   ├── snes/                      # Super Nintendo (.zip)
+│   └── wii/                       # Nintendo Wii (.rvz)
 ├── ES-DE/                         # ES-DE themes, media, and gamelists
 ├── RetroArch/                     # RetroArch configs, cores, joypad profiles, shaders
 ├── Saves_Backup/                  # On-device latest and timestamped save archives
@@ -85,13 +108,16 @@ MicroSD Storage    /storage/<SD_ID>/
 
 ## 🎮 Verified Working Titles & Baseline Settings
 
+- **OutRun 2006: Coast 2 Coast (DroidDeck / Steam)**:
+  - 1080p borderless, 2x MSAA, anisotropic filtering, 60fps physics fix, `dinput8` override.
+- **Apotris (Native Port)**:
+  - Standalone ARM64 APK running at native 60fps with full gamepad mapping; bypasses GBA emulation.
 - **Mario Kart Wii (Dolphin)**:
   - Configured with `WiimoteProfile1 = Classic_Controller` in `RMC*.ini`.
-  - Global `SIDevice0 = 6` (Standard GameCube Controller), `WiimoteSource0 = 1` (Emulated Wii Remote), `WiimoteEnableGCControllers = True`.
-  - Direct token bindings (`Button A`, `Button B`, `Classic/Buttons/A`) under active `Device = ` sections.
+  - Global `SIDevice0 = 6` (Standard GameCube Controller), `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`.
 - **Gran Turismo 4 Spec II (ARM SX2 / NetherSX2)**:
   - 16:9 widescreen rendering with CRT overscan crop (`Crop = 1`, `CropMode = Overscan`).
-  - GS readbacks disabled (`HardwareDownloadMode = 1`) to eliminate tunnel and night-track slowdowns.
+  - GS readbacks disabled (`HardwareDownloadMode = 1`) to eliminate slowdowns.
   - Active 16:9 widescreen patch (`646B2E29.pnach`) loaded via game CRC.
 
 ---
@@ -103,22 +129,24 @@ MicroSD Storage    /storage/<SD_ID>/
 2. Connect the handheld via USB-C and authorize ADB debugging.
 3. Ensure Python 3.10+ and ADB (provided in `platform-tools/`) are accessible.
 
+### Running Master Provisioning Pipeline
+```powershell
+.\scripts\provision_all.ps1
+```
+
 ### Running Verification & Audits
 ```powershell
 # Verify hardware and emulator deployment against repository baselines
 python scripts/verify_deployment.py
 ```
 
-### Capturing a Configuration Snapshot
+### UI Automation Helper
 ```powershell
-# Create a timestamped configuration snapshot
-python scripts/snapshot_device.py
-```
+# Inspect active screen hierarchy
+python scripts/android_ui.py --dump
 
-### Backing Up Saves & Memory Cards
-```powershell
-# Synchronize device saves to MicroSD and host PC
-python scripts/sync_all_saves.py
+# Tap element deterministically
+python scripts/android_ui.py --click-text "Play Steam"
 ```
 
 ---
@@ -130,6 +158,8 @@ This repository integrates upstream configurations, shaders, and patches from:
 - [PCSX2 & NetherSX2 Community](https://pcsx2.net)
 - [Libretro & RetroArch](https://www.retroarch.com)
 - [ES-DE Frontend](https://gitlab.com/es-de/emulationstation-de)
+- [DroidDeck](https://github.com/droiddeck)
+- [HarbourMasters & Shipwright Teams](https://github.com/HarbourMasters)
 - [Obtainium](https://github.com/ImranR98/Obtainium)
 
 See [CREDITS.md](CREDITS.md) for full attributions and licenses.

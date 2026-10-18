@@ -53,8 +53,10 @@ MicroSD            /storage/<SD_ID>/
 AntigravityWorkingDir/
 ├── .gitignore               # Excludes platform-tools/, logs, *.apk, bios/*, roms/**/*, *.pnach
 ├── AGENTS.md                # Agent overview, canonical storage layout, workspace instructions
+├── CLAUDE.md                # Claude handoff dossier, active troubleshooting & hardware briefing
 ├── GEMINI.md                # Gemini-specific provisioning guidelines
 ├── README.md                # Hardware specs, pipeline docs, ecosystem matrix
+├── WORKQUEUE.md             # Persistent 30-item master workqueue across all emulators & ports
 ├── platform-tools/          # Local Google Android SDK Platform-Tools (adb, fastboot) - not versioned
 ├── apks/                    # Staging directory for offline APK installations (not versioned)
 ├── bios/                    # Local staging copy of system BIOS files (not versioned)
@@ -74,6 +76,7 @@ AntigravityWorkingDir/
 └── scripts/
     ├── provision_all.ps1    # Master PowerShell provisioning orchestrator
     ├── setup_rp5.py         # Main automated ADB provisioning script (--all)
+    ├── android_ui.py        # Deterministic UIAutomator XML element interaction utility
     ├── stage_community_patches.py # Universal PS2 & GameCube/Wii patch engine
     ├── configure_standalones.py # Standalone 3D emulator profile injector
     ├── download_retroarch_cores.py # Automated Libretro 2D/Arcade core & asset deployer
