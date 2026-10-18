@@ -280,7 +280,7 @@ class DeploymentVerifier:
                     if token not in ra_text:
                         ra_errors.append(desc)
                 if not ra_errors:
-                    results.append(("RetroArch", "retroarch.cfg", "PASS", "Vulkan, OpenSLES 48ms low-latency verified"))
+                    results.append(("RetroArch", "retroarch.cfg", "PASS", "Vulkan, OpenSL 48ms low-latency verified"))
                 else:
                     results.append(("RetroArch", "retroarch.cfg", "FAIL", f"Missing: {', '.join(ra_errors)}"))
                     all_passed = False

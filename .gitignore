@@ -45,6 +45,7 @@ backups/
 snapshots/
 .idea/
 .vscode/
+.leak-patterns
 
 # Extracted native port binary assets (OTR, O2R)
 assets/

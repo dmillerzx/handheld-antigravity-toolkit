@@ -3,10 +3,10 @@
 scripts/check_leaks.py - Pre-commit leak checker for Handheld Antigravity Toolkit.
 ================================================================================
 Scans git staged diffs (or the entire tracked tree with --all) for:
-  1. Target device serials (e.g. ff152647)
-  2. MicroSD filesystem UUIDs (e.g. EEEF-F762)
+  1. Target device serials (defined in .leak-patterns)
+  2. MicroSD filesystem UUIDs (defined in .leak-patterns)
   3. Hardcoded Windows user directories (e.g. C:\\Users\\<name>)
-  4. User account identifiers ('dmill')
+  4. Local patterns defined in .leak-patterns
 
 Usage:
   python scripts/check_leaks.py                 # Check staged git changes
@@ -21,18 +21,44 @@ import sys
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+LEAK_PATTERNS_FILE = WORKSPACE_ROOT / ".leak-patterns"
 
-LEAK_RULES = [
-    ("Leaked hardware serial", re.compile(r"ff152647", re.IGNORECASE)),
-    ("Leaked MicroSD UUID", re.compile(r"EEEF-F762", re.IGNORECASE)),
-    ("Leaked Windows user path", re.compile(r"[A-Za-z]:[\\/]Users[\\/][a-zA-Z0-9_.-]+", re.IGNORECASE)),
-    ("Leaked Windows user identifier", re.compile(r"\bdmill\b", re.IGNORECASE)),
-]
-
-# Files exempt from self-reference checks (e.g., this script itself)
+# Files exempt from self-reference checks
 EXEMPT_FILES = {
     "scripts/check_leaks.py",
 }
+
+
+def load_leak_rules() -> list[tuple[str, re.Pattern]]:
+    """Loads patterns from .leak-patterns and merges with built-in generic patterns.
+    If .leak-patterns is missing, exits with code 2."""
+    if not LEAK_PATTERNS_FILE.is_file():
+        print(f"[!] ERROR: Required leak patterns file missing: {LEAK_PATTERNS_FILE}", file=sys.stderr)
+        print("[!] Cannot verify leaks safely without .leak-patterns. Exiting with code 2.", file=sys.stderr)
+        sys.exit(2)
+
+    rules: list[tuple[str, re.Pattern]] = [
+        ("Leaked Windows user path", re.compile(r"[A-Za-z]:[\\/]Users[\\/][a-zA-Z0-9_.-]+", re.IGNORECASE)),
+    ]
+
+    try:
+        content = LEAK_PATTERNS_FILE.read_text(encoding="utf-8")
+    except Exception as e:
+        print(f"[!] ERROR: Failed to read {LEAK_PATTERNS_FILE}: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    for line in content.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        try:
+            compiled = re.compile(line, re.IGNORECASE)
+            rules.append((f"Pattern match ({line})", compiled))
+        except re.error as e:
+            print(f"[!] Warning: invalid regex in {LEAK_PATTERNS_FILE}: '{line}' ({e})", file=sys.stderr)
+
+    return rules
+
 
 def install_hook() -> int:
     hooks_dir = WORKSPACE_ROOT / ".git" / "hooks"
@@ -47,9 +73,10 @@ def install_hook() -> int:
         "#!/bin/sh\n"
         "# Handheld Antigravity Toolkit pre-commit leak check hook\n"
         "python scripts/check_leaks.py\n"
-        "if [ $? -ne 0 ]; then\n"
-        "    echo \"[!] Commit aborted due to detected secret/identifier leaks.\"\n"
-        "    exit 1\n"
+        "status=$?\n"
+        "if [ $status -ne 0 ]; then\n"
+        "    echo \"[!] Commit aborted due to leak check failure (exit code $status).\"\n"
+        "    exit $status\n"
         "fi\n"
     )
 
@@ -63,13 +90,13 @@ def install_hook() -> int:
     return 0
 
 
-def check_content(filename: str, lines: list[tuple[int, str]]) -> list[str]:
+def check_content(filename: str, lines: list[tuple[int, str]], rules: list[tuple[str, re.Pattern]]) -> list[str]:
     violations = []
     if filename in EXEMPT_FILES:
         return violations
 
     for lineno, line in lines:
-        for desc, pattern in LEAK_RULES:
+        for desc, pattern in rules:
             match = pattern.search(line)
             if match:
                 matched_str = match.group(0)
@@ -80,6 +107,8 @@ def check_content(filename: str, lines: list[tuple[int, str]]) -> list[str]:
 
 
 def check_staged() -> int:
+    rules = load_leak_rules()
+
     # Get staged changes with line numbers
     cmd = ["git", "diff", "--cached", "-U0"]
     res = subprocess.run(cmd, cwd=WORKSPACE_ROOT, capture_output=True, text=True, errors="replace")
@@ -115,7 +144,7 @@ def check_staged() -> int:
 
     all_violations = []
     for fname, lines in added_lines.items():
-        all_violations.extend(check_content(fname, lines))
+        all_violations.extend(check_content(fname, lines, rules))
 
     if all_violations:
         print("[!] ERROR: Sensitive hardware serial, UUID, or user path detected in staged files:")
@@ -128,6 +157,8 @@ def check_staged() -> int:
 
 
 def check_all() -> int:
+    rules = load_leak_rules()
+
     cmd = ["git", "ls-files"]
     res = subprocess.run(cmd, cwd=WORKSPACE_ROOT, capture_output=True, text=True, errors="replace")
     if res.returncode != 0:
@@ -150,7 +181,7 @@ def check_all() -> int:
             continue
 
         lines = [(i + 1, l) for i, l in enumerate(content.splitlines())]
-        all_violations.extend(check_content(rel_path, lines))
+        all_violations.extend(check_content(rel_path, lines, rules))
 
     if all_violations:
         print(f"[!] ERROR: Found {len(all_violations)} leak violation(s) across tracked files:")
