@@ -476,7 +476,13 @@ Device = {ctrl_dev}
     def configure_ppsspp(self) -> None:
         scale = self.emulation.get("ppsspp_resolution_scale", 4)
         print(f"\n[*] Configuring PPSSPP (PSP - {scale}x Vulkan & Low Latency)...")
-        content = f"""[Sound]
+        psp_dir = f"/storage/{self.sd_id}/ROMs/psp" if self.sd_id else "/sdcard/PSP"
+        content = f"""[General]
+FirstRun = False
+RunCount = 1
+CurrentDirectory = {psp_dir}
+
+[Sound]
 GameVolume = 100
 
 [Graphics]
@@ -504,6 +510,8 @@ FastMemory = True
         local_cfg.write_text(content, encoding="utf-8")
         self.push_file(local_cfg, "/sdcard/PSP/SYSTEM/ppsspp.ini")
         self.push_file(local_cfg, "/sdcard/Android/data/org.ppsspp.ppsspp/files/PSP/SYSTEM/ppsspp.ini")
+        if self.sd_id:
+            self.push_file(local_cfg, f"/storage/{self.sd_id}/PSP/SYSTEM/ppsspp.ini")
 
     # 5. FLYCAST (Dreamcast)
     def configure_flycast(self) -> None:

@@ -254,6 +254,7 @@ def main():
     parser.add_argument("--adb", default="platform-tools/adb.exe", help="ADB binary path")
     parser.add_argument("--tap", nargs=2, type=int, metavar=("X", "Y"), help="Tap absolute screen coordinates (X Y)")
     parser.add_argument("--tap-and-dump", nargs=2, type=int, metavar=("X", "Y"), help="Tap coordinates, wait, and dump hierarchy")
+    parser.add_argument("--dump", action="store_true", help="Dump all interactive UI elements in current hierarchy")
     parser.add_argument("--click-text", help="Click element with exact text")
     parser.add_argument("--click-contains", help="Click element containing text")
     parser.add_argument("--click-id", help="Click element matching resource ID")
