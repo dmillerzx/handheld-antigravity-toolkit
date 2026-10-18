@@ -15,7 +15,8 @@
     "DXVK_STATE_CACHE": "1",
     "MESA_VK_WSI_PRESENT_MODE": "mailbox",
     "TU_DEBUG": "noconform",
-    "CUSTOM_GPU_DRIVER": "/sdcard/Download/drivers/Turnip_v26.0.0_R8.zip"
+    "CUSTOM_GPU_DRIVER": "/sdcard/Download/drivers/Turnip_v26.0.0_R8.zip",
+    "WINEDLLOVERRIDES": "dinput8=n,b"
   },
   "storage": {
     "prefix_root": "/sdcard/DroidDeck/prefixes/default",

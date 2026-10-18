@@ -66,6 +66,12 @@ TARGET_PACKAGES = [
     ("com.google.android.apps.nbu.files", "Files by Google"),
     ("com.mixplorer", "MiXplorer"),
     ("pl.solidexplorer2", "Solid Explorer"),
+    ("eu.pokemmo.client", "PokeMMO Client"),
+    ("org.eukaryot.sonic3air", "Sonic 3 A.I.R."),
+    ("org.stjr.srb2", "Sonic Robo Blast 2"),
+    ("com.fexed.spacecadetpinball", "Space Cadet 3D Pinball"),
+    ("com.unofficial.balatro", "Balatro (Native Mobile)"),
+    ("com.example.megamanxregenesis", "Mega Man X Regenesis"),
 ]
 
 # Additional AppOps granted beyond MANAGE_EXTERNAL_STORAGE
