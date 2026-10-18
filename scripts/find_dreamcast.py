@@ -1,8 +1,11 @@
+import os
+import shutil
 import subprocess
+import sys
 
-ADB = r"C:\Users\dmill\Documents\AntigravityWorkingDir\platform-tools\adb.exe"
-SERIAL = "ff152647"
+ADB = shutil.which("adb") or "platform-tools/adb.exe"
+SERIAL = os.environ.get("ANDROID_SERIAL")
 
-cmd = [ADB, "-s", SERIAL, "shell", "find /storage/EEEF-F762/ -iname '*arcade*racing*' -o -iname '*road*trip*'"]
+cmd = [ADB] + (["-s", SERIAL] if SERIAL else []) + ["shell", "find /storage/<SD_ID>/ -iname '*arcade*racing*' -o -iname '*road*trip*'"]
 res = subprocess.run(cmd, stdout=subprocess.PIPE, text=True, errors="ignore")
 print(res.stdout)

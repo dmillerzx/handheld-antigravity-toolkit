@@ -14,10 +14,10 @@ Your primary interface to the device is **ADB (Android Debug Bridge)** over USB 
 
 ## 2. Environment Invariants
 
-- **Workspace Root**: `C:\Users\dmill\Documents\AntigravityWorkingDir`
-- **Local Platform Tools**: `C:\Users\dmill\Documents\AntigravityWorkingDir\platform-tools\adb.exe`
-- **Installed Python**: `C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe`
-- **Git Binary**: `C:\Program Files\Git\cmd\git.exe`
+- **Workspace Root**: Workspace root directory (`<WORKSPACE_ROOT>`)
+- **Local Platform Tools**: `platform-tools/adb.exe`
+- **Installed Python**: `python` (Python 3.12)
+- **Git Binary**: `git.exe`
 - **RP5 serial**: Read dynamically via `adb devices` (multiple devices may be attached - always use `adb -s <serial>`)
 - When running commands in Windows PowerShell where PATH might not be reloaded in inherited subprocesses, ensure ADB and Python are referenced cleanly using environment refreshes or absolute fallbacks.
 
@@ -58,7 +58,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` (Libretro buildbot intermediateLink array for RetroArch) | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
 | **ES-DE Pre-Config** | Push `es_settings.xml` configured with MicroSD ROM path & direct ARMSX2 ROMSAF launch | `adb shell "cat /sdcard/ES-DE/settings/es_settings.xml"` |
 | **Turnip Drivers** | Stage Mesa Turnip GPU drivers in `/sdcard/Download/drivers/` | `adb shell "ls -la /sdcard/Download/drivers"` |
-| **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`) | `adb shell "getprop persist.sys.trigger.mode; settings get system accelerometer_rotation"` |
+| **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Smart fan mode (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode"` |
 | **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
 | **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
 | **2D/Arcade Cores** | Fetch & stage 11 designated cores and frontend assets | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |

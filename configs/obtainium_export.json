@@ -192,7 +192,7 @@
         "welcomeShown": true,
         "categories": "{\"Utility\":4292973003,\"Emulator\":4292711122,\"Frontend\":4293040264}",
         "firstRun": false,
-        "exportDir": "content://com.android.externalstorage.documents/tree/EEEF-F762%3ADownloads",
+        "exportDir": "content://com.android.externalstorage.documents/tree/<SD_ID>%3ADownloads",
         "googleVerificationWarningShown": true
     }
 }

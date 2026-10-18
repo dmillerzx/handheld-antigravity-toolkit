@@ -396,6 +396,10 @@ class RP5Provisioner:
         print("    -> Activating Do Not Disturb (zen_mode=1) to prevent notification focus loss...")
         self.shell("settings put global zen_mode 1", check=False)
 
+        # 12. Active cooling fan profile (fan_mode 4 = Smart)
+        print("    -> Setting active cooling fan profile to Smart (fan_mode=4)...")
+        self.shell("settings put system fan_mode 4", check=False)
+
         print("    -> System and hardware tuning complete.")
 
     def stage_droiddeck(self) -> None:
@@ -426,7 +430,7 @@ class RP5Provisioner:
         vdf_source = WORKSPACE_ROOT / "configs" / "libraryfolders.vdf"
         if vdf_source.exists():
             vdf_content = vdf_source.read_text(encoding="utf-8")
-            vdf_content = re.sub(r'/storage/[^"]+/Games/Steam', steam_target, vdf_content)
+            vdf_content = re.sub(r'/storage/(?:<SD_ID>|[^"/]+)/Games/Steam', steam_target, vdf_content)
             tmp_vdf = self.temp_dir / "libraryfolders.vdf"
             tmp_vdf.write_text(vdf_content, encoding="utf-8")
 
@@ -465,14 +469,12 @@ class RP5Provisioner:
             if not src.exists():
                 return
             txt = src.read_text(encoding="utf-8", errors="replace")
-            # Replace any hardcoded SD_ID or EEEF-F762 with dynamic sd_id or /sdcard
+            # Replace placeholder <SD_ID> with dynamic sd_id or /sdcard fallback
             if sd_id:
-                txt = txt.replace("<SD_ID>", sd_id).replace("EEEF-F762", sd_id)
+                txt = txt.replace("<SD_ID>", sd_id)
             else:
                 txt = txt.replace("/storage/<SD_ID>/RetroArch", "/sdcard/RetroArch")
-                txt = txt.replace("/storage/EEEF-F762/RetroArch", "/sdcard/RetroArch")
                 txt = txt.replace("/storage/<SD_ID>/bios", "/sdcard/bios")
-                txt = txt.replace("/storage/EEEF-F762/bios", "/sdcard/bios")
             tmp_f = self.temp_dir / src.name
             tmp_f.write_text(txt, encoding="utf-8")
             self.run_cmd("push", str(tmp_f), dest_internal)

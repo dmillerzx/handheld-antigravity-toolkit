@@ -18,7 +18,7 @@ This repository is the **Retroid Pocket 5 (RP5) Automated Provisioning Workspace
   - Android Input Name: `Xbox Wireless Controller` (registered in Android `dumpsys input`)
 - **Canonical Storage Layout**:
   - Internal: `/sdcard/bios/`
-  - MicroSD: `/storage/<SD_ID>/` (UUID dynamically discovered, currently `EEEF-F762`)
+  - MicroSD: `/storage/<SD_ID>/` (UUID dynamically discovered at runtime)
     - `/storage/<SD_ID>/bios/` (Canonical BIOS shared by all emulators)
     - `/storage/<SD_ID>/ROMs/<system>/` (Canonical ROM root; NO ROMs on internal storage)
     - `/storage/<SD_ID>/ROMs/ports/` (Native Android port launchers `*.app`)
@@ -41,11 +41,11 @@ The following issues and components have been completely resolved and verified v
 2. **Mario Kart Wii (Dolphin)**:
    - Dual controller conflict resolved. Clean `GCPadNew.ini` mappings with direct tokens under active `Device` sections; GameCube port 1 native scheme active.
 3. **OutRun 2006: Coast 2 Coast (DroidDeck Steam Integration)**:
-   - Unnested canonical path to `/storage/EEEF-F762/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`.
+   - Unnested canonical path to `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`.
    - Updated `libraryfolders.vdf` in all three mount locations (`Games/Steam/`, `Games/Steam/steamapps/`, and DroidDeck rootfs `files/steam/steamapps/`) with App ID `"8960"`.
    - Verified live in DroidDeck: OutRun 2006 appears under the **Games** tab with the **Launch** button, launch settings, FSR 1080p upscaling, and `WINEDLLOVERRIDES="dinput8=n,b"` ready.
 4. **Apotris Native Android Port**:
-   - Upstream ARM64 build (`com.apotris.android`) installed with ES-DE launcher at `/storage/EEEF-F762/ROMs/ports/Apotris.app`.
+   - Upstream ARM64 build (`com.apotris.android`) installed with ES-DE launcher at `/storage/<SD_ID>/ROMs/ports/Apotris.app`.
    - Verified running at silky-smooth native 60fps with full controller support, rendering GBA emulation obsolete.
 5. **PokeMMO 5-Region Staging**:
    - Clean retail ROMs for all 5 generations/regions (*Black*, *White*, *HeartGold*, *SoulSilver*, *Platinum*, plus *FireRed* & *Emerald*) extracted and staged to `/sdcard/Download/pokemmo_roms/` and internal sandbox `/sdcard/Android/data/eu.pokemmo.client/files/roms/`.
@@ -119,8 +119,8 @@ To avoid coordinate guesswork and UI hangs:
 
 ## 6. Execution Guidance for Claude
 
-1. **Working Directory**: `C:\Users\dmill\Documents\AntigravityWorkingDir`
+1. **Working Directory**: Workspace root directory (`<WORKSPACE_ROOT>`)
 2. **Local ADB Binary**: `.\platform-tools\adb.exe -s <SERIAL>`
-3. **Local Python**: `python` (Python 3.12 at `C:\Users\dmill\AppData\Local\Programs\Python\Python312\python.exe`)
+3. **Local Python**: `python` (Python 3.12)
 4. **Git Branch**: `main` (commit all changes cleanly before concluding sessions)
 5. **Task Master**: Always read and update [WORKQUEUE.md](WORKQUEUE.md) when changing task status.

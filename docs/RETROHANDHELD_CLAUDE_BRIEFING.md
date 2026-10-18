@@ -2,7 +2,7 @@
 **Prepared for**: Claude Integration & Cross-Agent Hand-off  
 **Date**: October 16, 2026  
 **Target Device**: Retroid Pocket 5 (RP5) — Serial `<SERIAL>`  
-**Repository**: [dmillerzx/handheld-antigravity-toolkit](https://github.com/dmillerzx/handheld-antigravity-toolkit) (branch: `main`)
+**Repository**: `handheld-antigravity-toolkit` (branch: `main`)
 
 ---
 

@@ -141,6 +141,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - **Auto-Rotate**: Disabled (`settings put system accelerometer_rotation 0`) to lock landscape display orientation.
 - **Controller Style**: Xbox mode (`persist.sys.gamepad.type 0`).
 - **Trigger Mode**: Both analog axis + digital button click (`persist.sys.trigger.mode 2`).
+- **Fan Profile**: Smart active cooling (`settings put system fan_mode 4`).
 
 ### I. Granting AppOps
 Android 11+ restricts storage access under Scoped Storage. The script invokes AppOps:

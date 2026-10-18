@@ -1,11 +1,14 @@
-import subprocess
+import os
 import re
+import shutil
+import subprocess
+import sys
 
-ADB = r"C:\Users\dmill\Documents\AntigravityWorkingDir\platform-tools\adb.exe"
-SERIAL = "ff152647"
+ADB = shutil.which("adb") or "platform-tools/adb.exe"
+SERIAL = os.environ.get("ANDROID_SERIAL")
 
 def run_adb(args):
-    cmd = [ADB, "-s", SERIAL] + args
+    cmd = [ADB] + (["-s", SERIAL] if SERIAL else []) + args
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors="ignore")
     return res.stdout
 

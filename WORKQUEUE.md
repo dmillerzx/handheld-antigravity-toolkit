@@ -8,7 +8,7 @@ This workqueue is maintained to ensure 100% tracking and verification across all
 
 | ID | Title / Component | Category | Status | Verification & Assets | Device Storage Location |
 |---|---|---|---|---|---|
-| **WQ-01** | **OutRun 2006 (Coast 2 Coast)** | DroidDeck (Steam) | **[VERIFIED READY]** | `libraryfolders.vdf` updated with App ID `8960`. OutRun 2006 recognized directly under Games tab in DroidDeck with Launch button & launch settings ready. `outrun2006.ini` configured for 1080p borderless, 2x AA, `WINEDLLOVERRIDES="dinput8=n,b"`. | `/storage/EEEF-F762/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`<br>`/storage/EEEF-F762/Android/data/com.droiddeck.launcher/files/steam/steamapps/` |
+| **WQ-01** | **OutRun 2006 (Coast 2 Coast)** | DroidDeck (Steam) | **[VERIFIED READY]** | `libraryfolders.vdf` updated with App ID `8960`. OutRun 2006 recognized directly under Games tab in DroidDeck with Launch button & launch settings ready. `outrun2006.ini` configured for 1080p borderless, 2x AA, `WINEDLLOVERRIDES="dinput8=n,b"`. | `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`<br>`/storage/<SD_ID>/Android/data/com.droiddeck.launcher/files/steam/steamapps/` |
 | **WQ-02** | **Mario Kart 64 (SpaghettiKart)** | Native Port | **[VERIFIED]** | `com.izzy.kart` v2.0.0 installed; `mk64.o2r` (12.1 MB) & `spaghetti.o2r` (2.7 MB) staged. Launcher `.app` in ES-DE. | `/sdcard/spaghettikart/`<br>`/sdcard/Android/data/com.izzy.kart/files/` |
 | **WQ-03** | **Perfect Dark** | Native Port | **[VERIFIED]** | `com.perfectdark.port` v2.0.0 installed; `pd.ntsc-final.z64` (33.5 MB, MD5 e03b088b) staged. Dual-analog 60fps. Launcher `.app` in ES-DE. | `/sdcard/perfect_dark/data/`<br>`/sdcard/Android/data/com.perfectdark.port/files/data/` |
 | **WQ-04** | **GoldenEye 007 (Recomp)** | Native Port | **[VERIFIED RUNNING]** | `com.sunjaycy.goldeneye` v1.4.1 installed. Resolved path issue: moved `default.xex` and game dump out of `files/assets/` directly into `files/` root. Verified running on hardware with full Twycross/Rare intro and iconic James Bond gunbarrel sequence. Launcher `.app` in ES-DE. | `/sdcard/goldeneye/`<br>`/sdcard/Android/data/com.sunjaycy.goldeneye/files/` |
@@ -25,10 +25,10 @@ This workqueue is maintained to ensure 100% tracking and verification across all
 | **WQ-15** | **Space Cadet 3D Pinball** | Native Port | **[VERIFIED]** | `com.fexed.spacecadetpinball` installed; full native decompilation. | Self-contained APK |
 | **WQ-16** | **PokeMMO** | Native MMO | **[VERIFIED: ALL 5 REGIONS STAGED]** | `eu.pokemmo.client` installed; Black & White 1 (256 MB each), HeartGold, SoulSilver, Platinum, FireRed & Emerald staged to both download & internal roms sandbox. | `/sdcard/Download/pokemmo_roms/`<br>`/sdcard/Android/data/eu.pokemmo.client/files/roms/` |
 | **WQ-17** | **DroidDeck: Steam Launcher** | Frontend / Steam | **[VERIFIED]** | `com.droiddeck.launcher` installed; 720p base -> 1080p FSR; Turnip v26.0.0 R8; `WINEDLLOVERRIDES="dinput8=n,b"`; launcher `.app` registered in ES-DE. | `/sdcard/DroidDeck/config.json`<br>`/sdcard/DroidDeck/settings.json` |
-| **WQ-18** | **GBA Full Library (486 Games)** | ROM Sync | **[VERIFIED 100%]** | 486 of 486 `.zip` ROMs (2.17 GB) verified in canonical storage layout. | `/storage/EEEF-F762/ROMs/gba/` |
-| **WQ-19** | **N64 Best Set (293 Games)** | ROM Sync | **[VERIFIED 100%]** | 293 of 293 `.n64.zip` ROMs (3.60 GB) verified in canonical storage layout. | `/storage/EEEF-F762/ROMs/n64/` |
+| **WQ-18** | **GBA Full Library (486 Games)** | ROM Sync | **[VERIFIED 100%]** | 486 of 486 `.zip` ROMs (2.17 GB) verified in canonical storage layout. | `/storage/<SD_ID>/ROMs/gba/` |
+| **WQ-19** | **N64 Best Set (293 Games)** | ROM Sync | **[VERIFIED 100%]** | 293 of 293 `.n64.zip` ROMs (3.60 GB) verified in canonical storage layout. | `/storage/<SD_ID>/ROMs/n64/` |
 | **WQ-20** | **AMOLED Homescreen & Wallpaper** | Retroid OS | **[VERIFIED]** | Custom 1080p Cyberpunk Neon Controller AMOLED wallpaper active; Page 1 & Page 2 organized. | Device UI |
-| **WQ-21** | **Apotris** | Native Port | **[VERIFIED 100% WORKING]** | `com.apotris.android` (ARM64 v8a) installed and verified running (+236ms launch, SDL2 main, 60fps native). Launcher `.app` staged in ES-DE. Eliminates need for GBA emulation. | Native APK & `/storage/EEEF-F762/ROMs/ports/Apotris.app` |
+| **WQ-21** | **Apotris** | Native Port | **[VERIFIED 100% WORKING]** | `com.apotris.android` (ARM64 v8a) installed and verified running (+236ms launch, SDL2 main, 60fps native). Launcher `.app` staged in ES-DE. Eliminates need for GBA emulation. | Native APK & `/storage/<SD_ID>/ROMs/ports/Apotris.app` |
 | **WQ-22** | **Banjo-Kazooie (Banjo Recomp)** | Native Port | **[BLOCKED: RT64 ADRENO BUG]** | `com.aure.banjorecomp` v0.1.2 installed; clean USA v1.0 `banjo.z64` (16 MB) staged to `/sdcard/Android/data/com.aure.banjorecomp/files/`. Crashes on startup inside `recompui::renderer::RT64Context::send_dummy_workload` due to identical Adreno 650 Qualcomm Vulkan driver bug (GitHub issue #19). | `/sdcard/Android/data/com.aure.banjorecomp/files/` |
 | **WQ-23** | **Paper Mario 64** | Native Port | **[PENDING ANDROID BUILD]** | Decompilation 100% complete (`pmret/papermario`). HarbourMasters' `PaperBoat` currently officially supports Windows, Linux, and Mac. Community Android port (`YlPorts/PaperBoat-android`) has no precompiled release APKs yet. (Playable via standalone Mupen64Plus FZ). | N64 Standalone |
 | **WQ-24** | **Super Mario 64 (sm64ex-alo)** | Native Port | **[QUEUED FOR DEPLOYMENT]** | Standalone Android APK with Render96 HD models/textures, 60 FPS animation interpolation, and 360° right-stick analog camera. | Queued |
@@ -37,7 +37,7 @@ This workqueue is maintained to ensure 100% tracking and verification across all
 | **WQ-27** | **Sonic 1, 2 & CD (RSDKv3/v4)** | Native Port | **[QUEUED FOR DEPLOYMENT]** | Decompilation native ports with widescreen 60fps. | Queued |
 | **WQ-28** | **CannonBall: OutRun** | Native Port | **[QUEUED FOR DEPLOYMENT]** | C++ arcade rewrite targeting 60fps widescreen arcade OutRun. | Queued |
 | **WQ-29** | **Hollow Knight & Celeste** | Native Port | **[QUEUED FOR DEPLOYMENT]** | Standalone ARM64 native Android ports. | Queued |
-| **WQ-30** | **Dreamcast Duplicate Cleanup** | ROM Hygiene | **[VERIFIED CLEAN]** | Duplicate CHD of *Arcade Racing Legends - Road Trip Edition* removed; single verified CDI retained. | `/storage/EEEF-F762/ROMs/dreamcast/` |
+| **WQ-30** | **Dreamcast Duplicate Cleanup** | ROM Hygiene | **[VERIFIED CLEAN]** | Duplicate CHD of *Arcade Racing Legends - Road Trip Edition* removed; single verified CDI retained. | `/storage/<SD_ID>/ROMs/dreamcast/` |
 
 ---
 
@@ -51,6 +51,6 @@ Both **Diddy Kong Racing (DKR-R)** (`io.github.thatguymcd.dkrr.preview`) and **B
 - **Status**: Standalone APKs do not bundle custom Turnip loaders, so they inherit Qualcomm's proprietary driver bugs. Both games run flawlessly at 60fps with high-resolution texture packs on the RP5 via **Mupen64Plus FZ Standalone**.
 
 ### B. DroidDeck & OutRun 2006 Discovery Resolved
-- DroidDeck manages multiple Steam mount paths (`/mnt/bannerlator-sd`, `/storage/EEEF-F762/Games/Steam`, and `D:\`).
+- DroidDeck manages multiple Steam mount paths (`/mnt/bannerlator-sd`, `/storage/<SD_ID>/Games/Steam`, and `D:\`).
 - By updating `libraryfolders.vdf` in all three locations (`Games/Steam/`, `Games/Steam/steamapps/`, and DroidDeck's rootfs `files/steam/steamapps/`) with App ID `"8960"` ("OutRun 2006: Coast 2 Coast"), DroidDeck immediately recognized the game.
 - The game is now fully visible and launchable under the **Games** tab with custom launch profiles, FSR upscaling to 1080p, and `dinput8` tweaks enabled.

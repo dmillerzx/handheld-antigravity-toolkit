@@ -1,12 +1,16 @@
-import subprocess
+import os
 import re
+import shutil
+import subprocess
+import sys
 import time
 
-ADB = r"C:\Users\dmill\Documents\AntigravityWorkingDir\platform-tools\adb.exe"
-SERIAL = "ff152647"
+ADB = shutil.which("adb") or "platform-tools/adb.exe"
+SERIAL = os.environ.get("ANDROID_SERIAL")
 
 def adb(args):
-    return subprocess.run([ADB, "-s", SERIAL] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
+    cmd = [ADB] + (["-s", SERIAL] if SERIAL else []) + args
+    return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
 
 print("Tapping Second library dropdown at (1600, 542)...")
 adb(["shell", "input", "tap", "1600", "542"])
