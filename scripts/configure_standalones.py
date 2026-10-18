@@ -116,8 +116,6 @@ SearchDirectory = {self.bios_dir}
 
 [Audio]
 Backend = Cubeb
-BufferSize = 20
-Resampler = Gaussian
 Sync = true
 
 [Display]
@@ -478,10 +476,8 @@ Device = {ctrl_dev}
     def configure_ppsspp(self) -> None:
         scale = self.emulation.get("ppsspp_resolution_scale", 4)
         print(f"\n[*] Configuring PPSSPP (PSP - {scale}x Vulkan & Low Latency)...")
-        content = f"""[Audio]
-AudioLatency = 0
-AudioResampler = True
-GlobalVolume = 10
+        content = f"""[Sound]
+GameVolume = 100
 
 [Graphics]
 GraphicsBackend = 3
@@ -514,11 +510,14 @@ FastMemory = True
         scale = self.emulation.get("flycast_res_scale", 2)
         ws = 1 if self.force_widescreen else 0
         print(f"\n[*] Configuring Flycast (Dreamcast - {scale}x Vulkan, Widescreen={ws} & AICA DSP Audio)...")
-        content = f"""[aica]
-AutoLatency = yes
-BufferSize = 2822
-DSPEnabled = yes
-GlobalVolume = 100
+        content = f"""[audio]
+backend = auto
+
+[config]
+aica.AutoLatency = yes
+aica.BufferSize = 2822
+aica.DSPEnabled = yes
+aica.Volume = 100
 
 [rend]
 rend = 2

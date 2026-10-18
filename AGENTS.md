@@ -119,7 +119,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 
 ### E. Standalone 3D Emulators Injection
 - **ARM SX2 (PS2 Primary)**: Direct boot via `%EMULATOR_ARMSX2% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%`. 2.0x 1080p Vulkan, string `AspectRatio = 16:9` (`"aspectRatio": 1` in UI JSON), `Crop = 1`, `CropMode = Overscan`, `HardwareDownloadMode = 1` (Disable Readbacks), and `touchControllerOpacity = 0`.
-- **NetherSX2 (PS2 Fallback)**: 2.25x 1080p SPU2 Hermite interpolation, `AspectRatio = 16:9`, `Crop = 1`, `CropMode = Overscan`.
+- **NetherSX2 (PS2 Fallback)**: 2.25x 1080p SPU2 Catmull-Rom interpolation, `AspectRatio = 16:9`, `Crop = 1`, `CropMode = Overscan`.
 - **DuckStation (PS1)**: 5x 1080p PGXP, Cubeb 20ms low latency audio.
 - **Dolphin (GameCube & Wii)**: 2.5x 1080p OpenSLES DSP audio, analog triggers (L=`Axis 22+`, R=`Axis 23+`). Global `SIDevice0 = 6`, `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`. Binds `WiimoteProfile1 = Classic_Controller` and `WiimoteSource0 = 1` in Mario Kart Wii (`RMC*.ini`) without conflicting `PadType0` dropdown indices.
 - **PPSSPP (PSP)**: 4x 1080p 16x Anisotropic filtering.
