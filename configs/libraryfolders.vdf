@@ -17,23 +17,25 @@
 		"path"		"/mnt/bannerlator-sd"
 		"label"		"RP5"
 		"contentid"		"3903766020842695481"
-		"total_size"		"0"
+		"total_size"		"5622639104"
 		"update_clean_bytes_tally"		"0"
 		"time_last_update_verified"		"0"
 		"apps"
 		{
+			"8960"		"5622639104"
 		}
 	}
 	"2"
 	{
-		"path"		"/storage/<SD_ID>/Games/Steam"
+		"path"		"/storage/EEEF-F762/Games/Steam"
 		"label"		"MicroSD Steam"
 		"contentid"		"3903766020842695482"
-		"total_size"		"0"
+		"total_size"		"5622639104"
 		"update_clean_bytes_tally"		"0"
 		"time_last_update_verified"		"0"
 		"apps"
 		{
+			"8960"		"5622639104"
 		}
 	}
 	"3"
@@ -41,11 +43,12 @@
 		"path"		"D:\\"
 		"label"		"Drive D"
 		"contentid"		"3903766020842695483"
-		"total_size"		"0"
+		"total_size"		"5622639104"
 		"update_clean_bytes_tally"		"0"
 		"time_last_update_verified"		"0"
 		"apps"
 		{
+			"8960"		"5622639104"
 		}
 	}
 }
