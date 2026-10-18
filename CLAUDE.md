@@ -40,10 +40,13 @@ The following issues and components have been completely resolved and verified v
    - Full 16:9 widescreen rendering, circular HUD gauges, CRT overscan crop (`Crop = 1`, `CropMode = Overscan`), 2.0x Vulkan upscaling, and suppressed touch overlay.
 2. **Mario Kart Wii (Dolphin)**:
    - Dual controller conflict resolved. Clean `GCPadNew.ini` mappings with direct tokens under active `Device` sections; GameCube port 1 native scheme active.
-3. **OutRun 2006: Coast 2 Coast (DroidDeck Steam Integration)**:
-   - Unnested canonical path to `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`.
-   - Updated `libraryfolders.vdf` in all three mount locations (`Games/Steam/`, `Games/Steam/steamapps/`, and DroidDeck rootfs `files/steam/steamapps/`) with App ID `"8960"`.
-   - Verified live in DroidDeck: OutRun 2006 appears under the **Games** tab with the **Launch** button, launch settings, FSR 1080p upscaling, and `WINEDLLOVERRIDES="dinput8=n,b"` ready.
+3. **OutRun 2006: Coast 2 Coast (DroidDeck Steam Integration & PR #1034)**:
+   - Canonical path established at `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`.
+   - `libraryfolders.vdf` updated in all mount points with App ID `"8960"`.
+   - DroidDeck updated in-app to PR #1034 test build (x86 Proton under FEX).
+   - Diagnosed root causes of user's "No licenses" / exit code 2 errors: `steam://rungameid` shortcut mismatch and missing `appmanifest_8960.acf` in retail installs.
+   - Reconfigured compatibility tool via evdev to `Proton Experimental` (x86 Proton under FEX). 32-bit DX9 translation under FEX remains experimental upstream.
+   - Flawless 1080p 60fps alternatives verified on RP5: PPSSPP (4x 1080p) and ARM SX2 (2.0x 1080p Vulkan).
 4. **Apotris Native Android Port**:
    - Upstream ARM64 build (`com.apotris.android`) installed with ES-DE launcher at `/storage/<SD_ID>/ROMs/ports/Apotris.app`.
    - Verified running at silky-smooth native 60fps with full controller support, rendering GBA emulation obsolete.
@@ -84,10 +87,20 @@ The following issues and components have been completely resolved and verified v
   - Decompilation is 100% complete (`pmret/papermario`).
   - HarbourMasters' official `PaperBoat` port currently targets Windows, Linux, and macOS only.
   - The community Android fork (`YlPorts/PaperBoat-android`) does not provide precompiled release APKs yet.
-- **Recommended Action**:
-  - Monitor `PaperBoat-android` for new release tags. In the meantime, route Paper Mario 64 through Mupen64Plus FZ Standalone in ES-DE.
+### Issue 3: DroidDeck OutRun 2006 (Coast 2 Coast) & 32-bit x86 Proton DX9 Translation
+- **Affected Pipeline**: `com.droiddeck.launcher` -> Steam Big Picture / PRoot / FEX -> `OR2006C2C.EXE`
+- **Root Cause Verified**:
+  - OutRun 2006 is a 32-bit x86 DirectX 9 Windows title.
+  - Initial configuration was assigned to `Proton Experimental ARM64`, which immediately fails on 32-bit x86 binaries.
+  - DroidDeck was updated via its in-app update UI to PR #1034 test build: *"fix: run x86 Proton under FEX in the Steam runtime it requires"* with active `Mesa_Turnip_v27.0.0-20261018-r2`.
+  - Launching via `steam://rungameid/17844709432596889600` fails with "No licenses" (`Screenshot_20261018-142427.png`) because Steam queries its store backend for delisted App ID 8960 when unmapped in the active user's `shortcuts.vdf`.
+  - Calling `droiddeck-proton-run --app 8960` returns exit code 2 (`steam_launch()` returns `None`) because retail PC installs lack Valve `appmanifest_8960.acf`.
+  - When reconfigured inside Steam Big Picture to `Proton Experimental` (x86 Proton under FEX), Steam displays the launch spinner for ~4 seconds as FEX initializes, then silently returns to Big Picture without presenting a game surface. 32-bit Direct3D 9 / DXVK thunking under FEX remains experimental in PR #1034.
+- **Recommended Action / Workaround**:
+  - For immediate, flawless 1080p 60fps gameplay, play OutRun 2006 via **PPSSPP** (PSP at 4x resolution, full analog triggers) or **ARM SX2** (PS2 at 2.0x Vulkan).
 
 ---
+
 
 ## 4. Next Tasks on the Master Roster (Queued)
 
@@ -119,6 +132,14 @@ To avoid coordinate guesswork and UI hangs:
   ```
 - Always verify running applications with `dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'` and logcat.
 - When capturing screenshots, verify the file size before opening to prevent truncated image read errors.
+- **Steam Big Picture & Gamescope Controller Evdev Injection**:
+  - RP5 physical controller is registered at `/dev/input/event8` (`Xbox Wireless Controller`).
+  - Button A (Select / South): `sendevent /dev/input/event8 1 304 1; sendevent /dev/input/event8 0 0 0; sleep 0.15; sendevent /dev/input/event8 1 304 0; sendevent /dev/input/event8 0 0 0`
+  - Button B (Back / East): `sendevent /dev/input/event8 1 305 1; sendevent /dev/input/event8 0 0 0; sleep 0.15; sendevent /dev/input/event8 1 305 0; sendevent /dev/input/event8 0 0 0`
+  - D-Pad Left: `sendevent /dev/input/event8 3 16 -1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 16 0; sendevent /dev/input/event8 0 0 0`
+  - D-Pad Right: `sendevent /dev/input/event8 3 16 1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 16 0; sendevent /dev/input/event8 0 0 0`
+  - D-Pad Down: `sendevent /dev/input/event8 3 17 1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 17 0; sendevent /dev/input/event8 0 0 0`
+  - D-Pad Up: `sendevent /dev/input/event8 3 17 -1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 17 0; sendevent /dev/input/event8 0 0 0`
 
 ---
 

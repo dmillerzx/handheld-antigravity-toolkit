@@ -8,7 +8,7 @@ This workqueue is maintained to ensure 100% tracking and verification across all
 
 | ID | Title / Component | Category | Status | Verification & Assets | Device Storage Location |
 |---|---|---|---|---|---|
-| **WQ-01** | **OutRun 2006 (Coast 2 Coast)** | DroidDeck (Steam) | **[VERIFIED READY]** | `libraryfolders.vdf` updated with App ID `8960`. OutRun 2006 recognized directly under Games tab in DroidDeck with Launch button & launch settings ready. `outrun2006.ini` configured for 1080p borderless, 2x AA, `WINEDLLOVERRIDES="dinput8=n,b"`. | `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`<br>`/storage/<SD_ID>/Android/data/com.droiddeck.launcher/files/steam/steamapps/` |
+| **WQ-01** | **OutRun 2006 (Coast 2 Coast)** | DroidDeck (Steam) | **[INVESTIGATED / BLOCKED ON DROIDDECK FEX DX9]** | Diagnosed launch failure from user screenshot ("No licenses" / exit code 2). Updated DroidDeck in-app to PR #1034 (FEX x86 Proton). Switched compatibility tool from Proton ARM64 to Proton Experimental (x86 under FEX) via evdev. Process initializes under FEX for ~4s before silent exit; 32-bit DX9 translation remains experimental in PR #1034. Working 1080p 60fps alternatives: PPSSPP (PSP) and ARM SX2 (PS2). | `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/`<br>`/storage/<SD_ID>/Android/data/com.droiddeck.launcher/files/steam/steamapps/` |
 | **WQ-02** | **Mario Kart 64 (SpaghettiKart)** | Native Port | **[VERIFIED]** | `com.izzy.kart` v2.0.0 installed; `mk64.o2r` (12.1 MB) & `spaghetti.o2r` (2.7 MB) staged. Launcher `.app` in ES-DE. | `/sdcard/spaghettikart/`<br>`/sdcard/Android/data/com.izzy.kart/files/` |
 | **WQ-03** | **Perfect Dark** | Native Port | **[VERIFIED]** | `com.perfectdark.port` v2.0.0 installed; `pd.ntsc-final.z64` (33.5 MB, MD5 e03b088b) staged. Dual-analog 60fps. Launcher `.app` in ES-DE. | `/sdcard/perfect_dark/data/`<br>`/sdcard/Android/data/com.perfectdark.port/files/data/` |
 | **WQ-04** | **GoldenEye 007 (Recomp)** | Native Port | **[VERIFIED RUNNING]** | `com.sunjaycy.goldeneye` v1.4.1 installed. Resolved path issue: moved `default.xex` and game dump out of `files/assets/` directly into `files/` root. Verified running on hardware with full Twycross/Rare intro and iconic James Bond gunbarrel sequence. Launcher `.app` in ES-DE. Telemetry profiler (`scratch/perf/sample_telemetry.py`) staged for Performance vs High Performance hitching analysis. | `/sdcard/goldeneye/`<br>`/sdcard/Android/data/com.sunjaycy.goldeneye/files/` |
@@ -50,10 +50,16 @@ Both **Diddy Kong Racing (DKR-R)** (`io.github.thatguymcd.dkrr.preview`) and **B
   - Banjo Recomp: Crash inside `recompui::renderer::RT64Context::send_dummy_workload(unsigned int)+132` in `vulkan.adreno.so` (upstream GitHub issue #19: Adreno 650 driver incompatibility).
 - **Status**: Standalone APKs do not bundle custom Turnip loaders, so they inherit Qualcomm's proprietary driver bugs. Both games run flawlessly at 60fps with high-resolution texture packs on the RP5 via **Mupen64Plus FZ Standalone**.
 
-### B. DroidDeck & OutRun 2006 Discovery Resolved
-- DroidDeck manages multiple Steam mount paths (`/mnt/bannerlator-sd`, `/storage/<SD_ID>/Games/Steam`, and `D:\`).
-- By updating `libraryfolders.vdf` in all three locations (`Games/Steam/`, `Games/Steam/steamapps/`, and DroidDeck's rootfs `files/steam/steamapps/`) with App ID `"8960"` ("OutRun 2006: Coast 2 Coast"), DroidDeck immediately recognized the game.
-- The game is now fully visible and launchable under the **Games** tab with custom launch profiles, FSR upscaling to 1080p, and `dinput8` tweaks enabled.
+### B. DroidDeck & OutRun 2006 Deep Dive & PR #1034 Investigation
+- **Path Resolution & Library Mounts**: OutRun 2006 PC assets reside at `/storage/<SD_ID>/Games/Steam/steamapps/common/OutRun 2006 Coast 2 Coast/OR2006C2C.EXE`. DroidDeck binds both `/mnt/bannerlator-sd` and `/mnt/droiddeck-sd` to this external directory.
+- **Root Cause of "No licenses" Dialog (`Screenshot_20261018-142427.png`)**: When launching non-Steam shortcuts via `steam://rungameid/<id>`, Steam validates the ID against `shortcuts.vdf`. If the generated ID does not match the active account's shortcut definition, Steam attempts to query the official Steam Store backend for App ID 8960 (delisted since 2012), prompting the license error modal.
+- **Root Cause of Exit Status 2 in `droiddeck-proton-run`**: When invoked with `--app 8960` without explicit target binary paths, `droiddeck-proton-run` executes `steam_launch()`, which searches for `appmanifest_8960.acf`. Because the game is a retail/standalone PC installation rather than a native Steam download, `appmanifest_8960.acf` does not exist, causing `steam_launch()` to return `None` (exit code 2).
+- **DroidDeck In-App Update**: Updated DroidDeck via the in-app UI to PR #1034 test build: *"fix: run x86 Proton under FEX in the Steam runtime it requires"* with active `Mesa_Turnip_v27.0.0-20261018-r2` drivers.
+- **Proton Compatibility Tool Switch via Evdev**: OutRun 2006 is a 32-bit x86 Windows DirectX 9 executable. Using evdev input injection (`/dev/input/event8`), we navigated Steam Big Picture -> Shortcut Properties -> Compatibility, switched from `Proton Experimental ARM64` (incompatible with 32-bit binaries) to `Proton Experimental` (x86 Proton under FEX).
+- **Execution Profile**: Upon pressing Play, Steam showed the launch spinner for ~4 seconds as FEX initialized before cleanly returning to Big Picture without presenting a game surface. 32-bit DX9/DXVK thunking inside PRoot/FEX remains experimental under PR #1034.
+- **Recommended Play Methods on RP5**:
+  1. **PPSSPP (PSP)**: 4x 1080p, locked 60 FPS, full analog triggers, extremely battery efficient.
+  2. **ARM SX2 (PS2)**: 2.0x 1080p Vulkan, locked 60 FPS, highest-poly console car models and uncompressed arcade audio.
 
 ---
 
@@ -78,4 +84,4 @@ All 16 active ports were booted and visually audited on physical Retroid Pocket 
 | 13 | **Mega Man X8 16-Bit Demake** | `org.godotengine.rockmanx816bitdemakemod` | `mmx8_title.png`: Rockman X8 V.Touch v1.6 TagTeam title screen | **100% VERIFIED** |
 | 14 | **Apotris** | `com.apotris.android` | `apotris_screen.png`: Native 60fps title screen: Press Any Button v4.1.1b | **100% VERIFIED** |
 | 15 | **PokeMMO** | `eu.pokemmo.client` | `pokemmo_login_form.png`: All 5 regions loaded (`NDS: B, PL, HG \| GBA: BPRE v1.1, BPEE v1.0`); animated cloud login screen active | **100% VERIFIED** |
-| 16 | **OutRun 2006 (Coast 2 Coast)** | `com.droiddeck.launcher` (Steam / FEX) | `droiddeck_games.png` & `steam_after_close.png`: Recognized in DroidDeck Games tab with Launch & custom settings; Steam Big Picture container verified live | **100% VERIFIED** |
+| 16 | **OutRun 2006 (Coast 2 Coast)** | `com.droiddeck.launcher` (Steam / FEX) | `user_screenshot_142427.png`, `compat_dropdown.png`, `play_4s.png`: DroidDeck updated to PR #1034; diagnosed "No licenses" / exit code 2; Proton Experimental (x86 FEX) mapped via evdev; 32-bit DX9 translation under FEX pending upstream stability (PPSSPP & ARM SX2 verified alternatives) | **DIAGNOSED / FEX DX9 PENDING** |
