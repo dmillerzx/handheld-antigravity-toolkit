@@ -159,6 +159,7 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 2. **Device State Verification**: Always check `adb devices` before executing device commands. If status is `unauthorized`, prompt the user to accept the USB debugging prompt on the device screen.
 3. **Safe Storage Handling**: Do not write large binary files directly to version control. Validate paths before issuing `adb push` commands, and only push to the canonical paths in Section 2.
 4. **Multiple Devices**: Multiple devices may be attached. Always query `adb devices` at runtime and pass `-s <serial>` explicitly.
+5. **Markdown Clipboard Staging**: When generating markdown content for the user to post externally (GitHub PRs, issues, Discord), stage the raw text directly into the user's clipboard using PowerShell `Get-Content <file> -Raw | Set-Clipboard` to prevent leading-space formatting corruption.
 
 ---
 

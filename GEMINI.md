@@ -139,3 +139,12 @@ To guarantee emulator stability and prevent input or configuration regressions:
 4. **Literal Plus/Minus Keys**: Dolphin keys for Plus and Minus buttons are literally `+` and `-` (e.g., `Buttons/+`, `Classic/Buttons/-`), never `Plus` or `Minus`.
 5. **Always Verify with Live Hardware Logs & Screenshots**: Never declare input or emulator configuration complete without verifying via ADB dumps, live logcat output, or screen captures that in-game menus advance and inputs are cleanly captured without drawer/system popups.
 
+---
+
+## 9. Markdown Clipboard Staging Protocol
+
+When providing markdown text intended for the user to copy/paste to external sites (e.g., GitHub comments, issues, PR discussions, Discord, forums):
+1. **Always stage directly into Windows clipboard**: Use PowerShell `Get-Content <file> -Raw | Set-Clipboard` so the user can immediately paste with `Ctrl+V`.
+2. **Strict Flush-Left Formatting**: Ensure zero leading indentation (no 4-space indentations) so GitHub Markdown does not parse text, headers, lists, or HTML `<details>` drawers as indented code blocks.
+
+
