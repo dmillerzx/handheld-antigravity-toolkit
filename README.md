@@ -15,6 +15,27 @@ This repository serves as a deterministic backup, restore, snapshot, and provisi
 
 ---
 
+## ⚡ Quick Start (60-Second Provisioning)
+
+Get a factory-fresh or reset Retroid Pocket 5 fully configured in minutes:
+
+1. **Enable USB Debugging on your RP5**:
+   - Go to **Settings** > **About handheld** and tap **Build number** 7 times to enable Developer options.
+   - Go to **Settings** > **System** > **Developer options** and enable **USB debugging**.
+2. **Connect Handheld to your Host PC**:
+   - Plug the RP5 into your PC using USB-C. Authorize the USB debugging prompt on the device screen.
+   - Verify connection in PowerShell:
+     `powershell
+     .\platform-tools\adb.exe devices
+     `
+3. **Run Zero-Touch Provisioning**:
+   `powershell
+   .\scripts\provision_all.ps1
+   `
+   *This automatically unlocks Android 13 phantom process restrictions, scaffolds the canonical MicroSD directories, tunes Retroid OS system flags (smart fan, Xbox controller mode, analog triggers), injects tuned 3D emulator profiles, configures low-latency 2D audio engines, and stages Obtainium app manifests.*
+
+---
+
 ## 📦 Core Capabilities
 
 ### 1. Configuration Snapshot & Restore Engine (`scripts/snapshot_device.py`)
@@ -163,3 +184,10 @@ This repository integrates upstream configurations, shaders, and patches from:
 - [Obtainium](https://github.com/ImranR98/Obtainium)
 
 See [CREDITS.md](CREDITS.md) for full attributions and licenses.
+
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.

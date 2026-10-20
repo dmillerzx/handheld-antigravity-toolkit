@@ -85,3 +85,19 @@ All 16 active ports were booted and visually audited on physical Retroid Pocket 
 | 14 | **Apotris** | `com.apotris.android` | `apotris_screen.png`: Native 60fps title screen: Press Any Button v4.1.1b | **100% VERIFIED** |
 | 15 | **PokeMMO** | `eu.pokemmo.client` | `pokemmo_login_form.png`: All 5 regions loaded (`NDS: B, PL, HG \| GBA: BPRE v1.1, BPEE v1.0`); animated cloud login screen active | **100% VERIFIED** |
 | 16 | **OutRun 2006 (Coast 2 Coast)** | `com.droiddeck.launcher` (Steam / FEX) | `user_screenshot_142427.png`, `compat_dropdown.png`, `play_4s.png`: DroidDeck updated to PR #1034; diagnosed "No licenses" / exit code 2; Proton Experimental (x86 FEX) mapped via evdev; 32-bit DX9 translation under FEX pending upstream stability (PPSSPP & ARM SX2 verified alternatives) | **DIAGNOSED / FEX DX9 PENDING** |
+
+---
+
+## 4. Upstream Community Contributions & Collaboration Milestones
+
+- **DroidDeck Upstream (PR #1034)**:
+  - Investigated and validated x86 Proton under FEX for 32-bit Windows titles (OR2006C2C.EXE).
+  - Documented multi-mount SD VDF path resolution (/mnt/bannerlator-sd vs /mnt/droiddeck-sd).
+  - Discovered and cataloged hardware controller event codes on /dev/input/event8 (Xbox mode) for headless UI automation inside PRoot/gamescope containers.
+- **Obtainium Emulation Pack (PR #195)**:
+  - Created upstream PR #195 resolving issue #187.
+  - Added dedicated com.armsx2.nightly table-only entry (excludeFromExport: true) tracking https://github.com/ARMSX2/ARMSX2.
+  - Filtered to Android-arm64\.apk$ with prereleases enabled, giving handheld users a direct 1-tap Obtainium install link while preventing stable com.armsx2 users from hitting package mismatch errors (#183).
+- **Public Toolkit Milestone (v1.0.0)**:
+  - Repository established as open-source reference provisioning suite under MIT License.
+  - 60-second quick-start deployment path standardized for the Retroid Pocket 5 community.

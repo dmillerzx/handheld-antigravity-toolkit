@@ -64,6 +64,13 @@ The following issues and components have been completely resolved and verified v
    - Relocated files directly to `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` and verified on-device: game boots, loads full Twycross/Rare intro, and advances to the iconic James Bond gunbarrel animation (`ge_live.png`).
 8. **Active Verified Native Ports (16 Titles Live on Device)**:
    - GoldenEye 007 (Recomp) / Ship of Harkinian (OOT) / 2 Ship 2 Harkinian (MM) / Mario Kart 64 (SpaghettiKart) / Star Fox 64 (Starship) / Zelda 3 (A Link to the Past) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Space Cadet 3D Pinball / Balatro / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6) / Apotris / PokeMMO (all 5 regions) / OutRun 2006 (Coast 2 Coast in DroidDeck).
+9. **Obtainium Emulation Pack Upstream Contribution (PR #195)**:
+   - Responded to community feature request on RJNY/Obtainium-Emulation-Pack #187.
+   - Identified root cause of Issue #183 (package ID mismatch between stable com.armsx2 and nightly com.armsx2.nightly).
+   - Submitted PR #195 adding com.armsx2.nightly with prereleases enabled, filtered to Android-arm64.apk$, as a table-only entry.
+10. **Public Toolkit Release (v1.0.0)**:
+    - Formalized MIT License in root LICENSE file.
+    - Streamlined README.md with a 3-step 60-second quick-start provisioning guide.
 
 ---
 
