@@ -71,7 +71,7 @@ Get a factory-fresh or reset Retroid Pocket 5 fully configured in minutes:
 - Automates staging and configuration for DroidDeck (`com.droiddeck.launcher`):
   - Pre-seeds `/sdcard/DroidDeck/config.json` with 720p base rendering, 1080p AMD FSR upscaling, `DXVK_ASYNC=1`, `MESA_VK_WSI_PRESENT_MODE=mailbox`, and Turnip drivers.
   - Multi-mount VDF synchronizer maps `/mnt/bannerlator-sd`, `/storage/<SD_ID>/Games/Steam`, and `D:\`.
-  - Stages verified Windows PC titles (e.g., **OutRun 2006: Coast 2 Coast** with widescreen, 60Hz physics fix, and `WINEDLLOVERRIDES="dinput8=n,b"`).
+  - Maps Steam Big Picture controller input and manages PC translation environments (x86 Proton under FEX tested; 32-bit DX9 translation remains experimental upstream in PR #1034).
 
 ### 6. Deterministic Android UI Automator (`scripts/android_ui.py`)
 - Eliminates visual coordinate guessing and blind tapping during setup:
@@ -129,17 +129,25 @@ MicroSD Storage    /storage/<SD_ID>/
 
 ## 🎮 Verified Working Titles & Baseline Settings
 
-- **OutRun 2006: Coast 2 Coast (DroidDeck / Steam)**:
-  - 1080p borderless, 2x MSAA, anisotropic filtering, 60fps physics fix, `dinput8` override.
-- **Apotris (Native Port)**:
-  - Standalone ARM64 APK running at native 60fps with full gamepad mapping; bypasses GBA emulation.
-- **Mario Kart Wii (Dolphin)**:
-  - Configured with `WiimoteProfile1 = Classic_Controller` in `RMC*.ini`.
-  - Global `SIDevice0 = 6` (Standard GameCube Controller), `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`.
 - **Gran Turismo 4 Spec II (ARM SX2 / NetherSX2)**:
   - 16:9 widescreen rendering with CRT overscan crop (`Crop = 1`, `CropMode = Overscan`).
   - GS readbacks disabled (`HardwareDownloadMode = 1`) to eliminate slowdowns.
   - Active 16:9 widescreen patch (`646B2E29.pnach`) loaded via game CRC.
+- **Mario Kart Wii (Dolphin)**:
+  - Configured with `WiimoteProfile1 = Classic_Controller` in `RMC*.ini`.
+  - Global `SIDevice0 = 6` (Standard GameCube Controller), `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`.
+- **OutRun 2006: Coast 2 Coast (PPSSPP & ARM SX2)**:
+  - **PPSSPP (PSP)**: 4x 1080p, locked 60 FPS, full analog trigger acceleration.
+  - **ARM SX2 (PS2)**: 2.0x 1080p Vulkan, locked 60 FPS, uncompressed arcade audio and high-polygon car models.
+  - *(Note: Windows PC execution under DroidDeck / FEX x86 Proton is blocked pending upstream 32-bit DX9 translation stability; play via PPSSPP or ARM SX2 on RP5).*
+- **Apotris (Native Port)**:
+  - Standalone ARM64 APK running at native 60fps with full gamepad mapping; bypasses GBA emulation.
+- **GoldenEye 007 & Perfect Dark (Native Android Ports)**:
+  - Native 60 FPS execution on physical RP5 hardware with full dual-analog camera controls.
+- **Ship of Harkinian & 2 Ship 2 Harkinian (Zelda N64 Decompilations)**:
+  - Native 60 FPS 1080p widescreen with 3DS Link & Young Link HD character models.
+- **PokeMMO (Native MMO Client)**:
+  - All 5 regions (Black, White, HeartGold, Platinum, FireRed, Emerald) loaded and verified in-game at 1080p 60fps.
 
 ---
 

@@ -65,7 +65,7 @@ Both **Diddy Kong Racing (DKR-R)** (`io.github.thatguymcd.dkrr.preview`) and **B
 
 ## 3. Verified Native Ports & Decompilations Audit (100% On-Device Visual Proof)
 
-All 16 active ports were booted and visually audited on physical Retroid Pocket 5 hardware (`<SERIAL>`):
+The 15 active native ports and 1 PC translation title were audited on physical Retroid Pocket 5 hardware (`<SERIAL>`):
 
 | # | Title | Package / Engine | Visual Verification Proof | Status |
 |---|---|---|---|---|

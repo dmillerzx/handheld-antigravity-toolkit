@@ -18,7 +18,7 @@ This document provides systematic, platform-by-platform validation procedures fo
 | **Azahar (3DS)** | Mesa Turnip Driver Stability | Vulkan Async shaders compile without pipeline stalls | `[PASS]` |
 | **Vita3K (PS Vita)** | Mesa Turnip 1080p Rendering | Stable 2x scaling without texture corruption or crashing | `[PASS]` |
 | **ES-DE Frontend** | Region Scraping & Back Safety | ScraperRegion set to US; BackEventAppExit=false (no accidental exits to Android) | `[PASS]` |
-| **DroidDeck (Steam)** | 720p FSR & MicroSD Steam Mount | MicroSD library mounted; OutRun 2006 (8960) recognized under Games tab; native XInput | `[PASS]` |
+| **DroidDeck (Steam)** | 720p FSR & MicroSD Steam Mount | MicroSD library mounted; DroidDeck config verified; OutRun 2006 PC FEX DX9 investigated (play via PPSSPP/ARM SX2) | [PASS / PC DX9 PENDING] |
 | **Native Ports (2D/3D)** | SoH, 2Ship, Apotris, GoldenEye, MMX | 60fps native execution, ES-DE .app launchers, direct gamepad bindings | `[PASS]` |
 | **N64 Recomp (RT64)** | DKR-R & Banjo Recomp | RT64 Vulkan pipeline limitation on stock Adreno 650 (use Mupen64Plus FZ fallback) | `[DOCUMENTED]` |
 

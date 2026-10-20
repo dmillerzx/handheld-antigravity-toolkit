@@ -62,8 +62,9 @@ The following issues and components have been completely resolved and verified v
 7. **GoldenEye 007 (Recomp)**:
    - Resolved asset path issue: `default.xex` and game files were previously placed in `files/assets/` rather than the root `files/` directory, causing "Game files not found (default.xex is missing)".
    - Relocated files directly to `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` and verified on-device: game boots, loads full Twycross/Rare intro, and advances to the iconic James Bond gunbarrel animation (`ge_live.png`).
-8. **Active Verified Native Ports (16 Titles Live on Device)**:
-   - GoldenEye 007 (Recomp) / Ship of Harkinian (OOT) / 2 Ship 2 Harkinian (MM) / Mario Kart 64 (SpaghettiKart) / Star Fox 64 (Starship) / Zelda 3 (A Link to the Past) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Space Cadet 3D Pinball / Balatro / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6) / Apotris / PokeMMO (all 5 regions) / OutRun 2006 (Coast 2 Coast in DroidDeck).
+8. **Active Verified Native Ports (15 Titles Live on Device)**:
+   - GoldenEye 007 (Recomp) / Ship of Harkinian (OOT) / 2 Ship 2 Harkinian (MM) / Mario Kart 64 (SpaghettiKart) / Star Fox 64 (Starship) / Zelda 3 (A Link to the Past) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Space Cadet 3D Pinball / Balatro / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6) / Apotris / PokeMMO (all 5 regions).
+   - *Note on OutRun 2006*: Verified running at 1080p 60fps via PPSSPP (PSP) and ARM SX2 (PS2); DroidDeck PC execution remains investigated and pending upstream FEX 32-bit DX9 translation.
 9. **Obtainium Emulation Pack Upstream Contribution (PR #195)**:
    - Responded to community feature request on RJNY/Obtainium-Emulation-Pack #187.
    - Identified root cause of Issue #183 (package ID mismatch between stable com.armsx2 and nightly com.armsx2.nightly).
