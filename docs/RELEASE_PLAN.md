@@ -121,4 +121,4 @@ Findings and technical documentation will be contributed back to upstream projec
    - Document the `KEYCODE_NAMES` token requirement vs obsolete `Button 96` numeric scan-codes.
    - Share findings on `[Controls]` `WiimoteProfile1 = Classic_Controller` and `WiimoteSource0 = 1` vs `SIDevice0`.
 3. **Community Handheld Post**:
-   - Publish `notes/FINDINGS.md` as a technical reference guide on r/retroid and SBCGaming.
+   - Publish `docs/TECHNICAL_FINDINGS.md` as a technical reference guide on r/retroid and SBCGaming.
