@@ -94,6 +94,14 @@ Get a factory-fresh or reset Retroid Pocket 5 fully configured in minutes:
 - Downloads 11 designated 2D and arcade Libretro cores from the official Libretro buildbot.
 - Deploys Core Info files, Joypad autoconfigs, and Slang shaders headlessly over ADB.
 
+### 9. Universal Community Patch Engine & Dolphin Widescreen Architecture (`scripts/stage_community_patches.py`)
+- **PS2 Master `.pnach` Cheats**: Streams and deploys 4,700+ PCSX2 master cheats directly into NetherSX2 and ARM SX2 `patches/` and `cheats/` directories.
+- **Dolphin Aspect Ratio Decoupling**: Global Dolphin graphics setting remains strictly on `Auto` (`AspectRatio = 0` in `GFX.ini`). Unpatched 4:3 titles maintain pure pillarboxing without horizontal distortion, while native 16:9 Wii games automatically scale via `[Wii] Widescreen = True`.
+- **550 GameCube Per-Game Profiles (`patches/gcn/`)**:
+  - **323 Gecko-Patched Games**: Injects clean engine-level camera patches under `[Gecko_Enabled]` with `[Video_Settings] AspectRatio = 1` and `wideScreenHack = False` (*Super Smash Bros. Melee*, *Super Mario Sunshine*, *The Legend of Zelda: The Wind Waker*, *Mario Kart: Double Dash!!*, *Luigi's Mansion*, *Paper Mario: TTYD*, etc.).
+  - **225 Native 16:9 Games**: Configures `[Video_Settings] AspectRatio = 1` and `wideScreenHack = False` without Gecko hacks (*F-Zero GX*, *007: Nightfire*, *Red Faction II*, *Tony Hawk*, *Burnout*, *TimeSplitters*, etc.).
+- **Smart Non-Destructive INI Merging**: Layers widescreen codes and video overrides on top of upstream Dolphin GameSettings without overwriting upstream bugfixes (MMU, dual-core, fastmem workarounds), and automatically propagates widescreen settings across all game revisions (`GALE01r*.ini`).
+
 ---
 
 ## 📁 Canonical Storage Architecture
@@ -133,17 +141,25 @@ MicroSD Storage    /storage/<SD_ID>/
   - 16:9 widescreen rendering with CRT overscan crop (`Crop = 1`, `CropMode = Overscan`).
   - GS readbacks disabled (`HardwareDownloadMode = 1`) to eliminate slowdowns.
   - Active 16:9 widescreen patch (`646B2E29.pnach`) loaded via game CRC.
-- **Mario Kart Wii (Dolphin)**:
-  - Configured with `WiimoteProfile1 = Classic_Controller` in `RMC*.ini`.
-  - Global `SIDevice0 = 6` (Standard GameCube Controller), `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`.
+- **Dolphin (GameCube & Wii Standalone)**:
+  - **Global Aspect Ratio Auto**: `AspectRatio = 0` in `GFX.ini` preserves true 4:3 pillarboxing for unpatched retro games without manual toggling; native 16:9 Wii games automatically scale via `[Wii] Widescreen = True`.
+  - **550 GameCube Per-Game Widescreen Profiles**: Staged in `patches/gcn/*.ini` (323 with active `$Widescreen Hack` Gecko codes and 225 with native 16:9 `[Video_Settings] AspectRatio = 1`).
+  - **Hardware Analog Triggers**: Binds hardware triggers to true analog axes (L=`Axis 22+`, R=`Axis 23+`).
+  - **Mario Kart Wii**: Configured with `WiimoteProfile1 = Classic_Controller` and `WiimoteSource0 = 1` in `RMC*.ini` without conflicting `PadType0` dropdown indices.
+
 - **OutRun 2006: Coast 2 Coast (PPSSPP & ARM SX2)**:
   - **PPSSPP (PSP)**: 4x 1080p, locked 60 FPS, full analog trigger acceleration.
   - **ARM SX2 (PS2)**: 2.0x 1080p Vulkan, locked 60 FPS, uncompressed arcade audio and high-polygon car models.
   - *(Note: Windows PC execution under DroidDeck / FEX x86 Proton is blocked pending upstream 32-bit DX9 translation stability; play via PPSSPP or ARM SX2 on RP5).*
 - **Apotris (Native Port)**:
   - Standalone ARM64 APK running at native 60fps with full gamepad mapping; bypasses GBA emulation.
-- **GoldenEye 007 & Perfect Dark (Native Android Ports)**:
-  - Native 60 FPS execution on physical RP5 hardware with full dual-analog camera controls.
+- **GoldenEye 007 (Native Android Recomp)**:
+  - Native 60 FPS execution on physical RP5 hardware with full dual-analog camera controls; Rareware intro and 007 gunbarrel sequence verified in-game.
+- **Perfect Dark (Native Android Port)**:
+  - Modern dual-analog twin-stick FPS mapping deployed via `configs/ports/perfect_dark/pd.ini` achieving 1:1 parity with Xbox Live Arcade (XBLA) "Duty Calls" preset.
+  - Right analog stick controls true pitch/yaw (`StickCButtons=0`), reticle locked dead-center (`MouseAimMode=1`, `CrosshairSway=0`), modern trigger shooting (RT=Fire, LT=Aim, RB/LB=Alt-Fire, X=Reload, Y=Weapon Cycle, B/R3=Crouch).
+  - In-game Control Style must be set to **"Ext"** (Mode 8: native PC Port layout).
+
 - **Ship of Harkinian & 2 Ship 2 Harkinian (Zelda N64 Decompilations)**:
   - Native 60 FPS 1080p widescreen with 3DS Link & Young Link HD character models.
 - **PokeMMO (Native MMO Client)**:
