@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning Proposal Review — Retroid Pocket 5 Workspace</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --text: #c9d1d9;
+      --text-heading: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.15);
+      --success: #3fb950;
+      --success-bg: rgba(63, 185, 80, 0.1);
+      --warning: #d29922;
+      --warning-bg: rgba(210, 153, 34, 0.1);
+      --code-bg: #0b0e14;
+      --tag-bg: #21262d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-review {
+      background-color: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .badge-scope {
+      background-color: var(--accent-glow);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    h1 {
+      color: var(--text-heading);
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      color: var(--text-heading);
+      font-size: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3 {
+      color: var(--accent);
+      font-size: 16px;
+      margin: 18px 0 8px 0;
+    }
+
+    p, ul, ol {
+      margin-bottom: 12px;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    strong {
+      color: var(--text-heading);
+    }
+
+    code {
+      background-color: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 13px;
+      color: #79c0ff;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 12px 0 16px 0;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .diff-block {
+      background-color: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 12px 0 16px 0;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .diff-add {
+      color: #7ee787;
+      background-color: rgba(63, 185, 80, 0.15);
+      display: block;
+      padding: 2px 4px;
+      border-left: 3px solid var(--success);
+    }
+
+    .diff-header {
+      color: #d2a8ff;
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .callout {
+      border-left: 4px solid var(--accent);
+      background-color: var(--accent-glow);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 16px 0;
+    }
+
+    .callout-title {
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    th, td {
+      border: 1px solid var(--card-border);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #21262d;
+      color: var(--text-heading);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .decision-box {
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.08) 0%, rgba(63, 185, 80, 0.08) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 28px;
+    }
+
+    .decision-title {
+      color: var(--text-heading);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+      border: none;
+    }
+
+    .btn-approve {
+      background-color: var(--success);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background-color: var(--tag-bg);
+      color: var(--text-heading);
+      border: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge-bar">
+        <span class="badge badge-review">Awaiting Approval</span>
+        <span class="badge badge-scope">Workspace Rule &amp; Skill Extension</span>
+        <span class="badge" style="background-color: #388bfd1a; color: #58a6ff; border: 1px solid #388bfd;">RP5 Automation</span>
+      </div>
+      <h1>Learning Proposal: Native Port FPS Controls &amp; ROM Standards</h1>
+      <p class="subtitle">Persisting reverse-engineered engine findings and community compression rules into persistent agent memory.</p>
+    </header>
+
+    <!-- SECTION 1: ROOT CAUSE SUMMARY -->
+    <div class="card">
+      <h2>1. Root Cause &amp; Technical Discovery Summary</h2>
+      
+      <h3>A. Perfect Dark Native Android Port (XBLA "Duty Calls" Twin-Stick Aim)</h3>
+      <p>Reverse-engineering <code>libpd.so</code> revealed the exact reasons why the native port felt clunky out-of-the-box and why switching to <strong>1.2 Solitaire</strong> broke analog controls:</p>
+      <ul>
+        <li><strong><code>StickCButtons = 1</code> (Default Trap)</strong>: Quantizes the right analog stick into 4-way discrete digital pulses with a hard threshold (<code>0x4000</code>), completely ignoring analog pitch/yaw look values. Setting <code>StickCButtons = 0</code> is required for raw 360° analog input.</li>
+        <li><strong>Control Style 8 ("Ext") Invariant</strong>: In <code>bmoveProcessInput</code>, analog look processing is locked behind <code>cmp w20, #8</code>. Switching to <strong>1.2 Solitaire</strong> sets <code>w20 = 1</code>, bypassing the modern analog aim routine entirely and falling back to digital C-button movement.</li>
+        <li><strong><code>MouseAimMode = 1</code> (Center Reticle Lock)</strong>: N64 floating cursor lets the crosshair drift in an on-screen box before panning the camera. Setting <code>MouseAimMode = 1</code> locks the crosshair dead-center for instant, modern FPS camera pan.</li>
+        <li><strong>Lookspring OFF</strong>: In-game Lookspring must be disabled to prevent the camera from automatically pitching down to level whenever walking forward.</li>
+        <li><strong>Action Bindings</strong>: <code>CK_8000</code> is the port's internal bind for <em>Cycle Crouch [+]</em> (mapped to <code>B</code> and <code>R3</code>), <code>X_BUTTON</code> for dedicated reload, and <code>Y_BUTTON</code> for weapon cycle.</li>
+      </ul>
+
+      <h3>B. Clean ROM Staging &amp; Compression Invariants</h3>
+      <p>Analysis of community-distributed N64 ROM hacks (e.g. <em>Super Smash Bros. Remix</em>) uncovered critical handheld emulator incompatibilities with raw <code>.7z</code> archives:</p>
+      <ul>
+        <li><strong>Nested Directories</strong>: Subfolders inside <code>.7z</code> archives (e.g., <code>Super Smash Bros (Remix v2.0.1)/...</code>) prevent emulators from identifying the <code>.z64</code> binary.</li>
+        <li><strong>Standalone Emulators</strong>: Mupen64Plus FZ does not support <code>.7z</code> archives.</li>
+        <li><strong>RetroArch Cache Lag</strong>: RetroArch decompresses <code>.7z</code> to a temporary cache directory before launching, causing severe launch pauses on 64MB expanded ROMs.</li>
+        <li><strong>The Standard</strong>: Repack as a clean <strong>Deflate <code>.zip</code> (level 9)</strong> named <code>&lt;Title&gt;.n64.zip</code> with exactly one <code>.z64</code> at the archive root.</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 2: PROPOSED CHANGES -->
+    <div class="card">
+      <h2>2. Proposed Changes</h2>
+
+      <h3>Item 1: Update Workspace Master Rules (<code>AGENTS.md</code> and <code>GEMINI.md</code>)</h3>
+      <p>Add two new standardized automation protocols to Section 4:</p>
+
+      <div class="diff-block">
+        <span class="diff-header">### AGENTS.md &amp; GEMINI.md (Section 4 — Proposed Additions)</span>
+        <span class="diff-add">+ ### J. Native Android Port Configurations (e.g., Perfect Dark)</span>
+        <span class="diff-add">+ - Deploys device-tuned INIs to /sdcard/Android/data/&lt;package&gt;/files/ and /sdcard/&lt;port&gt;/.</span>
+        <span class="diff-add">+ - Perfect Dark (com.perfectdark.port) XBLA "Duty Calls" Twin-Stick Formula:</span>
+        <span class="diff-add">+   - StickCButtons = 0: Outputs unquantized 360° analog pitch/yaw to rstick_x and rstick_y.</span>
+        <span class="diff-add">+   - In-game Control Style must be "Ext" (Control Mode 8). Never use legacy 1.2 Solitaire.</span>
+        <span class="diff-add">+   - MouseAimMode = 1: Locks reticle dead-center on screen for modern FPS aim.</span>
+        <span class="diff-add">+   - CrosshairSway = 0: Eliminates reticle wobble while moving.</span>
+        <span class="diff-add">+   - In-game Lookspring = OFF: Disables automatic camera leveling to the horizon.</span>
+        <span class="diff-add">+   - UseKeyReloads = 1 + X_BUTTON = JOY1_X: Dedicated instant reload.</span>
+        <span class="diff-add">+   - CK_8000 = JOY1_B, JOY1_RSTICK: Modern single-button/R3 toggle crouch.</span>
+        <span class="diff-add">+   - Z_TRIG = JOY1_RTRIGGER (RT fire) &amp; R_TRIG = JOY1_LTRIGGER (LT aim/zoom).</span>
+        <span class="diff-add">+ </span>
+        <span class="diff-add">+ ### K. ROM Packaging &amp; Compression Standards</span>
+        <span class="diff-add">+ - Cartridge Systems (N64, SNES, Genesis, GBA, NES):</span>
+        <span class="diff-add">+   - Standard Deflate .zip (level 9). Never push raw .7z archives to the device.</span>
+        <span class="diff-add">+   - N64 convention: &lt;Game Title&gt;.n64.zip containing exactly one clean .z64 at the root.</span>
+        <span class="diff-add">+ - Disc Systems (PS1, PS2, PSP, Dreamcast, Sega CD): Compressed .chd.</span>
+        <span class="diff-add">+ - Nintendo Disc Systems (GameCube, Wii): Compressed .rvz.</span>
+      </div>
+
+      <h3>Item 2: Create Companion Skill (<code>.agents/skills/rom-and-port-staging/SKILL.md</code>)</h3>
+      <p>Establishes an automated runbook and Python workflow for inspecting staged community archives, repacking to canonical formats, and deploying port profiles.</p>
+
+      <pre><code>---
+name: rom-and-port-staging
+description: >-
+  Standardized runbook for packaging and staging ROMs (Deflate .n64.zip, .rvz, .chd)
+  and deploying native Android port profiles (e.g., Perfect Dark XBLA twin-stick controls).
+---
+
+# rom-and-port-staging Skill
+
+## 1. N64 ROM Packaging Pipeline
+- Extract community .7z into temporary scratch directory.
+- Verify internal structure; strip nested directories and documentation files (.txt).
+- Repack using Python zipfile with ZIP_DEFLATED and compresslevel=9.
+- Name as &lt;Game Title&gt;.n64.zip.
+- Push to canonical MicroSD: /storage/&lt;SD_ID&gt;/ROMs/n64/.
+- Verify archive integrity on device via: adb shell "unzip -t '&lt;path&gt;'".
+
+## 2. Native Port Modern Twin-Stick Architecture (Perfect Dark)
+- Always enforce StickCButtons=0 in [Input.Player1].
+- Set Game.Player1.MouseAimMode=1 and CrosshairSway=0.
+- Verify in-game Control Style is set to "Ext" (Mode 8).</code></pre>
+    </div>
+
+    <!-- SECTION 3: DECISION -->
+    <div class="decision-box">
+      <div class="decision-title">Review Decision &amp; Approval</div>
+      <p>Approving this proposal will commit these rules to <code>AGENTS.md</code>, <code>GEMINI.md</code>, and instantiate the <code>rom-and-port-staging</code> skill, followed by immediately pushing the commit to GitHub.</p>
+      <div class="callout">
+        <div class="callout-title">Review Preferences Stored</div>
+        All future proposals and approval reviews will automatically be generated as rich <code>.html</code> review files with direct clickable links.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

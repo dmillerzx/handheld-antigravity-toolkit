@@ -151,6 +151,28 @@ adb shell appops set dev.imranr.obtainium REQUEST_INSTALL_PACKAGES allow
 adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 ```
 
+### J. Native Android Port Configurations (e.g., Perfect Dark)
+- Deploys device-tuned INIs to `/sdcard/Android/data/<package>/files/` and `/sdcard/<port>/`.
+- **Perfect Dark (`com.perfectdark.port`) XBLA "Duty Calls" Twin-Stick Formula**:
+  - `StickCButtons = 0`: Outputs unquantized 360° analog pitch/yaw to `rstick_x` and `rstick_y`.
+  - In-game Control Style must be **"Ext"** (Control Mode 8 in `libpd.so`). Selecting legacy N64 styles (e.g., 1.2 Solitaire) sets `w20 != 8`, bypassing the modern analog look path and reverting to discrete digital C-button stepping.
+  - `MouseAimMode = 1`: Locks reticle dead-center on screen for modern FPS aim (eliminates floating cursor/crosshair bounding box delay).
+  - `CrosshairSway = 0`: Eliminates reticle wobble while moving.
+  - In-game `Lookspring = OFF`: Disables automatic camera leveling to the horizon when walking forward.
+  - `UseKeyReloads = 1` + `X_BUTTON = JOY1_X`: Dedicated instant reload.
+  - `CK_8000 = JOY1_B, JOY1_RSTICK`: Modern single-button/R3 toggle crouch.
+  - `Z_TRIG = JOY1_RTRIGGER` (RT fire) & `R_TRIG = JOY1_LTRIGGER` (LT precision aim/zoom).
+  - Profile maintained in `configs/ports/perfect_dark/pd.ini` and staged via `stage_port_configs()`.
+
+### K. ROM Packaging & Compression Standards
+- **Cartridge Systems (N64, SNES, Genesis, GBA, NES)**:
+  - Standard Deflate `.zip` (level 9). Never push raw `.7z` archives to the device (Mupen64Plus FZ does not support `.7z`, and RetroArch experiences extraction lag on 64MB expanded ROMs).
+  - N64 convention: `<Game Title>.n64.zip` containing exactly one clean `.z64` at the root of the archive (strip all nested subfolders, `.txt` documentation, and patch notes).
+- **Disc Systems (PS1, PS2, PSP, Dreamcast, Sega CD)**:
+  - Compressed `.chd` (CD-ROM/DVD MAME chdman format).
+- **Nintendo Disc Systems (GameCube, Wii)**:
+  - Compressed `.rvz` (Dolphin RVZ format with zstd/128KB chunking).
+
 ---
 
 ## 5. Operational Best Practices for Agents
@@ -161,6 +183,7 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 4. **Multiple Devices**: Multiple devices may be attached. Always query `adb devices` at runtime and pass `-s <serial>` explicitly.
 5. **Markdown Clipboard Staging**: When generating markdown content for the user to post externally (GitHub PRs, issues, Discord), stage the raw text directly into the user's clipboard using PowerShell `.\scripts\stage_clipboard.ps1 -FilePath <path>` or `Get-Content <file> -Raw | Set-Clipboard` to prevent leading-space formatting corruption.
 6. **OLED Display Sleep Invariant**: Whenever tasks conclude or when waiting on user feedback, power down the physical device display (`adb shell input keyevent 26`) and verify with `adb shell dumpsys power` (`mHoldingDisplaySuspendBlocker=false`) to eliminate AMOLED burn-in risk.
+7. **User Approval & Review Presentation Protocol**: When preparing proposals, architectural designs, or multi-step plans for user approval and review, always generate a self-contained `.html` review page with clean styling, diff blocks, and visual hierarchy (e.g. `docs/review/<topic>.html`), and provide a clickable `file://` markdown link instead of raw `.md` files.
 
 ---
 

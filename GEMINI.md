@@ -66,6 +66,8 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Universal Patches** | Stage 4,700+ PS2 pnach cheats & 550 GameCube per-game profiles in patches/gcn/ smartly merged with upstream Dolphin GameSettings (Video_Settings AspectRatio=1, Gecko_Enabled) | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
 | **Save Backup Sync** | Mirror saves, savestates, and memory cards to `/storage/<SD_ID>/Saves_Backup/latest/` | `adb shell "ls -la /storage/<SD_ID>/Saves_Backup/latest"` |
 | **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` across all emulators and frontends | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
+| **Native Port Profiles** | Stage Perfect Dark (`com.perfectdark.port`) XBLA Duty Calls profile (`StickCButtons=0`, Style 8 "Ext", `MouseAimMode=1`, `CrosshairSway=0`, Lookspring OFF, `CK_8000` crouch) | `adb shell "cat /sdcard/Android/data/com.perfectdark.port/files/pd.ini"` |
+| **ROM Compression** | Verify cartridge ROMs are Deflate `.n64.zip` (clean root `.z64`, no `.7z`), disc ROMs are `.chd`, GC/Wii are `.rvz` | `adb shell "ls -la /storage/<SD_ID>/ROMs/n64"` |
 
 ---
 
@@ -154,6 +156,14 @@ When providing markdown text intended for the user to copy/paste to external sit
 Whenever finishing automation tasks, concluding a conversation turn, or awaiting user input:
 1. **Power down display**: Execute `adb -s <serial> shell input keyevent 26`.
 2. **Verify sleep status**: Execute `adb -s <serial> shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"` to ensure `mHoldingDisplaySuspendBlocker=false` and `mWakefulness=Dozing`.
+
+---
+
+## 11. User Approval & Review Presentation Protocol
+
+When preparing proposals, architectural designs, or multi-step plans for user approval and review (such as `/learn` proposals or system refactors):
+1. **Always generate a self-contained HTML review page**: Build a modern, styled `.html` file with clean typography, diff highlighting, and clear sectioning (e.g. `docs/review/<topic>.html`).
+2. **Provide clickable `file://` link**: Always link to the `.html` file using standard markdown `file:///` format instead of asking the user to review raw `.md` files.
 
 
 
