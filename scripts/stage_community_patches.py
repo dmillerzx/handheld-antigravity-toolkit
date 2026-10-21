@@ -42,7 +42,7 @@ from device_profile import detect_device_profile, detect_storage_targets, load_p
 PCSX2_PATCHES_URL = "https://github.com/PCSX2/pcsx2_patches/releases/latest/download/patches.zip"
 DOLPHIN_REPO_URL = "https://github.com/dolphin-emu/dolphin.git"
 
-RE_169_CODE = re.compile(r"^\$(?:16:9\s*(?:Widescreen|Aspect Ratio Fix)|Widescreen\s*\(16:9\)|Widescreen\s*Fix)[^\r\n]*", re.IGNORECASE)
+RE_169_CODE = re.compile(r"^\$(?:16:9\s*(?:Widescreen|Aspect Ratio Fix)?|Widescreen(?:\s*Hack|\s*Fix|\s*\(16:9\)|\[|\s*$))[^\r\n]*", re.IGNORECASE)
 RE_DEFLICKER_CODE = re.compile(r"^\$(?:Disable\s*Deflicker|Deflicker\s*Off|No\s*Deflicker|Disable\s*Bloom)[^\r\n]*", re.IGNORECASE)
 
 
@@ -74,6 +74,108 @@ def find_git() -> str:
         if c.is_file():
             return str(c)
     return "git"
+
+
+def merge_dolphin_ini_content(base_text: str, custom_text: str) -> str:
+    """Merges custom INI (Video_Settings, Gecko codes, etc.) into base INI without losing base game fixes."""
+    custom_sections = {}
+    curr_sec = None
+    for line in custom_text.splitlines():
+        stripped = line.strip()
+        m = re.match(r"^\[(.*?)\]$", stripped)
+        if m:
+            curr_sec = m.group(1).strip()
+            custom_sections[curr_sec] = []
+        elif curr_sec is not None:
+            custom_sections[curr_sec].append(line)
+
+    base_lines = base_text.splitlines()
+    base_sec_indices = {}
+    for idx, line in enumerate(base_lines):
+        m = re.match(r"^\[(.*?)\]$", line.strip())
+        if m:
+            base_sec_indices[m.group(1).strip().lower()] = idx
+
+    out_lines = list(base_lines)
+    for c_sec, c_lines in custom_sections.items():
+        c_sec_lower = c_sec.lower()
+        if c_sec_lower not in base_sec_indices:
+            if out_lines and out_lines[-1].strip() != "":
+                out_lines.append("")
+            out_lines.append(f"[{c_sec}]")
+            out_lines.extend(c_lines)
+        else:
+            if c_sec_lower in ["video_settings", "video_enhancements", "video_hacks", "core"]:
+                sec_idx = None
+                for idx, line in enumerate(out_lines):
+                    if re.match(rf"^\[{re.escape(c_sec)}\]$", line.strip(), re.IGNORECASE):
+                        sec_idx = idx
+                        break
+                if sec_idx is not None:
+                    end_idx = len(out_lines)
+                    for idx in range(sec_idx + 1, len(out_lines)):
+                        if re.match(r"^\[.*?\]$", out_lines[idx].strip()):
+                            end_idx = idx
+                            break
+                    for cl in c_lines:
+                        if "=" in cl:
+                            k = cl.split("=", 1)[0].strip().lower()
+                            replaced = False
+                            for idx in range(sec_idx + 1, end_idx):
+                                if "=" in out_lines[idx] and out_lines[idx].split("=", 1)[0].strip().lower() == k:
+                                    out_lines[idx] = cl
+                                    replaced = True
+                                    break
+                            if not replaced:
+                                out_lines.insert(sec_idx + 1, cl)
+                                end_idx += 1
+            elif c_sec_lower in ["gecko", "actionreplay"]:
+                sec_idx = None
+                for idx, line in enumerate(out_lines):
+                    if re.match(rf"^\[{re.escape(c_sec)}\]$", line.strip(), re.IGNORECASE):
+                        sec_idx = idx
+                        break
+                if sec_idx is not None:
+                    end_idx = len(out_lines)
+                    for idx in range(sec_idx + 1, len(out_lines)):
+                        if re.match(r"^\[.*?\]$", out_lines[idx].strip()):
+                            end_idx = idx
+                            break
+                    existing_text = "\n".join(out_lines[sec_idx:end_idx])
+                    codes_to_add = []
+                    skip = False
+                    for cl in c_lines:
+                        if cl.strip().startswith("$") and cl.strip() in existing_text:
+                            skip = True
+                        elif cl.strip().startswith("$"):
+                            skip = False
+                            codes_to_add.append(cl)
+                        elif not skip:
+                            codes_to_add.append(cl)
+                    if codes_to_add:
+                        for cl in codes_to_add:
+                            out_lines.insert(end_idx, cl)
+                            end_idx += 1
+            elif c_sec_lower in ["gecko_enabled", "actionreplay_enabled"]:
+                sec_idx = None
+                for idx, line in enumerate(out_lines):
+                    if re.match(rf"^\[{re.escape(c_sec)}\]$", line.strip(), re.IGNORECASE):
+                        sec_idx = idx
+                        break
+                if sec_idx is not None:
+                    end_idx = len(out_lines)
+                    for idx in range(sec_idx + 1, len(out_lines)):
+                        if re.match(r"^\[.*?\]$", out_lines[idx].strip()):
+                            end_idx = idx
+                            break
+                    existing_entries = [out_lines[i].strip() for i in range(sec_idx + 1, end_idx) if out_lines[i].strip()]
+                    for cl in c_lines:
+                        stripped = cl.strip()
+                        if stripped and stripped not in existing_entries:
+                            out_lines.insert(end_idx, cl)
+                            end_idx += 1
+
+    return "\n".join(out_lines) + "\n"
 
 
 class CommunityPatchEngine:
@@ -313,9 +415,22 @@ class CommunityPatchEngine:
         custom_gcn_count = 0
         if self.gcn_custom_dir.exists():
             custom_gcn = list(self.gcn_custom_dir.glob("*.ini"))
+            print(f"    -> Layering {len(custom_gcn):,} custom local GameCube Gecko/widescreen patch overrides...")
             for custom_ini in custom_gcn:
-                print(f"    -> Layering custom local GameCube Gecko patch override: {custom_ini.name}...")
-                shutil.copy2(custom_ini, curated_dir / custom_ini.name)
+                target_path = curated_dir / custom_ini.name
+                custom_text = custom_ini.read_text(encoding="utf-8", errors="replace")
+                if target_path.exists():
+                    target_path.write_text(merge_dolphin_ini_content(target_path.read_text(encoding="utf-8", errors="replace"), custom_text), encoding="utf-8")
+                else:
+                    target_path.write_text(custom_text, encoding="utf-8")
+
+                # If revision files exist for this game (e.g. GALE01r0.ini), merge widescreen settings into them as well
+                stem = custom_ini.stem
+                if len(stem) == 6:
+                    for rev_ini in curated_dir.glob(f"{stem}r*.ini"):
+                        rev_text = rev_ini.read_text(encoding="utf-8", errors="replace")
+                        rev_ini.write_text(merge_dolphin_ini_content(rev_text, custom_text), encoding="utf-8")
+
                 custom_gcn_count += 1
 
         custom_wii_count = 0
@@ -326,7 +441,8 @@ class CommunityPatchEngine:
                 shutil.copy2(custom_ini, curated_dir / custom_ini.name)
                 custom_wii_count += 1
 
-        print(f"    -> Curation complete: {len(all_inis):,} INIs ({widescreen_injected_count:,} with 16:9/deflicker hooks, {custom_gcn_count} GCN overrides, {custom_wii_count} Wii overrides).")
+        total_curated = len(list(curated_dir.glob("*.ini")))
+        print(f"    -> Curation complete: {total_curated:,} INIs ({widescreen_injected_count:,} with 16:9/deflicker hooks, {custom_gcn_count} GCN overrides, {custom_wii_count} Wii overrides).")
 
         # 4. Package into tarball and push to Dolphin GameSettings
         tar_path = self.scratch_dir / "dolphin_gamesettings.tar.gz"

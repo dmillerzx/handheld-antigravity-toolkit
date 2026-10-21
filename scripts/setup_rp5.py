@@ -451,6 +451,18 @@ class RP5Provisioner:
                 break
         print("    -> DroidDeck and PS Vita firmware staging complete.")
 
+    def stage_port_configs(self) -> None:
+        """Deploys tuned native port configurations (Perfect Dark, etc.)."""
+        print("\n[*] Staging native port configurations...")
+        pd_ini = WORKSPACE_ROOT / "configs" / "ports" / "perfect_dark" / "pd.ini"
+        if pd_ini.exists():
+            print("    -> Staging Perfect Dark dual-analog configuration (pd.ini)...")
+            self.shell("mkdir -p /sdcard/Android/data/com.perfectdark.port/files", check=False)
+            self.shell("mkdir -p /sdcard/perfect_dark", check=False)
+            self.run_cmd("push", str(pd_ini), "/sdcard/Android/data/com.perfectdark.port/files/pd.ini")
+            self.run_cmd("push", str(pd_ini), "/sdcard/perfect_dark/pd.ini")
+        print("    -> Native port configurations staging complete.")
+
     def stage_retroarch_engine(self) -> None:
         """Deploys ultra-low latency RetroArch configurations and low-pass audio filters."""
         print("\n[*] Staging Ultra-Low Latency RetroArch 2D engine & low-pass audio filters...")
@@ -593,6 +605,7 @@ class RP5Provisioner:
             self.install_local_apks(apks_dir)
         self.grant_storage_permissions()
         self.stage_droiddeck()
+        self.stage_port_configs()
         self.stage_retroarch_engine()
         self.stage_widescreen_patches()
         self.run_standalone_config()

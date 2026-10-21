@@ -351,7 +351,7 @@ EnableCheats = true
     def configure_dolphin(self) -> None:
         self.shell("am force-stop org.dolphinemu.dolphinemu", check=False)
         scale = self.emulation.get("dolphin_internal_resolution", 2.5)
-        print(f"\n[*] Configuring Dolphin (GC/Wii - {scale}x Vulkan, Controller & DSP Audio)...")
+        print(f"\n[*] Configuring Dolphin (GC/Wii - {scale}x Vulkan, AspectRatio=Auto [0], Controller & DSP Audio)...")
         # Dolphin.ini (GC & Wii Virtual Console Setup)
         wii_widescreen = "True" if self.force_widescreen else "False"
         dolphin_ini = f"""[Core]
@@ -396,7 +396,10 @@ Enabled = False
 PermissionAsked = True
 """
         # GFX.ini (Graphics & Performance)
-        aspect_ratio = 1 if self.force_widescreen else 0
+        # Global AspectRatio = 0 (Auto): Keeps unpatched games pillarboxed 4:3,
+        # while per-game GameSettings INIs inject [Video_Settings] AspectRatio = 1
+        # specifically for widescreen patched or native widescreen titles.
+        aspect_ratio = 0
         gfx_ini = f"""[Settings]
 Backend = Vulkan
 InternalResolution = {scale}
