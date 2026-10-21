@@ -121,7 +121,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - **ARM SX2 (PS2 Primary)**: Direct boot via `%EMULATOR_ARMSX2% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%`. 2.0x 1080p Vulkan, string `AspectRatio = 16:9` (`"aspectRatio": 1` in UI JSON), `Crop = 1`, `CropMode = Overscan`, `HardwareDownloadMode = 1` (Disable Readbacks), and `touchControllerOpacity = 0`.
 - **NetherSX2 (PS2 Fallback)**: 2.25x 1080p SPU2 Catmull-Rom interpolation, `AspectRatio = 16:9`, `Crop = 1`, `CropMode = Overscan`.
 - **DuckStation (PS1)**: 5x 1080p PGXP, Cubeb 20ms low latency audio.
-- **Dolphin (GameCube & Wii)**: 2.5x 1080p OpenSLES DSP audio, analog triggers (L=`Axis 22+`, R=`Axis 23+`). Global `SIDevice0 = 6`, `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`. Binds `WiimoteProfile1 = Classic_Controller` and `WiimoteSource0 = 1` in Mario Kart Wii (`RMC*.ini`) without conflicting `PadType0` dropdown indices.
+- **Dolphin (GameCube & Wii)**: 2.5x 1080p OpenSLES DSP audio, analog triggers (L=`Axis 22+`, R=`Axis 23+`). Global `SIDevice0 = 6`, `WiimoteSource0 = 1`, `WiimoteEnableGCControllers = True`. Global `GFX.ini` leaves `AspectRatio = 0` (Auto) so unpatched titles remain pillarboxed 4:3, while `[Wii] Widescreen = True` auto-scales 16:9 Wii games. Binds `WiimoteProfile1 = Classic_Controller` and `WiimoteSource0 = 1` in Mario Kart Wii (`RMC*.ini`) without conflicting `PadType0` dropdown indices.
 - **PPSSPP (PSP)**: 4x 1080p 16x Anisotropic filtering.
 - **Flycast (Dreamcast)**: 2x 1080p Widescreen.
 - **Azahar (3DS)**: 3x 1080p Mesa Turnip driver, async shader compilation.
@@ -129,7 +129,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 
 ### F. Universal Community Patch Engine (`scripts/stage_community_patches.py`)
 - **PS2 (NetherSX2 / PCSX2)**: Downloads and deploys 4,700+ `.pnach` master cheats to both `patches/` and `cheats/`.
-- **GameCube & Wii (Dolphin)**: Parses 1,891 upstream GameSettings INIs, injects 16:9 widescreen Gecko codes under `[Gecko_Enabled]`, sets `[Video_Settings] AspectRatio = 1`, and merges custom Gecko patches.
+- **GameCube & Wii (Dolphin)**: Staged 550 GameCube per-game profiles in `patches/gcn/` (323 verified Gecko widescreen codes and 225 native 16:9 configurations) assigning `[Video_Settings] AspectRatio = 1` and `wideScreenHack = False`. Upstream Dolphin GameSettings are smartly merged, preserving game bugfixes while layering widescreen codes across base and revision INIs. Global `GFX.ini` keeps `AspectRatio = 0` (Auto) to ensure unpatched 4:3 titles remain pillarboxed without distortion.
 - Headless `es_settings.xml` pre-routes all 3D systems to standalone emulators while routing 2D/Arcade systems to RetroArch.
 
 ### G. Save & State Backup Pipeline
