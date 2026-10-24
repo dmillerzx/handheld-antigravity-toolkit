@@ -44,6 +44,7 @@ scratch/
 backups/
 snapshots/
 notes/
+docs/review/
 .idea/
 .vscode/
 .leak-patterns

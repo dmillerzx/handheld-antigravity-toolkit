@@ -165,5 +165,12 @@ When preparing proposals, architectural designs, or multi-step plans for user ap
 1. **Always generate a self-contained HTML review page**: Build a modern, styled `.html` file with clean typography, diff highlighting, and clear sectioning (e.g. `docs/review/<topic>.html`).
 2. **Provide clickable `file://` link**: Always link to the `.html` file using standard markdown `file:///` format instead of asking the user to review raw `.md` files.
 
+---
+
+## 12. GitHub Issue & Bug Report Automation
+
+The host environment has an authenticated GitHub CLI (`gh` account `dmillerzx` with full `repo` scopes). Going forward, open bug reports, feature requests, and community upstream issues directly via `gh issue create --repo <owner/repo> --title "<title>" --body-file "<file>"` rather than prompting the user to submit them manually.
+
+
 
 

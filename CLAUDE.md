@@ -160,3 +160,4 @@ To avoid coordinate guesswork and UI hangs:
 4. **Git Branch**: `main` (commit all changes cleanly before concluding sessions)
 5. **Task Master**: Always read and update [WORKQUEUE.md](WORKQUEUE.md) when changing task status.
 6. **Markdown Clipboard Staging**: When providing markdown text intended for the user to copy/paste to external sites (GitHub comments, bug reports, forums), always stage the clean, unindented text directly into the user's Windows clipboard using PowerShell (`Get-Content <file> -Raw | Set-Clipboard`) to prevent accidental 4-space code block formatting.
+7. **GitHub Issue & Bug Report Automation**: The host environment has an authenticated GitHub CLI (`gh` account `dmillerzx` with full `repo` scopes). Going forward, open bug reports, feature requests, and upstream issues directly via `gh issue create --repo <owner/repo> --title "<title>" --body-file "<file>"` rather than prompting the user to submit them manually.
