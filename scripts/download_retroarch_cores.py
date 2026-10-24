@@ -41,6 +41,7 @@ DESIGNATED_2D_CORES = [
     ("mednafen_wswan_libretro_android.so.zip", "WonderSwan / Color (Beetle Cygne)"),
     ("fbneo_libretro_android.so.zip", "Arcade / Neo Geo (FinalBurn Neo)"),
     ("stella_libretro_android.so.zip", "Atari 2600 (Stella)"),
+    ("cannonball_libretro_android.so.zip", "OutRun Arcade (CannonBall)"),
 ]
 
 CORE_ASSETS = [

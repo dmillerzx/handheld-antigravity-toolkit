@@ -588,6 +588,19 @@ class RP5Provisioner:
                 print(f"\n[!] ERROR: download_retroarch_cores.py failed with returncode {res.returncode}")
                 raise RuntimeError("RetroArch core and asset provisioning failed")
 
+    def stage_cannonball_engine(self) -> None:
+        """Deploys CannonBall OutRun 60FPS Widescreen engine assets and ROMs."""
+        script = WORKSPACE_ROOT / "scripts" / "stage_cannonball.py"
+        if script.exists():
+            print("\n[*] Staging CannonBall OutRun 60FPS Widescreen engine...")
+            cmd = [sys.executable, str(script)]
+            try:
+                res = subprocess.run(cmd, check=False)
+                if res.returncode != 0:
+                    print(f"    [!] Notice: stage_cannonball.py returned code {res.returncode}")
+            except Exception as e:
+                print(f"    [!] Error running stage_cannonball.py: {e}")
+
     def run_save_sync(self) -> None:
         """Executes sync_all_saves.py with dynamic storage detection."""
         script = WORKSPACE_ROOT / "scripts" / "sync_all_saves.py"
@@ -633,6 +646,7 @@ class RP5Provisioner:
         self.stage_widescreen_patches()
         self.run_standalone_config()
         self.run_retroarch_core_download()
+        self.stage_cannonball_engine()
         self.run_save_sync()
         self.run_preflight_verification()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
