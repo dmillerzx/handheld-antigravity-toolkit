@@ -185,6 +185,10 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 6. **OLED Display Sleep Invariant**: Whenever tasks conclude or when waiting on user feedback, power down the physical device display (`adb shell input keyevent 26`) and verify with `adb shell dumpsys power` (`mHoldingDisplaySuspendBlocker=false`) to eliminate AMOLED burn-in risk.
 7. **User Approval & Review Presentation Protocol**: When preparing proposals, architectural designs, or multi-step plans for user approval and review, always generate a self-contained `.html` review page with clean styling, diff blocks, and visual hierarchy (e.g. `docs/review/<topic>.html`), and provide a clickable `file://` markdown link instead of raw `.md` files.
 8. **GitHub Issue & Bug Report Automation**: The host environment has an authenticated GitHub CLI (`gh` account `dmillerzx` with full `repo` scopes). Going forward, open bug reports, feature requests, and upstream issues directly via `gh issue create --repo <owner/repo> --title "<title>" --body-file "<file>"` rather than prompting the user to submit them manually.
+9. **Token Efficiency, Reasoning Effort & Quota Invariants**:
+   - **Default to Medium Reasoning**: Routine automation, ADB execution, file patching, ROM staging, and documentation MUST run on `Medium` (or `Low`) reasoning effort. `High` reasoning is strictly reserved for deep binary reverse-engineering, elusive race-condition debugging, or explicit user instruction.
+   - **Context Compaction Gate**: When a session reaches 30–40 turns or after intensive shell output dumps, proactively recommend `/compact` to truncate history and prevent quadratic token inflation.
+   - **Multi-Pool Awareness**: Antigravity maintains independent quota buckets for Gemini, Claude/GPT, and Argon. When one bucket nears its 5-hour burst limiter, suggest balancing work across the other 100% available pools.
 
 ---
 

@@ -171,6 +171,25 @@ When preparing proposals, architectural designs, or multi-step plans for user ap
 
 The host environment has an authenticated GitHub CLI (`gh` account `dmillerzx` with full `repo` scopes). Going forward, open bug reports, feature requests, and community upstream issues directly via `gh issue create --repo <owner/repo> --title "<title>" --body-file "<file>"` rather than prompting the user to submit them manually.
 
+---
+
+## 13. Token Efficiency, Reasoning Effort & Multi-Pool Quota Architecture
+
+To avoid premature throttling under the 5-hour rolling rate limits and preserve high-velocity responsiveness:
+
+1. **Reasoning Effort Invariant (`Medium` Baseline)**:
+   - Always default to `Medium` (or `Low`) reasoning effort for procedural execution, ADB tasks, script authoring, and INI configuration.
+   - `High` reasoning effort spends 2,500–5,000 hidden thinking tokens on every single tool step. It is prohibited for routine execution and permitted only during initial decompilation analysis or on explicit user request.
+2. **Proactive Context Compaction (`/compact`)**:
+   - Antigravity transmits the cumulative transcript on every interaction. To prevent multi-megabyte context bloat and quadratic token burn, recommend the `/compact` slash command whenever a task surpasses ~30 turns.
+3. **Multi-Model Quota Balancing**:
+   - Antigravity isolates quotas into three distinct pools:
+     - **Gemini Models** (`gemini-3.8-flash`, `gemini-pro`)
+     - **Claude and GPT Models** (`claude-sonnet-5-5`, `claude-opus-5-5`, `gpt-oss-120b`)
+     - **Gemini 4 Argon** (`gemini-4-argon`)
+   - When one pool's 5-hour limit approaches depletion, immediately offer to route workloads to `claude-sonnet-5-5-medium` or `gemini-4-argon`, which maintain completely independent 100% capacity buckets.
+
+
 
 
 
