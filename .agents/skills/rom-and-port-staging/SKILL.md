@@ -182,3 +182,63 @@ Dispatched cleanly by ES-DE via `<command label="Android App">%ANDROIDAPP%=%FILE
 - In LibUltraShip ports under Android OpenGLES (e.g., PaperBoat `dev.net64.paperboat`), 2D paletted textures (CI4, CI8, IA fonts, UI text cards, and character billboard sprites) experience severe vertical striping/aliasing due to Fast3D GLES palette sampling math (`paletteSample()` in `palette.glsli` / `interpreter.cpp`). 3D polygon geometry renders normally at 60 FPS.
 - This is an upstream shader/engine defect and cannot be resolved by editing `paperboat.cfg.json` CVars on-device. Tracked upstream in [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274).
 - For immediate 1080p 60 FPS playthroughs with high-resolution texture packs, maintain clean Deflate 9 `.n64.zip` archives in `/storage/<SD_ID>/ROMs/n64/` playable via standalone **Mupen64Plus FZ**.
+
+---
+
+## 5. Native Android Port APK Asset & Launcher Icon Injection Runbook
+
+Community native ports frequently lack `res/mipmap` drawables and `android:icon` manifest attributes, causing Android 13 to fall back to a placeholder icon (purple circle with white Android robot).
+
+### A. APK Decompilation
+Disassemble the port APK without altering dex bytecode:
+```powershell
+java -jar scratch/tools/apktool.jar d "apks/ports/<port>.apk" -o "scratch/<port>_src" -f
+```
+
+### B. Master Badge Geometry & Mipmap Generation
+1. Design or extract a 1024x1024 circular master image with antialiased transparent padding outside the outer rim (badge diameter ~90% of canvas width).
+2. Generate the complete density suite using PIL:
+   - `mipmap-mdpi`: 48x48 (standard), 108x108 (adaptive)
+   - `mipmap-hdpi`: 72x72 (standard), 162x162 (adaptive)
+   - `mipmap-xhdpi`: 96x96 (standard), 216x216 (adaptive)
+   - `mipmap-xxhdpi`: 144x144 (standard), 324x324 (adaptive)
+   - `mipmap-xxxhdpi`: 192x192 (standard), 432x432 (adaptive)
+3. Stage `ic_launcher.png`, `ic_launcher_round.png`, and `ic_launcher_foreground.png`.
+4. Configure adaptive vector definition in `res/mipmap-anydpi-v26/ic_launcher.xml` and `ic_launcher_round.xml` referencing `@color/ic_launcher_background` (`#FF101216`).
+
+### C. Manifest Injection
+In `AndroidManifest.xml`, update `<application>` and launcher `<activity>`:
+```xml
+<application android:icon="@mipmap/ic_launcher"
+             android:roundIcon="@mipmap/ic_launcher_round"
+             android:isGame="true" ...>
+    <activity android:icon="@mipmap/ic_launcher"
+              android:roundIcon="@mipmap/ic_launcher_round" ...>
+```
+
+### D. Recompilation & Alignment Signing
+```powershell
+java -jar scratch/tools/apktool.jar b "scratch/<port>_src" -o "scratch/<port>_unaligned.apk"
+java -jar scratch/tools/uber-apk-signer.jar -a "scratch/<port>_unaligned.apk" -o "apks/ports/" --allowResign
+```
+
+### E. Data Protection Invariant During Signature Migration
+When replacing an existing installation whose signing key differs:
+1. `adb install -r` rejects with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`.
+2. **SAFETY INVARIANT**: Never run `pm uninstall` without first backing up game assets and saves:
+   ```powershell
+   adb shell "mkdir -p /sdcard/<port>_backup && cp -r /sdcard/Android/data/<package>/files/* /sdcard/<port>_backup/"
+   ```
+3. Execute `adb shell pm uninstall <package>`.
+4. Install rebuilt APK: `adb install "apks/ports/<rebuilt>.apk"`.
+5. Restore files:
+   ```powershell
+   adb shell "mkdir -p /sdcard/Android/data/<package>/files && cp -r /sdcard/<port>_backup/* /sdcard/Android/data/<package>/files/"
+   ```
+6. Grant storage access: `adb shell appops set <package> MANAGE_EXTERNAL_STORAGE allow`.
+
+### F. Frontend Media Mirroring
+Mirror master icon PNG to ES-DE frontend media paths:
+- `/sdcard/ES-DE/downloaded_media/ports/covers/<Title>.png`
+- `/storage/<SD_ID>/ROMs/ports/media/covers/<Title>.png`
+

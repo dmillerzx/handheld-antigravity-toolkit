@@ -170,6 +170,8 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
   - Engine installed with `Data.rsdk` (208 MB) and `Settings.ini` staged to `/sdcard/RSDK/v5/` and app files. 1080p 60 FPS native rendering.
 - **GoldenEye 007 Recomp (`com.sunjaycy.goldeneye`)**:
   - `default.xex` and game files must reside in root `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` (never nested under `files/assets/`).
+  - Injected custom James Bond gunbarrel 007 circular adaptive icon into APK mipmaps and mirrored to ES-DE covers.
+  - Signature Migration Invariant: Always backup `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` before any uninstall/reinstall cycle to preserve multi-track audio banks and player save profiles.
 - **CannonBall Arcade OutRun (`CannonBall - OutRun.game`)**:
   - Libretro CannonBall core (`cannonball_libretro_android.so`) deployed with 60 FPS 16:9 widescreen arcade ROMs, eliminating DX9 PC translation overhead.
 - **LibUltraShip Decompilation Ports (SoH, 2S2H, Starship, PaperBoat)**:
