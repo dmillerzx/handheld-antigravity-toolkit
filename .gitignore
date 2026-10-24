@@ -50,7 +50,7 @@ docs/review/
 .leak-patterns
 
 # Extracted native port binary assets (OTR, O2R, RSDK)
-assets/
+/assets/
 staging/
 *.rsdk
 _n64_temp/
