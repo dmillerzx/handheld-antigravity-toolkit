@@ -60,13 +60,14 @@ Get a factory-fresh or reset Retroid Pocket 5 fully configured in minutes:
   ```
 
 ### 4. Native Android Ports & Decompilations Ecosystem
-- Manages 18+ native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app` using `%ANDROIDAPP%=%FILEINJECT%`:
-  - **Super Mario 64**: Standalone 60 FPS 1080p widescreen port (`com.vdavid003.sm64port`) with full right-analog stick camera
+- Manages 19 native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app` using `%ANDROIDAPP%=%FILEINJECT%`:
+  - **Super Mario 64 (sm64ex-alo)**: Native Snapdragon 865 60 FPS 1080p widescreen port with full 360° right-analog camera, ZL multi-bind, and clean touchless binary
+  - **CannonBall: OutRun**: Standalone 60 FPS 16:9 widescreen arcade engine rewrite eliminating PC translation overhead
   - **Another Metroid 2 Remake (AM2R)**: Native 60 FPS 1080p AMOLED widescreen with HQ audio and physical gamepad mapping (`com.companyname.AM2RWrapper`)
   - **Sonic Mania Plus**: Retro Engine v5 native Android port (`com.decomp.rsdkv5`) running 1080p 60 FPS with full controller support and `Data.rsdk` assets
   - **Zelda N64**: Ship of Harkinian (OOT) + 3DS Link/Young Link HD models, 2 Ship 2 Harkinian (MM)
   - **Retro 2D**: Zelda 3 (A Link to the Past), Apotris (Native GBA engine rewrite, 60fps), Sonic 3 A.I.R., Sonic Robo Blast 2 (SRB2)
-  - **N64 Classics**: Mario Kart 64 (SpaghettiKart), Star Fox 64 (Starship), GoldenEye 007 (Recomp), Perfect Dark
+  - **N64 Classics**: Mario Kart 64 (SpaghettiKart), Star Fox 64 (Starship), GoldenEye 007 (Recomp), Perfect Dark, Paper Mario 64 (PaperBoat)
   - **Fan Overhauls**: Mega Man X: Regenesis (SNES timeline), Mega Man X8 16-Bit Demake (Touch Mod v1.6 + 100% save)
   - **Modern Decomps**: Balatro (1080p 60fps AMOLED), Space Cadet 3D Pinball, PokeMMO (All 5 generations staged)
 

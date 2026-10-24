@@ -96,8 +96,8 @@ The following issues and components have been completely resolved and verified v
 - **Current State**:
   - Deployed from official HarbourMasters CI artifact. `Torch` on-device ROM extraction successfully creates `pm64.o2r` (40.1 MB) from clean US ROM.
   - 3D world geometry, camera interpolation, and audio render cleanly at 60 FPS.
-  - 2D billboard character sprites (Mario, NPCs) and theater curtain textures exhibit vertical striping and scrambled paletted noise under OpenGLES.
-  - Root cause tracked to Fast3D GLES noise/dither shader logic in `external/libultraship` (PR #217 / PR #262).
+  - 2D billboard character sprites (Mario, NPCs), UI font glyphs, and theater curtain textures exhibit vertical striping and scrambled paletted noise under OpenGLES.
+  - Root cause submitted to upstream issue [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274) with live hardware logs and screenshot telemetry (Fast3D GLES CI4/CI8/IA palette sampling in `libultraship`).
   - High-res 1080p 60 FPS gameplay is immediately available via **Mupen64Plus FZ Standalone**.
 ### Issue 3: DroidDeck OutRun 2006 (Coast 2 Coast) & 32-bit x86 Proton DX9 Translation
 - **Affected Pipeline**: `com.droiddeck.launcher` -> Steam Big Picture / PRoot / FEX -> `OR2006C2C.EXE`
@@ -114,16 +114,17 @@ The following issues and components have been completely resolved and verified v
 ---
 
 
-## 4. Next Tasks on the Master Roster (Queued)
+## 4. Workqueue Status & Completed Deployments
 
-Consult [WORKQUEUE.md](WORKQUEUE.md) for the active 30-item task tracking table. The immediate next titles queued for deployment are:
-
-1. **Super Mario 64 (`sm64ex-alo`)**: Deploy standalone APK with Render96 HD models/textures, 60fps interpolation, and 360° right-stick analog camera.
-2. **Another Metroid 2 Remake (`AM2R`)**: Deploy v1.5.5+ Android build with uncompressed stereo audio and 16:9 widescreen canvas.
-3. **Sonic Mania (`RSDKv5`)**: Deploy Retro Engine v5 native Android APK + `Data.rsdk` assets.
-4. **Sonic 1, 2 & CD (`RSDKv3/v4`)**: Deploy widescreen 60fps decompilation APKs.
-5. **CannonBall: OutRun**: Deploy 60fps widescreen C++ arcade rewrite.
-6. **Hollow Knight & Celeste**: Deploy standalone native ARM64 Android ports.
+Consult [WORKQUEUE.md](WORKQUEUE.md) for the active 30-item task tracking table. Recent updates:
+- **Deployed & Verified Native Ports (19 Total)**: Super Mario 64 (`sm64ex-alo`), Another Metroid 2 Remake (`AM2R`), Sonic Mania Plus (`RSDKv5`), CannonBall (OutRun Arcade 60fps), Apotris, PokeMMO (5 regions), Ship of Harkinian (OOT), 2 Ship 2 Harkinian (MM), SpaghettiKart (MK64), Starship (SF64), Zelda 3, Perfect Dark, Sonic 3 A.I.R., SRB2, Space Cadet, Balatro, Mega Man X: Regenesis, Mega Man X8 16-bit Demake, PaperBoat (Paper Mario 64).
+- **User Scoping Adjustments**:
+  - Grand Theft Auto III (re3) and Grand Theft Auto: Vice City (reVC): Paused / on hold per user direction (both immediately playable via ARM SX2 PS2 2.0x 1080p).
+  - Sonic 1, Sonic 2, Sonic CD, Hollow Knight, and Celeste: Dropped from active queue per user direction.
+- **Active Community Upstream Tracking**:
+  - [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274): Android GLES 2D paletted font & billboard corruption.
+  - [RT64/RT64#282](https://github.com/RT64/RT64/issues/282): Adreno 650 Vulkan shader pipeline compiler crash (Banjo Recompiled / DKR-R).
+  - [droiddeck/droiddeck#1034](https://github.com/droiddeck/droiddeck/pull/1034): 32-bit x86 Proton DX9 translation telemetry (OutRun 2006).
 
 ---
 
