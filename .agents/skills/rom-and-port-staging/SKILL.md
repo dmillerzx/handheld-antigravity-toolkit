@@ -179,5 +179,6 @@ adb -s <serial> shell "echo '<package>' > '/storage/<SD_ID>/ROMs/ports/<Title>.a
 Dispatched cleanly by ES-DE via `<command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>` in `es_systems.xml`.
 
 ### E. OpenGLES Fast3D Shader Limitations & Mupen64Plus FZ Fallback
-- Certain 2D billboard sprites (e.g., character sprites, intro curtains in PaperBoat) may experience dither noise or paletted striping under Android OpenGLES due to upstream Fast3D shader math.
+- In LibUltraShip ports under Android OpenGLES (e.g., PaperBoat `dev.net64.paperboat`), 2D paletted textures (CI4, CI8, IA fonts, UI text cards, and character billboard sprites) experience severe vertical striping/aliasing due to Fast3D GLES palette sampling math (`paletteSample()` in `palette.glsli` / `interpreter.cpp`). 3D polygon geometry renders normally at 60 FPS.
+- This is an upstream shader/engine defect and cannot be resolved by editing `paperboat.cfg.json` CVars on-device. Tracked upstream in [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274).
 - For immediate 1080p 60 FPS playthroughs with high-resolution texture packs, maintain clean Deflate 9 `.n64.zip` archives in `/storage/<SD_ID>/ROMs/n64/` playable via standalone **Mupen64Plus FZ**.

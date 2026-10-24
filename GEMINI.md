@@ -172,6 +172,10 @@ When preparing proposals, architectural designs, or multi-step plans for user ap
 
 The host environment has an authenticated GitHub CLI (`gh` account `dmillerzx` with full `repo` scopes). Going forward, open bug reports, feature requests, and community upstream issues directly via `gh issue create --repo <owner/repo> --title "<title>" --body-file "<file>"` rather than prompting the user to submit them manually.
 
+### Bug Report Staging & Asset Invariants
+1. **Permanent Screenshot Permalinks**: Stage bug screenshots into `docs/assets/screenshots/<name>.png`. Ensure `.gitignore` anchors `/assets/` at root so `docs/assets/` is tracked. Commit and push to `origin main` before submitting the issue so images render via permanent raw GitHub URLs.
+2. **Cross-Link Synchronization**: Immediately document the returned upstream issue URL in `WORKQUEUE.md` and `CLAUDE.md`, and update local tracking issues (e.g. `dmillerzx/handheld-antigravity-toolkit#1`) for cross-agent awareness.
+
 ---
 
 ## 13. Token Efficiency, Reasoning Effort & Multi-Pool Quota Architecture
