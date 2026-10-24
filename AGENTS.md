@@ -163,6 +163,20 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
   - `CK_8000 = JOY1_B, JOY1_RSTICK`: Modern single-button/R3 toggle crouch.
   - `Z_TRIG = JOY1_RTRIGGER` (RT fire) & `R_TRIG = JOY1_LTRIGGER` (LT precision aim/zoom).
   - Profile maintained in `configs/ports/perfect_dark/pd.ini` and staged via `stage_port_configs()`.
+- **Super Mario 64 ALO (`com.izzyagamer.sm64alo`)**:
+  - Clean touchless binary (`sm64.alo.clean.apk`) deployed removing hardcoded touch overlays.
+  - Multi-bound crouch/ground-pound/long-jump: `key_z` bound to ZL (`101a`) + L1 (`1009`) + L3 (`1007`); `key_b` to X and B; BetterCamera 360° analog stick look (`bettercam_analog true`, sensitivity 70); VSync locked to 60.0 FPS.
+- **Sonic Mania Plus (`com.decomp.rsdkv5`)**:
+  - Engine installed with `Data.rsdk` (208 MB) and `Settings.ini` staged to `/sdcard/RSDK/v5/` and app files. 1080p 60 FPS native rendering.
+- **GoldenEye 007 Recomp (`com.sunjaycy.goldeneye`)**:
+  - `default.xex` and game files must reside in root `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` (never nested under `files/assets/`).
+- **CannonBall Arcade OutRun (`CannonBall - OutRun.game`)**:
+  - Libretro CannonBall core (`cannonball_libretro_android.so`) deployed with 60 FPS 16:9 widescreen arcade ROMs, eliminating DX9 PC translation overhead.
+- **LibUltraShip Decompilation Ports (SoH, 2S2H, Starship, PaperBoat)**:
+  - Push authentic N64 ROM as `baserom.us.z64` into `/sdcard/Android/data/<package>/files/`.
+  - Launch `<package>/.LauncherActivity` to execute internal C++ `Torch` extractor natively on-device, generating `*.o2r` (e.g. `pm64.o2r` 40.1 MB).
+  - Disable on-screen touch overlays via `"gTouchControls": {"Enabled": 0}` and set backend ID `1` (OpenGL) in `<port>.cfg.json`.
+  - Register standalone `.app` launcher pointing to `<package>` in `/storage/<SD_ID>/ROMs/ports/` dispatched via `<command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>`.
 
 ### K. ROM Packaging & Compression Standards
 - **Cartridge Systems (N64, SNES, Genesis, GBA, NES)**:

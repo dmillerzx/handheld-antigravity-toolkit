@@ -92,3 +92,92 @@ For standalone native Android ports (such as `com.perfectdark.port`), configure 
    - `A_BUTTON = JOY1_A` (Action / Open Doors / Accept)
    - `B_BUTTON = JOY1_B` / `CANCEL_BUTTON = JOY1_B, JOY1_BACK` (Cancel / Back)
    - `CK_8000 = JOY1_B, JOY1_RSTICK` (Cycle Crouch on B and R3 Click)
+- Profile maintained in `configs/ports/perfect_dark/pd.ini` and staged via `stage_port_configs()`.
+
+### B. Super Mario 64 ALO (`com.izzyagamer.sm64alo`)
+- Built natively on Snapdragon 865 with 60 FPS animation interpolation and 1080p widescreen canvas.
+- Deployed touchless binary (`sm64.alo.clean.apk`) removing hardcoded touch overlays.
+- Controller profile:
+  - `key_z` bound to ZL (`101a`) + L1 (`1009`) + L3 (`1007`) for responsive crouch/ground-pound/long-jump.
+  - `key_b` bound to both X (`1002`) and B (`1001`) for versatile attack/dive.
+  - `key_r` bound to R1 (`100a`) and ZR (`101b`).
+  - BetterCamera 360° analog stick look active (`bettercam_analog true`, sensitivity 70).
+  - VSync enabled (`vsync true`) locking 60.0 FPS without tearing.
+
+### C. Sonic Mania Plus (`com.decomp.rsdkv5`)
+- Decompilation engine installed via `com.decomp.rsdkv5`.
+- Data file `Data.rsdk` (208 MB) and `Settings.ini` staged to `/sdcard/RSDK/v5/` and `/sdcard/Android/data/com.decomp.rsdkv5/files/`.
+- 1080p 60 FPS native rendering with physical controller auto-detection.
+
+### D. GoldenEye 007 Recomp (`com.sunjaycy.goldeneye`)
+- Requires game files and `default.xex` located directly in the root files folder `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` (never nested under `files/assets/`, which causes missing asset errors).
+
+### E. CannonBall Arcade OutRun (`CannonBall - OutRun.game`)
+- Deploys Libretro CannonBall core (`cannonball_libretro_android.so`) to `/storage/<SD_ID>/RetroArch/cores/`.
+- Arcade Revision B ROMs and engine data staged to `/storage/<SD_ID>/RetroArch/system/cannonball/`.
+- Configured with 60 FPS, 16:9 widescreen, and high-res rendering via `Cannonball.opt`.
+- Eliminates 32-bit PC container overhead for OutRun on RP5.
+
+---
+
+## 4. LibUltraShip & Torch Decompilation Ports Runbook
+
+Applies to HarbourMasters LibUltraShip ports: **Ship of Harkinian** (`com.dishii.soh`), **2 Ship 2 Harkinian** (`com.dishii.mm`), **Star Fox 64 Starship** (`com.starship.android`), and **Paper Mario 64 PaperBoat** (`dev.net64.paperboat`).
+
+### A. Upstream CI Discovery
+- HarbourMasters repositories compile automated Android artifacts (`*.apk`) on push to `develop`.
+- Download artifacts via GitHub CLI:
+  ```powershell
+  gh run download <run_id> --repo <owner/repo> --dir scratch/<port>_run
+  ```
+- Staged APKs reside in `apks/ports/<name>.apk`.
+
+### B. Zero-Touch On-Device Torch Extraction
+Rather than running complex host-side desktop extraction tools, LibUltraShip Android APKs embed the C++ `Torch` asset extractor inside `libmain.so`:
+1. Push verified clean N64 ROM to the app's external files directory as `baserom.us.z64`:
+   ```powershell
+   adb -s <serial> shell "mkdir -p /sdcard/Android/data/<package>/files/"
+   adb -s <serial> push "<clean_rom.z64>" "/sdcard/Android/data/<package>/files/baserom.us.z64"
+   ```
+2. Grant storage permissions:
+   ```powershell
+   adb -s <serial> shell "appops set <package> MANAGE_EXTERNAL_STORAGE allow"
+   ```
+3. Launch `LauncherActivity`:
+   ```powershell
+   adb -s <serial> shell "am start -n <package>/.LauncherActivity"
+   ```
+4. The launcher executes `Torch` in a background worker, unpacks `config.yml`, hashes the ROM, and generates `*.o2r` (e.g. `pm64.o2r` 40.1 MB) and `torch.hash.yml`. The launcher exits via `Runtime.exit()` once finished, cleanly releasing memory.
+
+### C. Headless Config Tuning & Touch Control Suppression
+In `/sdcard/Android/data/<package>/files/<port>.cfg.json`:
+- Suppress on-screen virtual buttons:
+  ```json
+  "gTouchControls": {
+      "EditMode": 0,
+      "Enabled": 0,
+      "Opacity": 0.8,
+      "Scale": 1.0
+  }
+  ```
+- Align backend ID to OpenGL:
+  ```json
+  "Window": {
+      "AudioBackend": "sdl",
+      "Backend": {
+          "Id": 1,
+          "Name": "OpenGL"
+      }
+  }
+  ```
+
+### D. ES-DE Launcher Registration
+Register the port in the canonical MicroSD launcher path:
+```powershell
+adb -s <serial> shell "echo '<package>' > '/storage/<SD_ID>/ROMs/ports/<Title>.app'"
+```
+Dispatched cleanly by ES-DE via `<command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>` in `es_systems.xml`.
+
+### E. OpenGLES Fast3D Shader Limitations & Mupen64Plus FZ Fallback
+- Certain 2D billboard sprites (e.g., character sprites, intro curtains in PaperBoat) may experience dither noise or paletted striping under Android OpenGLES due to upstream Fast3D shader math.
+- For immediate 1080p 60 FPS playthroughs with high-resolution texture packs, maintain clean Deflate 9 `.n64.zip` archives in `/storage/<SD_ID>/ROMs/n64/` playable via standalone **Mupen64Plus FZ**.
