@@ -196,6 +196,16 @@ To avoid premature throttling under the 5-hour rolling rate limits and preserve 
      - **Gemini 4 Argon** (`gemini-4-argon`)
    - When one pool's 5-hour limit approaches depletion, immediately offer to route workloads to `claude-sonnet-5-5-medium` or `gemini-4-argon`, which maintain completely independent 100% capacity buckets.
 
+---
+
+## 14. Host Workstation Optimization & Shell Execution Invariants
+
+1. **Dell Precision Service Boundary Law**: Always preserve `DPMService` (Dell Peripheral Manager / `DDPM.Subagent`) to protect external monitor input switching and USB-C hub peripheral controls. Set `DellTechHub` and `DellClientManagementService` to `Manual` (or `Disabled`) and kill child subagents to eliminate ~1.3 GB of idle memory bloat.
+2. **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
+3. **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).
+4. **PowerShell Scratch File Execution Invariant**: When running complex PowerShell commands via agent CLI tools, never nest double-quoted script blocks or unescaped variables inside `-Command "..."`. Always stage multi-line scripts to `<appDataDir>\brain\<conversation-id>/scratch/<name>.ps1` and execute with `-File` for 100% deterministic, uncorrupted parsing.
+
+
 
 
 

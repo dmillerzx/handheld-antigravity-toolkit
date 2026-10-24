@@ -74,6 +74,10 @@ AntigravityWorkingDir/
 │   └── retroarch/           # Low-latency configs, core options, GBA low-pass filter & shader
 ├── drivers/                 # Mesa Turnip Adreno 650 GPU drivers (not versioned)
 └── scripts/
+    ├── apply_windows_optimizations.ps1 # Dell Precision 5560 Windows 11 workstation optimization suite
+    ├── lock_audio_services.ps1         # MaxxAudio shield watchdog & Equalizer APO health verifier
+    ├── register_audio_shield_task.ps1  # Automated SYSTEM boot/logon scheduled task registrar
+    ├── rollback_services_and_optimizations.ps1 # Zero-loss rollback orchestrator for host optimizations
     ├── provision_all.ps1    # Master PowerShell provisioning orchestrator
     ├── setup_rp5.py         # Main automated ADB provisioning script (--all)
     ├── android_ui.py        # Deterministic UIAutomator XML element interaction utility
@@ -210,6 +214,11 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
    - **Default to Medium Reasoning**: Routine automation, ADB execution, file patching, ROM staging, and documentation MUST run on `Medium` (or `Low`) reasoning effort. `High` reasoning is strictly reserved for deep binary reverse-engineering, elusive race-condition debugging, or explicit user instruction.
    - **Context Compaction Gate**: When a session reaches 30–40 turns or after intensive shell output dumps, proactively recommend `/compact` to truncate history and prevent quadratic token inflation.
    - **Multi-Pool Awareness**: Antigravity maintains independent quota buckets for Gemini, Claude/GPT, and Argon. When one bucket nears its 5-hour burst limiter, suggest balancing work across the other 100% available pools.
+10. **Windows 11 Workstation Tuning & Shell Execution Invariants**:
+   - **Dell Precision Service Boundary Law**: Always preserve `DPMService` (Dell Peripheral Manager / `DDPM.Subagent`) to protect external monitor input switching and USB-C hub peripheral controls. Set `DellTechHub` and `DellClientManagementService` to `Manual` (or `Disabled`) to eliminate 7 background telemetry subagents and prevent ~1.3 GB of idle memory bloat.
+   - **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
+   - **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).
+   - **PowerShell Scratch File Execution Invariant**: When running complex PowerShell commands via agent CLI tools, never nest double-quoted script blocks or unescaped variables inside `-Command "..."`. Always stage multi-line scripts to `<appDataDir>\brain\<conversation-id>/scratch/<name>.ps1` and execute with `-File` for 100% deterministic, uncorrupted parsing.
 
 ---
 
