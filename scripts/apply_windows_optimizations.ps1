@@ -6,13 +6,44 @@ Write-Host "=========================================================="
 Write-Host "  DELL PRECISION 5560 WINDOWS 11 WORKSTATION OPTIMIZATION  "
 Write-Host "=========================================================="
 
-# 1. Backup Send to OneNote shortcut before removing
+# 1. OneNote & Phone Link Background Suppression
+$oneNoteReg = "HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other"
+if (Test-Path $oneNoteReg) {
+    Set-ItemProperty -Path $oneNoteReg -Name "EnableMemoryTrayMenuItem" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $oneNoteReg -Name "EnableMemoryShortcut" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] OneNote Tray & Shortcut registry options set to 0 (Disabled)."
+}
+
 $startupFolder = [System.Environment]::GetFolderPath('Startup')
 $oneNoteLnk = Join-Path $startupFolder "Send to OneNote.lnk"
 if (Test-Path -LiteralPath $oneNoteLnk) {
-    Copy-Item -LiteralPath $oneNoteLnk -Destination "configs\system_backup\Send to OneNote.lnk" -Force
-    Remove-Item -LiteralPath $oneNoteLnk -Force
+    Copy-Item -LiteralPath $oneNoteLnk -Destination "configs\system_backup\Send to OneNote.lnk" -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $oneNoteLnk -Force -ErrorAction SilentlyContinue
     Write-Host "[OK] Removed legacy 'Send to OneNote.lnk' from startup folder (backed up to configs\system_backup\)"
+}
+
+$onenotem = Get-Process -Name onenotem -ErrorAction SilentlyContinue
+if ($onenotem) {
+    Stop-Process -Name onenotem -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] Stopped ONENOTEM.EXE process."
+}
+
+# Windows Phone Link background restriction
+$phoneAppReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\Microsoft.YourPhone_8wekyb3d8bbwe"
+if (Test-Path $phoneAppReg) {
+    Set-ItemProperty -Path $phoneAppReg -Name "Disabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $phoneAppReg -Name "DisabledByUser" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] Phone Link background permissions set to Disabled in BackgroundAccessApplications."
+}
+$policyReg = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+if (-not (Test-Path $policyReg)) {
+    New-Item -Path $policyReg -Force -ErrorAction SilentlyContinue | Out-Null
+}
+Set-ItemProperty -Path $policyReg -Name "EnableMmx" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+$phoneProc = Get-Process -Name PhoneExperienceHost -ErrorAction SilentlyContinue
+if ($phoneProc) {
+    Stop-Process -Name PhoneExperienceHost -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] Stopped PhoneExperienceHost process."
 }
 
 # 2. Tier 1: Telemetry & Background Trackers -> Disabled
@@ -71,7 +102,9 @@ $manualServices = @(
     'XboxService',
     'GamingServices',
     'GamingServicesNet',
-    'GameInputRedistService'
+    'GameInputRedistService',
+    'DellTechHub',
+    'DellClientManagementService'
 )
 
 Write-Host "`n--- Configuring Tier 2: On-Demand Services (Manual) ---"
@@ -81,6 +114,15 @@ foreach ($s in $manualServices) {
         Stop-Service -Name $s -Force -ErrorAction SilentlyContinue
         Set-Service -Name $s -StartupType Manual -ErrorAction SilentlyContinue
         Write-Host "[OK] Service '$s' set to Manual (on-demand)."
+    }
+}
+
+# Terminate lingering telemetry subagents if any remained after service shutdown
+$lingeringProcs = Get-Process | Where-Object { $_.ProcessName -like "Dell.TechHub*" -or $_.ProcessName -eq "Dell.CoreServices.Client" -or $_.ProcessName -eq "Dell.UCA.Manager" }
+if ($lingeringProcs) {
+    foreach ($p in $lingeringProcs) {
+        Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Cleaned up lingering telemetry process: $($p.ProcessName) (PID $($p.Id))"
     }
 }
 

@@ -43,7 +43,9 @@ $targetServices = @(
     'XboxService',
     'GamingServices',
     'GamingServicesNet',
-    'GameInputRedistService'
+    'GameInputRedistService',
+    'DellTechHub',
+    'DellClientManagementService'
 )
 
 foreach ($target in $targetServices) {
