@@ -62,8 +62,8 @@ The following issues and components have been completely resolved and verified v
 7. **GoldenEye 007 (Recomp)**:
    - Resolved asset path issue: `default.xex` and game files were previously placed in `files/assets/` rather than the root `files/` directory, causing "Game files not found (default.xex is missing)".
    - Relocated files directly to `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` and verified on-device: game boots, loads full Twycross/Rare intro, and advances to the iconic James Bond gunbarrel animation (`ge_live.png`).
-8. **Active Verified Native Ports (18 Titles Live on Device)**:
-   - Super Mario 64 (sm64ex-alo) / Another Metroid 2 Remake (AM2R) / Sonic Mania Plus / GoldenEye 007 (Recomp) / Ship of Harkinian (OOT) / 2 Ship 2 Harkinian (MM) / Mario Kart 64 (SpaghettiKart) / Star Fox 64 (Starship) / Zelda 3 (A Link to the Past) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Space Cadet 3D Pinball / Balatro / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6) / Apotris / PokeMMO (all 5 regions).
+8. **Active Verified Native Ports (19 Titles Live on Device)**:
+   - Super Mario 64 (sm64ex-alo) / Another Metroid 2 Remake (AM2R) / Sonic Mania Plus / GoldenEye 007 (Recomp) / Ship of Harkinian (OOT) / 2 Ship 2 Harkinian (MM) / Mario Kart 64 (SpaghettiKart) / Star Fox 64 (Starship) / Zelda 3 (A Link to the Past) / Perfect Dark / Sonic 3 A.I.R. / Sonic Robo Blast 2 (SRB2) / Space Cadet 3D Pinball / Balatro / Mega Man X: Regenesis / Mega Man X8 16-Bit Demake (Touch Mod v1.6) / Apotris / PokeMMO (all 5 regions) / Paper Mario 64 (PaperBoat).
    - *ES-DE Ports Launcher Architecture*: ES-DE's default system for ports routes to RetroArch ECWolf. Resolved by deploying a custom `ports` system in `es_systems.xml` using `<command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>` and `<string name="AlternativeEmulator.ports" value="Android App" />` in `es_settings.xml`.
    - *Note on OutRun 2006*: Verified running at 1080p 60fps via PPSSPP (PSP) and ARM SX2 (PS2); DroidDeck PC execution remains investigated and pending upstream FEX 32-bit DX9 translation.
 9. **Obtainium Emulation Pack Upstream Contribution (PR #195)**:
@@ -91,11 +91,14 @@ The following issues and components have been completely resolved and verified v
   - Do not attempt to rewrite the APK unless recompiling with an OpenGL ES fallback or custom Turnip loader hook.
   - Both titles run at a locked 60 FPS in 1080p with high-res texture packs via **Mupen64Plus FZ Standalone**.
 
-### Issue 2: Paper Mario 64 Android Port Status
+### Issue 2: Paper Mario 64 (PaperBoat) Android OpenGLES Shader Limitation
+- **Affected Package**: `dev.net64.paperboat` (PaperBoat v1.0.3)
 - **Current State**:
-  - Decompilation is 100% complete (`pmret/papermario`).
-  - HarbourMasters' official `PaperBoat` port currently targets Windows, Linux, and macOS only.
-  - The community Android fork (`YlPorts/PaperBoat-android`) does not provide precompiled release APKs yet.
+  - Deployed from official HarbourMasters CI artifact. `Torch` on-device ROM extraction successfully creates `pm64.o2r` (40.1 MB) from clean US ROM.
+  - 3D world geometry, camera interpolation, and audio render cleanly at 60 FPS.
+  - 2D billboard character sprites (Mario, NPCs) and theater curtain textures exhibit vertical striping and scrambled paletted noise under OpenGLES.
+  - Root cause tracked to Fast3D GLES noise/dither shader logic in `external/libultraship` (PR #217 / PR #262).
+  - High-res 1080p 60 FPS gameplay is immediately available via **Mupen64Plus FZ Standalone**.
 ### Issue 3: DroidDeck OutRun 2006 (Coast 2 Coast) & 32-bit x86 Proton DX9 Translation
 - **Affected Pipeline**: `com.droiddeck.launcher` -> Steam Big Picture / PRoot / FEX -> `OR2006C2C.EXE`
 - **Root Cause Verified**:
