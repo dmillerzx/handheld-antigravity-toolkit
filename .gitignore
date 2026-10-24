@@ -48,5 +48,8 @@ notes/
 .vscode/
 .leak-patterns
 
-# Extracted native port binary assets (OTR, O2R)
+# Extracted native port binary assets (OTR, O2R, RSDK)
 assets/
+staging/
+*.rsdk
+_n64_temp/

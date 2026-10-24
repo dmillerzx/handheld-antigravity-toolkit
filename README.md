@@ -60,7 +60,10 @@ Get a factory-fresh or reset Retroid Pocket 5 fully configured in minutes:
   ```
 
 ### 4. Native Android Ports & Decompilations Ecosystem
-- Manages 14+ native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app`:
+- Manages 18+ native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app` using `%ANDROIDAPP%=%FILEINJECT%`:
+  - **Super Mario 64**: Standalone 60 FPS 1080p widescreen port (`com.vdavid003.sm64port`) with full right-analog stick camera
+  - **Another Metroid 2 Remake (AM2R)**: Native 60 FPS 1080p AMOLED widescreen with HQ audio and physical gamepad mapping (`com.companyname.AM2RWrapper`)
+  - **Sonic Mania Plus**: Retro Engine v5 native Android port (`com.decomp.rsdkv5`) running 1080p 60 FPS with full controller support and `Data.rsdk` assets
   - **Zelda N64**: Ship of Harkinian (OOT) + 3DS Link/Young Link HD models, 2 Ship 2 Harkinian (MM)
   - **Retro 2D**: Zelda 3 (A Link to the Past), Apotris (Native GBA engine rewrite, 60fps), Sonic 3 A.I.R., Sonic Robo Blast 2 (SRB2)
   - **N64 Classics**: Mario Kart 64 (SpaghettiKart), Star Fox 64 (Starship), GoldenEye 007 (Recomp), Perfect Dark

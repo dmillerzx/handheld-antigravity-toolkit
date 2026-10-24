@@ -184,5 +184,6 @@
 <string name="AlternativeEmulator.dreamcast" value="Flycast (Standalone)" />
 <string name="AlternativeEmulator.n3ds" value="Azahar (Standalone)" />
 <string name="AlternativeEmulator.psvita" value="Vita3K (Standalone)" />
+<string name="AlternativeEmulator.ports" value="Android App" />
 <string name="ROMDirectory" value="/storage/<SD_ID>/ROMs" />
 </config>

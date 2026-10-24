@@ -96,4 +96,13 @@
         <command label="Dolphin MMJR (Standalone)">%EMULATOR_DOLPHIN-MMJR% %ACTION%=android.intent.action.VIEW %EXTRA_AutoStartFile%=%ROM%</command>
         <command label="Dolphin MMJR2 (Standalone)">%EMULATOR_DOLPHIN-MMJR2% %ACTION%=android.intent.action.VIEW %EXTRA_AutoStartFile%=%ROM%</command>
     </system>
+    <system>
+        <name>ports</name>
+        <fullname>Ports</fullname>
+        <path>%ROMPATH%/ports</path>
+        <extension>.app .APP</extension>
+        <command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>
+        <platform>ports</platform>
+        <theme>ports</theme>
+    </system>
 </systemList>

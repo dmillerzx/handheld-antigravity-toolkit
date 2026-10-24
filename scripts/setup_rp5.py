@@ -81,6 +81,12 @@ TARGET_PACKAGES = [
     ("com.perfectdark.port", "Perfect Dark"),
     ("com.sunjaycy.goldeneye", "GoldenEye 007 (Recomp)"),
     ("io.github.thatguymcd.dkrr.preview", "Diddy Kong Racing (DKR-R)"),
+    ("com.aure.banjorecomp", "Banjo-Kazooie (Banjo Recomp)"),
+    ("com.apotris.android", "Apotris"),
+    ("com.companyname.AM2RWrapper", "Another Metroid 2 Remake (AM2R)"),
+    ("com.izzyagamer.sm64alo", "Super Mario 64 (sm64ex-alo)"),
+    ("com.vdavid003.sm64port", "Super Mario 64 (Vanilla Port)"),
+    ("com.decomp.rsdkv5", "Sonic Mania (RSDKv5)"),
 ]
 
 # Additional AppOps granted beyond MANAGE_EXTERNAL_STORAGE
@@ -461,6 +467,23 @@ class RP5Provisioner:
             self.shell("mkdir -p /sdcard/perfect_dark", check=False)
             self.run_cmd("push", str(pd_ini), "/sdcard/Android/data/com.perfectdark.port/files/pd.ini")
             self.run_cmd("push", str(pd_ini), "/sdcard/perfect_dark/pd.ini")
+
+        srb2_cfg = WORKSPACE_ROOT / "configs" / "ports" / "srb2" / "config.cfg"
+        if srb2_cfg.exists():
+            print("    -> Staging Sonic Robo Blast 2 controller configuration (config.cfg)...")
+            self.shell('mkdir -p "/sdcard/Sonic Robo Blast 2"', check=False)
+            self.run_cmd("push", str(srb2_cfg), "/sdcard/Sonic Robo Blast 2/config.cfg")
+
+        sonic_mania_cfg = WORKSPACE_ROOT / "configs" / "ports" / "sonic_mania" / "RSDK" / "V5"
+        if sonic_mania_cfg.exists():
+            print("    -> Staging Sonic Mania configuration...")
+            self.shell("mkdir -p /sdcard/RSDK/v5", check=False)
+            self.shell("mkdir -p /sdcard/Android/data/com.decomp.rsdkv5/files", check=False)
+            for cfg_name in ["Settings.ini", "modSettings.ini"]:
+                cfg_file = sonic_mania_cfg / cfg_name
+                if cfg_file.exists():
+                    self.run_cmd("push", str(cfg_file), f"/sdcard/RSDK/v5/{cfg_name}")
+                    self.run_cmd("push", str(cfg_file), f"/sdcard/Android/data/com.decomp.rsdkv5/files/{cfg_name}")
         print("    -> Native port configurations staging complete.")
 
     def stage_retroarch_engine(self) -> None:
