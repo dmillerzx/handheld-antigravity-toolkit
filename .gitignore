@@ -45,6 +45,7 @@ backups/
 snapshots/
 notes/
 docs/review/
+configs/system_backup/
 .idea/
 .vscode/
 .leak-patterns
