@@ -186,7 +186,17 @@ ControllerView = None
         local_cfg.write_text(content, encoding="utf-8")
         self.push_file(local_cfg, "/sdcard/Android/data/xyz.aethersx2.android/files/inis/PCSX2.ini")
 
-        # Deploy GT4 Spec II and GT4 per-game overscan crop & no-readback performance profiles
+        # Deploy GT4, OutRun 2006, and native widescreen per-game profiles
+        widescreen_games = [
+            # Gran Turismo 4 / Spec II
+            "646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini",
+            # OutRun 2006: Coast 2 Coast (NTSC-U & PAL)
+            "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
+            # Burnout 3: Takedown (NTSC-U & PAL)
+            "C74D7614.ini", "SLUS-21050.ini", "SLUS-21050_C74D7614.ini", "SLES-52585.ini",
+            # Black (NTSC-U & PAL)
+            "C2B0A956.ini", "SLUS-21376.ini", "SLES-53886.ini",
+        ]
         gt4_ini_content = f"""[EmuCore/GS]
 AspectRatio = {aspect}
 Crop = 1
@@ -198,8 +208,8 @@ EnableCheats = true
 """
         gt4_cfg = self.temp_dir / "gt4_nethersx2_gamesettings.ini"
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
-        for gt4_id in ["646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
-            self.push_file(gt4_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{gt4_id}")
+        for g_id in widescreen_games:
+            self.push_file(gt4_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{g_id}")
 
         # Deploy Retroid Pocket 5 calibrated input profile
         input_prof = WORKSPACE_ROOT / "configs" / "nethersx2_rp5_inputprofile.ini"
@@ -302,7 +312,17 @@ Opacity = 0
         if input_prof.exists():
             self.push_file(input_prof, "/sdcard/Android/data/com.armsx2/files/inputprofiles/RP5r.ini")
 
-        # 4. Deploy GT4 Spec II and GT4 per-game overscan crop & no-readback performance profiles
+        # 4. Deploy GT4, OutRun 2006, and native widescreen per-game profiles
+        widescreen_games = [
+            # Gran Turismo 4 / Spec II
+            "646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini",
+            # OutRun 2006: Coast 2 Coast (NTSC-U & PAL)
+            "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
+            # Burnout 3: Takedown (NTSC-U & PAL)
+            "C74D7614.ini", "SLUS-21050.ini", "SLUS-21050_C74D7614.ini", "SLES-52585.ini",
+            # Black (NTSC-U & PAL)
+            "C2B0A956.ini", "SLUS-21376.ini", "SLES-53886.ini",
+        ]
         gt4_ini_content = f"""[EmuCore/GS]
 AspectRatio = {aspect}
 Crop = 1
@@ -314,8 +334,8 @@ EnableCheats = true
 """
         gt4_cfg = self.temp_dir / "gt4_armsx2_gamesettings.ini"
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
-        for gt4_id in ["646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini"]:
-            self.push_file(gt4_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{gt4_id}")
+        for g_id in widescreen_games:
+            self.push_file(gt4_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{g_id}")
 
         # 5. Stage BIOS into ARM SX2 internal directory
         self.shell("mkdir -p /sdcard/Android/data/com.armsx2/files/bios", check=False)
@@ -549,7 +569,7 @@ VirtualGamepad = 0
     # 6. AZAHAR (3DS)
     def configure_azahar(self) -> None:
         scale = self.emulation.get("azahar_resolution_factor", 3)
-        turnip_line = "custom_driver = /sdcard/Download/drivers/Turnip_v26.0.0_R8.zip\n" if self.supports_turnip else ""
+        turnip_line = "custom_driver = /sdcard/Download/drivers/turnip_v24.3.0_R9v2.zip\n" if self.supports_turnip else ""
         driver_desc = "Mesa Turnip Driver" if self.supports_turnip else "System Vulkan Driver"
         print(f"\n[*] Configuring Azahar (3DS - {scale}x Vulkan, Async Shaders & {driver_desc})...")
         content = f"""[Renderer]
