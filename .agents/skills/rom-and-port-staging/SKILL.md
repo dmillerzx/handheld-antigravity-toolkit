@@ -55,6 +55,34 @@ def repack_7z_to_clean_n64_zip(in_7z: str, out_zip: str, temp_dir: str = "_temp"
 - **PS1, PS2, PSP, Dreamcast, Sega CD, Saturn**: Compressed `.chd` (CD-ROM/DVD MAME chdman format).
 - **GameCube, Wii**: Compressed `.rvz` (Dolphin RVZ format with zstd and 128KB block size).
 
+### D. Sony PlayStation Portable (PSP) CHD Staging & 60 FPS Optimization
+
+1. **Extraction & MAME CHD Conversion**:
+   - Extract raw `.iso` from `.7z` / `.zip` archive.
+   - Convert to standard MAME UMD/DVD CHD format:
+     ```powershell
+     .\scratch\chdman.exe createdvd -i "<game>.iso" -o "<game>.chd" -f
+     ```
+   - Delete temporary `.iso` immediately to preserve host storage.
+
+2. **Canonical SD Staging**:
+   - Push to `/storage/<SD_ID>/ROMs/psp/<game>.chd`.
+   - Update `/sdcard/ES-DE/gamelists/psp/gamelist.xml` with `<game>` metadata entry to ensure instant frontend discovery.
+
+3. **PPSSPP Dynamic Framerate Unlocking**:
+   - For titles with internal variable framerate limiters (e.g., *OutRun 2006*):
+   - Inject per-game configuration into `/sdcard/PSP/SYSTEM/<GAME_ID>_ppsspp.ini`:
+     ```ini
+     [Graphics]
+     GraphicsBackend = 3       # Vulkan
+     InternalResolution = 4    # 4x Native (1920x1088 for 1080p AMOLED)
+     AnisotropyLevel = 16
+
+     [CPU]
+     FastMemory = True
+     LockedCPUSpeed = 444      # Overclocks emulated PSP CPU from 222/333MHz to maintain 60 FPS ceiling
+     ```
+
 ---
 
 ## 2. On-Device Verification Protocol
