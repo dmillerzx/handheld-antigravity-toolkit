@@ -85,3 +85,16 @@ Or preview changes safely without applying:
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\rollback_services_and_optimizations.ps1 -WhatIf
 ```
+
+---
+
+## 5. Installing New Dev Tooling Without Undoing the Tuning
+
+Before installing anything that adds services, scheduled tasks, startup entries, or a hypervisor (Visual Studio, WSL2, Docker, vendor tools):
+
+1. **Baseline first** (read-only): `.\scripts\snapshot_workstation_state.ps1 -Save configs\system_backup\state_<date>_before-<tool>.json`
+2. **Install**, preferring user-scope / no-restart options and the smallest workload (e.g. VS Build Tools `VCTools`, not full VS).
+3. **Diff**: `.\scripts\snapshot_workstation_state.ps1 -Compare <baseline.json>` lists added/changed services, tasks, startup entries, memory, hypervisor state, and the AGENTS.md section-10 invariants (DPMService running, Dell telemetry services Manual, MaxxAudioShield task present).
+4. **Prune** only what the diff shows is new telemetry/updater noise: set to `Manual` rather than deleting, record the change, never touch `DPMService`.
+5. **WSL2**: keep `%USERPROFILE%\.wslconfig` capped (host: 31.7 GB RAM / 16 logical CPUs -> `memory=10GB`, `processors=8`, `swap=2GB`, `autoMemoryReclaim=gradual`, `sparseVhd=true`). Apply with `wsl --shutdown`. Enabling Virtual Machine Platform turns the hypervisor on; note it in the diff.
+6. Optional, user-approval only: Defender exclusions for build directories (speeds builds, lowers protection).

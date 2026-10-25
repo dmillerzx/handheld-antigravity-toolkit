@@ -1,5 +1,24 @@
 # DKR-R Android (Adreno 650) - handoff, 2026-10-25
 
+## UPDATE 13:44 EDT (session 2) - READ FIRST
+- **DKR-R trace now captured and confirms the null-pipeline path.** v1.0.6 on the RP5, launcher
+  "PLAY OFFLINE": plume logs 5x `AdrenoVK-0: Failed to link shaders. Pipeline create failed`,
+  then ~1s later `SIGSEGV` (SEGV_MAPERR, fault addr 0x8) in
+  `vulkan.adreno.so qglinternal::vkCmdBindPipeline`, called from `libDKR-R.so`
+  (`F3DDKRRT64Bridge::Dispatch` -> `RT64Renderer::send_dl` on the gfx thread).
+  Evidence: `docs/handoff/evidence/dkrr-1.0.6-rp5-adreno650-logcat.txt`.
+  So the earlier "unverified for DKR-R" caveats below are now resolved: the Banjo-style crash
+  does happen in DKR-R. Still open: *why* the driver fails to link (shader/spec-constant
+  specific) - needs a build with PR #1 to print the failing stage entry points.
+- PR: https://github.com/dmillerzx/DKR-R/pull/1 (CI green). Upstream correction comment:
+  https://github.com/ThatGuyMcd/DKR-R/issues/70#issuecomment-6400952849
+- To repeat the repro: launch app, scroll launcher panel (swipes at x=960, y 850->250), tap
+  "PLAY OFFLINE - DIDDY KONG RACING" (~940,722). ROM `dkr.z64` (Rev A / v1.1) is already staged
+  in the app files. Dismiss the Android "Use USB for" dialog if it appears.
+- A stale hung background task (`winget --version`) was killed; avoid bare `winget`/`wsl`
+  probes in commands that must finish.
+
+
 Fork: https://github.com/dmillerzx/DKR-R  (MIT, upstream ThatGuyMcd/DKR-R)
 Local clone: `DKR-R/` (gitignored? no - it is a nested repo; do not `git add` it from the toolkit repo)
 Branch: `android/ci-and-adreno-fix` (pushed, 2 commits ahead of `main`)

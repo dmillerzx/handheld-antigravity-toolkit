@@ -82,10 +82,10 @@ The following issues and components have been completely resolved and verified v
 - **Affected Packages**:
   - `io.github.thatguymcd.dkrr.preview` (Diddy Kong Racing Recomp v1.0.6)
   - `com.aure.banjorecomp` (Banjo-Kazooie Recomp v0.1.2)
-- **Root Cause Verified via Logcat**:
-  - Both ports use the `RT64` Vulkan backend (`recompui::renderer::RT64Context`).
-  - DKR-R: Null pointer dereference (`SEGV_MAPERR`) inside `/vendor/lib64/hw/vulkan.adreno.so` at `qglinternal::vkCmdBindPipeline` when executing `RT64::DisplayList`.
-  - Banjo Recomp: Crash inside `recompui::renderer::RT64Context::send_dummy_workload(unsigned int)+132` in `vulkan.adreno.so` (upstream GitHub issue #19: Adreno 650 driver incompatibility).
+- **Root Cause Verified via Logcat** (**CORRECTED 2026-10-25**: the only captured trace is from Banjo Recomp; see `docs/handoff/dkrr-android-2026-10-25.md`):
+  - Both ports use the `RT64` Vulkan backend.
+  - Banjo Recomp (`libgame.so`): `AdrenoVK-0: Failed to link shaders. Pipeline create failed`, then a null pointer dereference (`SEGV_MAPERR`, fault addr `0x30`) inside `/vendor/lib64/hw/vulkan.adreno.so` at `qglinternal::vkCmdBindPipeline`, called from `recompui::renderer::RT64Context::send_dummy_workload(unsigned int)+132` (upstream GitHub issue #19: Adreno 650 driver incompatibility).
+  - DKR-R (`libDKR-R.so`, v1.0.6 on RP5, captured 2026-10-25 13:43): **confirmed.** plume logs 5x `AdrenoVK-0: Failed to link shaders. Pipeline create failed`, then `SIGSEGV` (fault addr 0x8) in `vulkan.adreno.so qglinternal::vkCmdBindPipeline` via `F3DDKRRT64Bridge::Dispatch` -> `RT64Renderer::send_dl`. Evidence: `docs/handoff/evidence/dkrr-1.0.6-rp5-adreno650-logcat.txt`. v1.0.10 source binds a null `VkPipeline` after a failed `vkCreate*Pipelines`; defensive fix in `dmillerzx/DKR-R` PR #1 (diagnosable failure, not a driver fix; the link failure itself is still open).
   - Standalone Android APKs cannot inject custom Turnip drivers because they bind directly to system `libvulkan.so`.
 - **Recommended Action / Workaround**:
   - Do not attempt to rewrite the APK unless recompiling with an OpenGL ES fallback or custom Turnip loader hook.

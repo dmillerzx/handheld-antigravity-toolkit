@@ -1,0 +1,42 @@
+# DKR-R v1.0.6 (io.github.thatguymcd.dkrr.preview) on Retroid Pocket 5 / Adreno 650 - captured 2026-10-25 13:43 EDT
+# ROM: Diddy Kong Racing v1.1 (Rev A) via launcher "PLAY OFFLINE". Filtered from adb logcat; first DKR-R (not Banjo) trace.
+# Sequence: 5x "Failed to link shaders / Pipeline create failed" (plume), then SIGSEGV in vkCmdBindPipeline ~1s later.
+
+10-25 13:43:22.130  3129  3583 I AdrenoVK-0: QUALCOMM build          : c095b0f6a5, I88dcacb6b9
+10-25 13:43:22.130  3129  3583 I AdrenoVK-0: Build Date              : 09/27/23
+10-25 13:43:22.130  3129  3583 I AdrenoVK-0: Shader Compiler Version : E031.42.24.00
+10-25 13:43:22.130  3129  3583 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+10-25 13:43:22.130  3129  3583 I AdrenoVK-0: Driver Version          : 0746.0
+10-25 13:43:22.130  3129  3583 I AdrenoVK-0: Application Name    : plume
+10-25 13:43:22.174  3129  3583 I AdrenoVK-0: Failed to link shaders.
+10-25 13:43:22.174  3129  3583 I AdrenoVK-0: Pipeline create failed
+10-25 13:43:22.179  3129  3583 I AdrenoVK-0: Failed to link shaders.
+10-25 13:43:22.179  3129  3583 I AdrenoVK-0: Pipeline create failed
+10-25 13:43:22.212  3129  3583 I AdrenoVK-0: Failed to link shaders.
+10-25 13:43:22.212  3129  3583 I AdrenoVK-0: Pipeline create failed
+10-25 13:43:22.215  3129  3583 I AdrenoVK-0: Failed to link shaders.
+10-25 13:43:22.215  3129  3583 I AdrenoVK-0: Pipeline create failed
+10-25 13:43:22.217  3129  3583 I AdrenoVK-0: Failed to link shaders.
+10-25 13:43:22.217  3129  3583 I AdrenoVK-0: Pipeline create failed
+10-25 13:43:23.274  3129  3583 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x8 in tid 3583 (Thread-3), pid 3129 (SDLActivity)
+10-25 13:43:23.499  3623  3623 F DEBUG   : Build fingerprint: 'qti/kona/kona:13/TKQ1.240621.001/eng.RP5.20260725.142941:user/release-keys'
+10-25 13:43:23.499  3623  3623 F DEBUG   : pid: 3129, tid: 3583, name: Thread-3  >>> io.github.thatguymcd.dkrr.preview <<<
+10-25 13:43:23.499  3623  3623 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0000000000000008
+10-25 13:43:23.499  3623  3623 F DEBUG   : Cause: null pointer dereference
+10-25 13:43:23.499  3623  3623 F DEBUG   : backtrace:
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #00 pc 00000000000a4450  /vendor/lib64/hw/vulkan.adreno.so (qglinternal::vkCmdBindPipeline(VkCommandBuffer_T*, VkPipelineBindPoint, VkPipeline_T*)+0) (BuildId: e2b939342a4324955eb988f19774e26e)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #01 pc 00000000010f0d70  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #02 pc 00000000010efab8  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #03 pc 00000000010efc44  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #04 pc 0000000001109c70  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #05 pc 00000000011073cc  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #06 pc 00000000010038a0  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #07 pc 00000000008ae7dc  <app>/lib/arm64/libDKR-R.so (dkr::runtime::F3DDKRRT64Bridge::Dispatch(RT64::State*, RT64::Displa
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #08 pc 000000000100cbe4  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #09 pc 00000000010e183c  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #10 pc 00000000008b829c  <app>/lib/arm64/libDKR-R.so (dkr::runtime::F3DDKRRT64Bridge::process(RT64::Application&, OSTask 
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #11 pc 00000000008d00b8  <app>/lib/arm64/libDKR-R.so (dkr::runtime::RT64Renderer::send_dl(OSTask const*, unsigned char*)+
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #12 pc 0000000000e6a388  <app>/lib/arm64/libDKR-R.so (gfx_thread_func(unsigned char*, moodycamel::LightweightSemaphore*, 
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #13 pc 0000000000e70aec  <app>/lib/arm64/libDKR-R.so (BuildId: 6c2cc6fb35a7a6777d105cafc1314d2ad644a5b5)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #14 pc 00000000000ba650  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+208) (BuildId: bf5f1ce73f89cca7d6a062eb7877e86a)
+10-25 13:43:23.499  3623  3623 F DEBUG   :       #15 pc 0000000000053ffc  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+68) (BuildId: bf5f1ce73f89cca7d6a062eb7877e86a)
