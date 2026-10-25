@@ -57,7 +57,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Storage Scaffolding** | Create canonical directories | `adb shell "ls -la /sdcard/bios /storage/<SD_ID>"` |
 | **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` (Libretro buildbot intermediateLink array for RetroArch) | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
 | **ES-DE Pre-Config** | Push `es_settings.xml` configured with MicroSD ROM path & direct ARMSX2 ROMSAF launch | `adb shell "cat /sdcard/ES-DE/settings/es_settings.xml"` |
-| **Turnip Drivers** | Stage Mesa Turnip GPU drivers in `/sdcard/Download/drivers/` | `adb shell "ls -la /sdcard/Download/drivers"` |
+| **Turnip Drivers** | Stage Mesa Turnip GPU drivers (turnip_v24.3.0_R9v2 baseline, TurnipZ-0.3.0 SD865, Turnip-24.1.0 R18 a6xx) in `/sdcard/Download/drivers/` (No Adreno 7xx-only builds) | `adb shell "ls -la /sdcard/Download/drivers"` |
 | **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Smart fan mode (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode"` |
 | **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
 | **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
@@ -204,6 +204,28 @@ To avoid premature throttling under the 5-hour rolling rate limits and preserve 
 2. **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
 3. **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).
 4. **PowerShell Scratch File Execution Invariant**: When running complex PowerShell commands via agent CLI tools, never nest double-quoted script blocks or unescaped variables inside `-Command "..."`. Always stage multi-line scripts to `<appDataDir>\brain\<conversation-id>/scratch/<name>.ps1` and execute with `-File` for 100% deterministic, uncorrupted parsing.
+
+---
+
+## 15. GPU Driver Architecture & Native Port Rendering Invariant
+
+1. **Adreno 650 Driver Hierarchy**: The Retroid Pocket 5 features a Qualcomm Snapdragon 865 (SM8250 / Kona) with an Adreno 650 GPU (`a6xx` family). Supported drivers:
+   - `turnip_v24.3.0_R9v2.zip`: Gold-standard general baseline (Azahar 3DS, DroidDeck DXVK).
+   - `TurnipZ-0.3.0.zip`: SD865-tailored Mesa 27.0-devel branch (highest Switch/heavy Vulkan FPS, Unreal Engine color fixes).
+   - `Turnip-24.1.0.adpkg_R18.a6xx.zip`: Dedicated `a6xx` depth clearing & tessellation fix.
+   - Qualcomm Kona Stock Driver (`com.qualcomm.qti.gpudrivers.kona.api30`): Built-in system driver; default for PS2, Dolphin baseline, and native Android ports.
+2. **Native Port Boundary**: Native Android ports (Perfect Dark, SM64 ALO, Banjo, SoH, Sonic Mania, etc.) and direct OS bounded emulators (ARM SX2, NetherSX2, PPSSPP, Flycast, DuckStation) bind directly to `/system/lib64/libvulkan.so` and execute natively on Qualcomm hardware with zero translation overhead. Do not attempt to inject Turnip ZIPs into native ports.
+3. **Adreno 6xx Invariant**: Never stage Adreno 7xx-only (`vulkan.ad07xx.so`) driver archives as primary drivers on the RP5. Always verify `meta.json` inside driver ZIPs.
+
+---
+
+## 16. Community Project Orphan Takeover & Deep Engineering Session Boundary
+
+1. **Orphan Takeover Protocol**: When an upstream open-source maintainer announces departure or ends platform support (e.g. ThatGuyMcd on DKR-R Android), verify licensing (MIT/GPL), autonomously establish community continuity via `gh repo fork <owner>/<repo> --clone=false` under the user's account (`dmillerzx`), and post empathetic, technically accurate feedback explaining the hardware root cause.
+2. **Shared-Engine Triage Strategy**: When multiple ports share the same underlying engine (e.g. N64Recomp + RT64 across DKR-R and Banjo Recomp), solve the bug on the orphaned project first, then backport or submit upstream PRs to active maintainers.
+3. **Session Boundary & Reasoning Elevation Invariant**: Transitioning from high-level triage/planning to deep C++ Android NDK builds, CMake scripting, or Vulkan shader debugging MUST occur in a fresh session to eliminate transcript bloat and prevent quadratic token inflation. Explicitly prompt the user to switch to a high-reasoning model (`Claude 3.5 Sonnet` or `Gemini Pro`) with `High` thinking effort before commencing native decompilation/patching work.
+
+
 
 
 

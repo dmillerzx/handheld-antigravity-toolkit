@@ -242,3 +242,22 @@ Mirror master icon PNG to ES-DE frontend media paths:
 - `/sdcard/ES-DE/downloaded_media/ports/covers/<Title>.png`
 - `/storage/<SD_ID>/ROMs/ports/media/covers/<Title>.png`
 
+---
+
+## 7. N64Recomp & RT64 Engine Port Architecture (DKR-R / Banjo Recomp)
+
+### A. Rendering Pipeline & TBDR Constraints
+- **N64Recomp** (Mr-Wiseguy) statically recompiles N64 MIPS R4300i binaries to native C/C++.
+- The graphics backend relies on **RT64** (Vulkan/D3D12), an engine built for modern PC raytracing, 60fps/uncapped interpolation, and post-processing.
+- **Mobile Hardware Mismatch**: Mobile GPUs (Qualcomm Adreno 650) use Tile-Based Deferred Rendering (TBDR). RT64's render passes and constant buffer churn create memory bandwidth bottlenecks.
+- **Qualcomm Stock Driver Bug**: Qualcomm's proprietary driver (`/vendor/lib64/hw/vulkan.adreno.so`) fails on RT64's SPIR-V shaders, returning `VK_NULL_HANDLE` and triggering a fatal `SIGSEGV` null pointer dereference inside `vkCmdBindPipeline`.
+
+### B. Two-Phase Remediation Strategy
+1. **Phase 1: Boot & Driver Injection**:
+   - Integrate **AdrenoTools** into the Android NDK JNI wrapper to dynamically inject Mesa Turnip (`turnip_v24.3.0_R9v2.zip`), bypassing Qualcomm's broken SPIR-V compiler.
+   - Patch `RT64::DisplayList::draw()` and `recompui::renderer::RT64Context` with null-checks to catch failed pipeline handles gracefully.
+2. **Phase 2: Performance Profiling**:
+   - Disable heavy desktop post-processing bloom/shadow passes in mobile builds.
+   - Simplify descriptor set churn for TBDR architecture.
+
+

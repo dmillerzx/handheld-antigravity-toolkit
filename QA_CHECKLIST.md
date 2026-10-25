@@ -131,8 +131,8 @@ This document provides systematic, platform-by-platform validation procedures fo
 * **Objective:** Confirm Turnip Adreno Vulkan driver stability and shader compilation.
 * **Test Game:** *The Legend of Zelda: A Link Between Worlds* (3DS) / *Persona 4 Golden* (Vita).
 * **Procedure:**
-  1. Launch Azahar -> Verify Custom Driver points to `/sdcard/Download/drivers/Turnip_v26.0.0_R8.zip`.
-  2. Launch Vita3K -> Verify GPU Driver is set to Turnip v26.0.0 R8.
+  1. Launch Azahar -> Verify Custom Driver points to `/sdcard/Download/drivers/turnip_v24.3.0_R9v2.zip`.
+  2. Launch Vita3K -> Verify GPU Driver is set to Turnip v24.3.0 R9v2.
   3. Play through introductory sequence and shader-heavy area.
 * **Pass Criteria:** Game boots without GPU hang (`VK_ERROR_DEVICE_LOST`); frame rate remains solid at 3x (3DS) and 2x (Vita).
 

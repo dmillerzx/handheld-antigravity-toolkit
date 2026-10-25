@@ -193,6 +193,16 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 - **Nintendo Disc Systems (GameCube, Wii)**:
   - Compressed `.rvz` (Dolphin RVZ format with zstd/128KB chunking).
 
+### L. GPU Driver Architecture & Adreno 650 Governance
+- **Device SoC**: Qualcomm Snapdragon 865 (SM8250 / Kona) with Adreno 650 GPU (`a6xx` architecture family).
+- **Driver Hierarchy**:
+  1. `turnip_v24.3.0_R9v2.zip` (K11MCH1): Gold-standard general-purpose Turnip driver for RP5 (Azahar 3DS, DroidDeck DXVK).
+  2. `TurnipZ-0.3.0.zip` (AlexSanz0902): SD865-customized Mesa 27.0-devel branch (highest Switch/heavy Vulkan FPS, Unreal Engine color fixes).
+  3. `Turnip-24.1.0.adpkg_R18.a6xx.zip`: Dedicated `a6xx` depth clearing & tessellation fix.
+  4. Qualcomm Kona Stock Driver (`com.qualcomm.qti.gpudrivers.kona.api30`): Built-in system driver; default for PS2, Dolphin baseline, and native Android ports.
+- **Architectural Boundary**: Native Android ports (Perfect Dark, SM64 ALO, Banjo, SoH, Sonic Mania, etc.) and direct OS bounded emulators (ARM SX2, NetherSX2, PPSSPP, Flycast, DuckStation) bind directly to `/system/lib64/libvulkan.so` and execute natively on Qualcomm hardware with zero translation overhead. Do not attempt to inject Turnip ZIPs into native ports.
+- **Adreno 6xx Invariant**: Never stage Adreno 7xx-only (`vulkan.ad07xx.so`) driver archives as primary drivers on the RP5. Always verify `meta.json` inside driver ZIPs.
+
 ---
 
 ## 5. Operational Best Practices for Agents
@@ -219,6 +229,14 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
    - **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
    - **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).
    - **PowerShell Scratch File Execution Invariant**: When running complex PowerShell commands via agent CLI tools, never nest double-quoted script blocks or unescaped variables inside `-Command "..."`. Always stage multi-line scripts to `<appDataDir>\brain\<conversation-id>/scratch/<name>.ps1` and execute with `-File` for 100% deterministic, uncorrupted parsing.
+11. **Community Project Orphan Takeover & Open-Source Forking Protocol**:
+    - When an upstream maintainer announces departure or ends platform support (e.g., ThatGuyMcd on DKR-R Android), verify licensing (MIT/GPL).
+    - Autonomously establish community continuity via `gh repo fork <owner>/<repo> --clone=false` under the user's account (`dmillerzx`).
+    - Post empathetic, technically accurate feedback on the upstream issue explaining the hardware root cause (e.g. Qualcomm Vulkan SPIR-V compiler bugs vs mobile TBDR) and link to the community fork.
+    - When multiple ports share the same underlying engine (e.g. N64Recomp + RT64 across DKR-R and Banjo Recomp), solve the bug on the orphaned project first, then backport or submit upstream PRs to active maintainers.
+12. **Deep Engineering Session Boundary & Reasoning Elevation Invariant**:
+    - Transitioning from high-level triage/planning to deep C++ Android NDK builds, CMake scripting, or Vulkan shader debugging MUST occur in a fresh session to eliminate transcript bloat and prevent quadratic token inflation.
+    - Explicitly prompt the user to switch to a high-reasoning model (`Claude 3.5 Sonnet` or `Gemini Pro`) with `High` thinking effort before commencing native decompilation/patching work.
 
 ---
 
