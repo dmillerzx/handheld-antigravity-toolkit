@@ -218,9 +218,10 @@ EnableCheats = true
         outrun_games = [
             "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
         ]
+        outrun_scale = 1.5
         outrun_ini_content = f"""[EmuCore/Speedhacks]
-EECycleRate = -1
-EECycleSkip = 0
+EECycleRate = 0
+EECycleSkip = 1
 vuThread = true
 vu1Instant = true
 WaitLoop = true
@@ -232,10 +233,16 @@ fastCDVD = true
 AspectRatio = {aspect}
 Crop = 1
 CropMode = Overscan
+HWDownloadMode = 1
 HardwareDownloadMode = 1
-UpscaleMultiplier = {scale}
+HWSpinCPUForReadbacks = true
+UpscaleMultiplier = {outrun_scale}
 accurate_blending_unit = 0
+UserHacks = 1
+UserHacks_AutoFlush = 0
+UserHacks_AutoFlushLevel = 0
 SkipDuplicateFrames = true
+ThreadedPresentation = true
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 """
@@ -374,9 +381,10 @@ EnableCheats = true
         outrun_games = [
             "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
         ]
+        outrun_scale = 1.5
         outrun_ini_content = f"""[EmuCore/Speedhacks]
-EECycleRate = -1
-EECycleSkip = 0
+EECycleRate = 0
+EECycleSkip = 1
 vuThread = true
 vu1Instant = true
 WaitLoop = true
@@ -388,10 +396,16 @@ fastCDVD = true
 AspectRatio = {aspect}
 Crop = 1
 CropMode = Overscan
+HWDownloadMode = 1
 HardwareDownloadMode = 1
-UpscaleMultiplier = {scale}
+HWSpinCPUForReadbacks = true
+UpscaleMultiplier = {outrun_scale}
 accurate_blending_unit = 0
+UserHacks = 1
+UserHacks_AutoFlush = 0
+UserHacks_AutoFlushLevel = 0
 SkipDuplicateFrames = true
+ThreadedPresentation = true
 EnableWideScreenPatches = {ws_patches}
 EnableCheats = true
 """
