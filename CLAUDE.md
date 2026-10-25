@@ -69,7 +69,7 @@ The following issues and components have been completely resolved and verified v
 9. **Obtainium Emulation Pack Upstream Contribution (PR #195)**:
    - Responded to community feature request on RJNY/Obtainium-Emulation-Pack #187.
    - Identified root cause of Issue #183 (package ID mismatch between stable com.armsx2 and nightly com.armsx2.nightly).
-   - Submitted PR #195 adding com.armsx2.nightly with prereleases enabled, filtered to Android-arm64.apk$, as a table-only entry.
+   - Submitted PR #195 adding com.armsx2.nightly with prereleases enabled, filtered to Android-arm64.apk$, as a table-only entry. Upstream maintainer RJNY reviewed and merged PR #195.
 10. **Public Toolkit Release (v1.0.0)**:
     - Formalized MIT License in root LICENSE file.
     - Streamlined README.md with a 3-step 60-second quick-start provisioning guide.
@@ -91,14 +91,14 @@ The following issues and components have been completely resolved and verified v
   - Do not attempt to rewrite the APK unless recompiling with an OpenGL ES fallback or custom Turnip loader hook.
   - Both titles run at a locked 60 FPS in 1080p with high-res texture packs via **Mupen64Plus FZ Standalone**.
 
-### Issue 2: Paper Mario 64 (PaperBoat) Android OpenGLES Shader Limitation
+### Issue 2: Paper Mario 64 (PaperBoat) Android OpenGLES Tagged Pointer Bug [RESOLVED IN PR #275]
 - **Affected Package**: `dev.net64.paperboat` (PaperBoat v1.0.3)
-- **Current State**:
-  - Deployed from official HarbourMasters CI artifact. `Torch` on-device ROM extraction successfully creates `pm64.o2r` (40.1 MB) from clean US ROM.
-  - 3D world geometry, camera interpolation, and audio render cleanly at 60 FPS.
-  - 2D billboard character sprites (Mario, NPCs), UI font glyphs, and theater curtain textures exhibit vertical striping and scrambled paletted noise under OpenGLES.
-  - Root cause submitted to upstream issue [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274) with live hardware logs and screenshot telemetry (Fast3D GLES CI4/CI8/IA palette sampling in `libultraship`).
-  - High-res 1080p 60 FPS gameplay is immediately available via **Mupen64Plus FZ Standalone**.
+- **Root Cause & Resolution**:
+  - Investigated and submitted upstream to [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274).
+  - Contributor James Doyle identified root cause in [HarbourMasters/PaperBoat#275](https://github.com/HarbourMasters/PaperBoat/pull/275): Android arm64 memory allocator tags heap pointers in top byte (`0xb4...`). While dereferenced correctly via AArch64 top-byte-ignore, `libultraship` evaluated OTR filepaths numerically (`w1 > 0x0000FFFFFFFFFFFF`), rejecting tagged pointers and dropping paletted 2D asset handlers.
+  - Deployed patched test build (`paperboat-app-release.patched-libultraship.apk`) to physical Retroid Pocket 5 hardware.
+  - Verified 100% clean rendering on hardware: Mario/Bowser/Kammy Koopa billboard sprites, font glyphs, title screen artwork, and theater curtains render cleanly at 60 FPS without distortion.
+  - Upstream verification and on-device screenshot telemetry posted to #274 and #275.
 ### Issue 3: DroidDeck OutRun 2006 (Coast 2 Coast) & 32-bit x86 Proton DX9 Translation
 - **Affected Pipeline**: `com.droiddeck.launcher` -> Steam Big Picture / PRoot / FEX -> `OR2006C2C.EXE`
 - **Root Cause Verified**:
