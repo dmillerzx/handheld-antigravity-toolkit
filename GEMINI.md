@@ -219,7 +219,27 @@ To avoid premature throttling under the 5-hour rolling rate limits and preserve 
 
 ---
 
-## 16. Community Project Orphan Takeover & Deep Engineering Session Boundary
+## 16. Controller Configuration Preservation Invariant
+
+Automated provisioning scripts (`setup_rp5.py`, `configure_standalones.py`, `provision_all.ps1`) must **never** unconditionally overwrite existing emulator controller mappings on the device:
+1. **Dolphin Controller Guard**: Always check if `GCPadNew.ini` or `WiimoteNew.ini` exists on-device before pushing. If present, skip deploying controller templates to preserve user-calibrated physical button assignments and stick deadzones.
+2. **RetroArch & Standalone Pads**: Input profiles in NetherSX2, ARM SX2, DuckStation, and PPSSPP must respect user-calibrated files once created.
+
+---
+
+## 17. Architecture-Driven Platform Routing Heuristic
+
+When a title exists across multiple platforms (e.g. PS2, GameCube, PSP, Native PC):
+1. **Bespoke Console Titles**: Titles engineered natively for the PS2 architecture (e.g., *Gran Turismo 4*, *God of War*, *Devil May Cry 3*) run at a locked 60 FPS at 2.0x 1080p on the Snapdragon 865.
+2. **PC/Xbox-Ported Outliers**: Titles originally engineered for PC/Xbox architectures (DirectX 8/9 with programmable shaders, e.g., *OutRun 2006: Coast 2 Coast*) fight the PS2 hardware, triggering excessive `autoFlush` stalls and single-threaded Emotion Engine bottlenecks.
+3. **Preferred Routing**: For these outlier titles, prioritize:
+   - **PSP (PPSSPP)**: Rendered at 4x Native (1080p) with emulated CPU clock unlocked to `444 MHz` for a locked 60 FPS presentation.
+   - **GameCube (Dolphin)**: 2.5x 1080p with Gecko widescreen patches.
+   - **Native PC (DroidDeck / Wine)**: Once 32-bit x86 DX9 translation stabilizes under FEX.
+
+---
+
+## 18. Community Project Orphan Takeover & Deep Engineering Session Boundary
 
 1. **Orphan Takeover Protocol**: When an upstream open-source maintainer announces departure or ends platform support (e.g. ThatGuyMcd on DKR-R Android), verify licensing (MIT/GPL), autonomously establish community continuity via `gh repo fork <owner>/<repo> --clone=false` under the user's account (`dmillerzx`), and post empathetic, technically accurate feedback explaining the hardware root cause.
 2. **Shared-Engine Triage Strategy**: When multiple ports share the same underlying engine (e.g. N64Recomp + RT64 across DKR-R and Banjo Recomp), solve the bug on the orphaned project first, then backport or submit upstream PRs to active maintainers.

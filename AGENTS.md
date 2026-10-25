@@ -203,6 +203,20 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 - **Architectural Boundary**: Native Android ports (Perfect Dark, SM64 ALO, Banjo, SoH, Sonic Mania, etc.) and direct OS bounded emulators (ARM SX2, NetherSX2, PPSSPP, Flycast, DuckStation) bind directly to `/system/lib64/libvulkan.so` and execute natively on Qualcomm hardware with zero translation overhead. Do not attempt to inject Turnip ZIPs into native ports.
 - **Adreno 6xx Invariant**: Never stage Adreno 7xx-only (`vulkan.ad07xx.so`) driver archives as primary drivers on the RP5. Always verify `meta.json` inside driver ZIPs.
 
+### M. Controller Configuration Preservation Invariant
+Automated provisioning scripts (`setup_rp5.py`, `configure_standalones.py`, `provision_all.ps1`) must **never** unconditionally overwrite existing emulator controller mappings on the device:
+1. **Dolphin Controller Guard**: Always check if `GCPadNew.ini` or `WiimoteNew.ini` exists on-device before pushing. If present, skip deploying controller templates to preserve user-calibrated physical button assignments and stick deadzones.
+2. **RetroArch & Standalone Pads**: Input profiles in NetherSX2, ARM SX2, DuckStation, and PPSSPP must respect user-calibrated files once created.
+
+### N. Architecture-Driven Platform Routing Heuristic
+When a title exists across multiple platforms (e.g. PS2, GameCube, PSP, Native PC):
+1. **Bespoke Console Titles**: Titles engineered natively for the PS2 architecture (e.g., *Gran Turismo 4*, *God of War*, *Devil May Cry 3*) run at a locked 60 FPS at 2.0x 1080p on the Snapdragon 865.
+2. **PC/Xbox-Ported Outliers**: Titles originally engineered for PC/Xbox architectures (DirectX 8/9 with programmable shaders, e.g., *OutRun 2006: Coast 2 Coast*) fight the PS2 hardware, triggering excessive `autoFlush` stalls and single-threaded Emotion Engine bottlenecks.
+3. **Preferred Routing**: For these outlier titles, prioritize:
+   - **PSP (PPSSPP)**: Rendered at 4x Native (1080p) with emulated CPU clock unlocked to `444 MHz` for a locked 60 FPS presentation.
+   - **GameCube (Dolphin)**: 2.5x 1080p with Gecko widescreen patches.
+   - **Native PC (DroidDeck / Wine)**: Once 32-bit x86 DX9 translation stabilizes under FEX.
+
 ---
 
 ## 5. Operational Best Practices for Agents
