@@ -535,8 +535,13 @@ Device = {ctrl_dev}
         for remote_base in ["/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config", "/sdcard/dolphin-emu/Config"]:
             self.push_file(f_dol, f"{remote_base}/Dolphin.ini")
             self.push_file(f_gfx, f"{remote_base}/GFX.ini")
-            self.push_file(cfg_gcpad, f"{remote_base}/GCPadNew.ini")
-            self.push_file(cfg_wiimote, f"{remote_base}/WiimoteNew.ini")
+            # Preserve user controller mappings if already configured on-device
+            has_gcpad = self.shell(f"[ -f '{remote_base}/GCPadNew.ini' ] && echo 1 || echo 0", check=False).strip()
+            if has_gcpad != "1":
+                self.push_file(cfg_gcpad, f"{remote_base}/GCPadNew.ini")
+            has_wiimote = self.shell(f"[ -f '{remote_base}/WiimoteNew.ini' ] && echo 1 || echo 0", check=False).strip()
+            if has_wiimote != "1":
+                self.push_file(cfg_wiimote, f"{remote_base}/WiimoteNew.ini")
             self.push_file(f_hot, f"{remote_base}/Hotkeys.ini")
             self.push_file(f_hot2, f"{remote_base}/HotKey.ini")
             self.push_file(f_free, f"{remote_base}/FreeLookController.ini")
