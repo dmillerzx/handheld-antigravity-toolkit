@@ -81,3 +81,19 @@ Inside containerized environments (DroidDeck, Steam Big Picture, Wine/Proton, Ga
   ```bash
   sendevent /dev/input/event8 3 17 -1; sendevent /dev/input/event8 0 0 0; sleep 0.1; sendevent /dev/input/event8 3 17 0; sendevent /dev/input/event8 0 0 0
   ```
+
+---
+
+## 4. Frontend Launch & Dynamic Linker Diagnostics
+
+When a title launched from ES-DE results in an immediate black screen or drops back to the frontend:
+
+1. **Query Linker & App Activity Logs Immediately**:
+   ```powershell
+   adb -s <serial> shell "logcat -d | grep -iE 'RetroActivity|linker|dlopen|fatal|signal 11' | tail -n 40"
+   ```
+
+2. **Diagnose Missing vs. Inaccessible Core**:
+   * `dlopen failed: library ".../cores/<core>.so" not found`: The core has not been downloaded inside RetroArch's internal storage (`/data/user/0/com.retroarch.aarch64/cores/`). Direct the user to **Online Updater ➔ Core Downloader** inside RetroArch.
+   * `dlopen failed: library ... is not accessible for the namespace: [name="classloader-namespace"]`: ES-DE or an intent passed a path pointing to external storage (`/sdcard/` or `/storage/<SD_ID>/`). The core path in `es_systems.xml` must point to `/data/user/0/com.retroarch.aarch64/cores/<core>.so` and the binary must be installed via RetroArch's internal downloader.
+

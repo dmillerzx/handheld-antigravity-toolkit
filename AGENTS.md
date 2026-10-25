@@ -217,6 +217,17 @@ When a title exists across multiple platforms (e.g. PS2, GameCube, PSP, Native P
    - **GameCube (Dolphin)**: 2.5x 1080p with Gecko widescreen patches.
    - **Native PC (DroidDeck / Wine)**: Once 32-bit x86 DX9 translation stabilizes under FEX.
 
+### O. Android 13 Dynamic Linker Classloader Namespace Invariant (RetroArch Cores)
+On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynamic linker restricts native library loading via `classloader-namespace`:
+- **Permitted Paths**: `permitted_paths="/data:/mnt/expand:/data/user/0/com.retroarch.aarch64"`.
+- **External Storage Prohibition**: RetroArch cannot `dlopen()` any `.so` dynamic library located on `/sdcard/`, `/storage/emulated/0/`, or external MicroSD (`/storage/<SD_ID>/RetroArch/cores/`). Attempts to pass external core paths fail with:
+  `dlopen failed: library "..." is not accessible for the namespace: [name="classloader-namespace"]`
+- **Non-Root Write Boundary**: Unrooted ADB shell cannot write to `/data/user/0/com.retroarch.aarch64/cores/` (`Permission denied`), and `run-as` is unavailable on non-debuggable production builds.
+- **Operational Requirement**:
+  1. **Assets vs. Cores**: Frontend assets (Shaders, Joypad Autoconfig, Info files) can and should be staged to `/storage/<SD_ID>/RetroArch/`.
+  2. **Core Acquisition**: Executable `.so` cores **must** be downloaded directly inside RetroArch via **Online Updater ➔ Core Downloader**. Provisioning scripts and agents must not assume pushing `.so` binaries to external storage provides a functional core.
+  3. **Standalone N64 Routing**: If an in-app core download is not preferred, route N64 to standalone Mupen64Plus FZ (`org.mupen64plusae.v3.fzurita`) in `es_settings.xml`.
+
 ---
 
 ## 5. Operational Best Practices for Agents

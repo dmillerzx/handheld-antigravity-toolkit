@@ -245,6 +245,20 @@ When a title exists across multiple platforms (e.g. PS2, GameCube, PSP, Native P
 2. **Shared-Engine Triage Strategy**: When multiple ports share the same underlying engine (e.g. N64Recomp + RT64 across DKR-R and Banjo Recomp), solve the bug on the orphaned project first, then backport or submit upstream PRs to active maintainers.
 3. **Session Boundary & Reasoning Elevation Invariant**: Transitioning from high-level triage/planning to deep C++ Android NDK builds, CMake scripting, or Vulkan shader debugging MUST occur in a fresh session to eliminate transcript bloat and prevent quadratic token inflation. Explicitly prompt the user to switch to a high-reasoning model (`Claude 3.5 Sonnet` or `Gemini Pro`) with `High` thinking effort before commencing native decompilation/patching work.
 
+---
+
+## 19. Android 13 Dynamic Linker Classloader Namespace Invariant (RetroArch Cores)
+
+On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynamic linker restricts native library loading via `classloader-namespace`:
+- **Permitted Paths**: `permitted_paths="/data:/mnt/expand:/data/user/0/com.retroarch.aarch64"`.
+- **External Storage Prohibition**: RetroArch cannot `dlopen()` any `.so` dynamic library located on `/sdcard/`, `/storage/emulated/0/`, or external MicroSD (`/storage/<SD_ID>/RetroArch/cores/`). Attempts to pass external core paths fail with:
+  `dlopen failed: library "..." is not accessible for the namespace: [name="classloader-namespace"]`
+- **Non-Root Write Boundary**: Unrooted ADB shell cannot write to `/data/user/0/com.retroarch.aarch64/cores/` (`Permission denied`), and `run-as` is unavailable on non-debuggable production builds.
+- **Operational Requirement**:
+  1. **Assets vs. Cores**: Frontend assets (Shaders, Joypad Autoconfig, Info files) can and should be staged to `/storage/<SD_ID>/RetroArch/`.
+  2. **Core Acquisition**: Executable `.so` cores **must** be downloaded directly inside RetroArch via **Online Updater ➔ Core Downloader**. Provisioning scripts and agents must not assume pushing `.so` binaries to external storage provides a functional core.
+  3. **Standalone N64 Routing**: If an in-app core download is not preferred, route N64 to standalone Mupen64Plus FZ (`org.mupen64plusae.v3.fzurita`) in `es_settings.xml`.
+
 
 
 
