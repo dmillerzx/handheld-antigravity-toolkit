@@ -151,7 +151,12 @@ ControllerView = None
         aspect = "16:9" if self.force_widescreen else "Auto 4:3/3:2"
         ws_patches = "true" if self.force_widescreen else "false"
         print(f"\n[*] Configuring NetherSX2 (PS2 - {scale}x Vulkan, SPU2 Interpolation, AspectRatio={aspect}, Crop=1, CropMode=Overscan & Widescreen={ws_patches})...")
-        content = f"""[General]
+        content = f"""[UI]
+SettingsVersion = 1
+OsdShowFPS = true
+OsdShowSpeed = true
+
+[General]
 Bios = scph70012.bin
 BiosDirectory = {self.bios_dir}
 WarnAboutUnsafeSettings = false
@@ -190,8 +195,6 @@ ControllerView = None
         widescreen_games = [
             # Gran Turismo 4 / Spec II
             "646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini",
-            # OutRun 2006: Coast 2 Coast (NTSC-U & PAL)
-            "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
             # Burnout 3: Takedown (NTSC-U & PAL)
             "C74D7614.ini", "SLUS-21050.ini", "SLUS-21050_C74D7614.ini", "SLES-52585.ini",
             # Black (NTSC-U & PAL)
@@ -210,6 +213,36 @@ EnableCheats = true
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
         for g_id in widescreen_games:
             self.push_file(gt4_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{g_id}")
+
+        # OutRun 2006: Coast 2 Coast (NTSC-U & PAL) - 60 FPS Speedhack + GS profile
+        outrun_games = [
+            "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
+        ]
+        outrun_ini_content = f"""[EmuCore/Speedhacks]
+EECycleRate = -1
+EECycleSkip = 0
+vuThread = true
+vu1Instant = true
+WaitLoop = true
+IntcStat = true
+vuFlagHack = true
+fastCDVD = true
+
+[EmuCore/GS]
+AspectRatio = {aspect}
+Crop = 1
+CropMode = Overscan
+HardwareDownloadMode = 1
+UpscaleMultiplier = {scale}
+accurate_blending_unit = 0
+SkipDuplicateFrames = true
+EnableWideScreenPatches = {ws_patches}
+EnableCheats = true
+"""
+        outrun_cfg = self.temp_dir / "outrun_nethersx2_gamesettings.ini"
+        outrun_cfg.write_text(outrun_ini_content, encoding="utf-8")
+        for g_id in outrun_games:
+            self.push_file(outrun_cfg, f"/sdcard/Android/data/xyz.aethersx2.android/files/gamesettings/{g_id}")
 
         # Deploy Retroid Pocket 5 calibrated input profile
         input_prof = WORKSPACE_ROOT / "configs" / "nethersx2_rp5_inputprofile.ini"
@@ -231,6 +264,8 @@ EnableCheats = true
         # 1. Generate PCSX2-Android.ini
         pcsx2_ini_content = f"""[UI]
 SettingsVersion = 1
+OsdShowFPS = true
+OsdShowSpeed = true
 
 [Folders]
 Bios = {self.bios_dir}
@@ -316,8 +351,6 @@ Opacity = 0
         widescreen_games = [
             # Gran Turismo 4 / Spec II
             "646B2E29.ini", "SCUS-97436_646B2E29.ini", "SLUS-97436.ini", "SCUS-97436.ini", "SCUS-97328.ini", "SCES-51719.ini", "SCPS-17001.ini",
-            # OutRun 2006: Coast 2 Coast (NTSC-U & PAL)
-            "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
             # Burnout 3: Takedown (NTSC-U & PAL)
             "C74D7614.ini", "SLUS-21050.ini", "SLUS-21050_C74D7614.ini", "SLES-52585.ini",
             # Black (NTSC-U & PAL)
@@ -336,6 +369,36 @@ EnableCheats = true
         gt4_cfg.write_text(gt4_ini_content, encoding="utf-8")
         for g_id in widescreen_games:
             self.push_file(gt4_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{g_id}")
+
+        # OutRun 2006: Coast 2 Coast (NTSC-U & PAL) - 60 FPS Speedhack + GS profile
+        outrun_games = [
+            "38C16493.ini", "SLUS-21274.ini", "SLUS-21274_38C16493.ini", "F3FD313E.ini", "SLES-53998.ini", "SLES-53998_F3FD313E.ini",
+        ]
+        outrun_ini_content = f"""[EmuCore/Speedhacks]
+EECycleRate = -1
+EECycleSkip = 0
+vuThread = true
+vu1Instant = true
+WaitLoop = true
+IntcStat = true
+vuFlagHack = true
+fastCDVD = true
+
+[EmuCore/GS]
+AspectRatio = {aspect}
+Crop = 1
+CropMode = Overscan
+HardwareDownloadMode = 1
+UpscaleMultiplier = {scale}
+accurate_blending_unit = 0
+SkipDuplicateFrames = true
+EnableWideScreenPatches = {ws_patches}
+EnableCheats = true
+"""
+        outrun_cfg = self.temp_dir / "outrun_armsx2_gamesettings.ini"
+        outrun_cfg.write_text(outrun_ini_content, encoding="utf-8")
+        for g_id in outrun_games:
+            self.push_file(outrun_cfg, f"/sdcard/Android/data/com.armsx2/files/gamesettings/{g_id}")
 
         # 5. Stage BIOS into ARM SX2 internal directory
         self.shell("mkdir -p /sdcard/Android/data/com.armsx2/files/bios", check=False)
