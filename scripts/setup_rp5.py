@@ -484,6 +484,13 @@ class RP5Provisioner:
                 if cfg_file.exists():
                     self.run_cmd("push", str(cfg_file), f"/sdcard/RSDK/v5/{cfg_name}")
                     self.run_cmd("push", str(cfg_file), f"/sdcard/Android/data/com.decomp.rsdkv5/files/{cfg_name}")
+
+        dkrr_ini = WORKSPACE_ROOT / "configs" / "ports" / "dkrr" / "dkr-port-settings.ini"
+        if dkrr_ini.exists():
+            print("    -> Staging DKR-R controller & graphics configuration (dkr-port-settings.ini)...")
+            self.shell("mkdir -p /sdcard/Android/data/io.github.thatguymcd.dkrr.preview/files/config", check=False)
+            self.run_cmd("push", str(dkrr_ini), "/sdcard/Android/data/io.github.thatguymcd.dkrr.preview/files/config/dkr-port-settings.ini")
+            self.shell("run-as io.github.thatguymcd.dkrr.preview cp /sdcard/Android/data/io.github.thatguymcd.dkrr.preview/files/config/dkr-port-settings.ini files/config/dkr-port-settings.ini", check=False)
         print("    -> Native port configurations staging complete.")
 
     def stage_retroarch_engine(self) -> None:
