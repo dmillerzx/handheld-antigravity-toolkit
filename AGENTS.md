@@ -228,6 +228,12 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
   2. **Core Acquisition**: Executable `.so` cores **must** be downloaded directly inside RetroArch via **Online Updater ➔ Core Downloader**. Provisioning scripts and agents must not assume pushing `.so` binaries to external storage provides a functional core.
   3. **Standalone N64 Routing**: If an in-app core download is not preferred, route N64 to standalone Mupen64Plus FZ (`org.mupen64plusae.v3.fzurita`) in `es_settings.xml`.
 
+### P. Downstream Handheld Fork Governance & Android Target Boundary Law
+1. **Continuous Upstream Synchronization**: When maintaining an orphaned or downstream handheld fork (e.g., DKR-R Android on `dmillerzx/DKR-R`), continuously track and rebase against `upstream/main` and upstream release tags. Downstream branches must never lag behind upstream bugfixes and engine enhancements (`ahead_by: N, behind_by: 0`).
+2. **Community Standalone Release Obligation**: Handheld console users cannot compile C++ Android NDK code on-device. Whenever an upstream sync or downstream platform fix completes, package standalone signed APKs (`Package-Android-Preview.ps1`) and publish them to GitHub Releases with verified SHA-256 checksums and controller mapping instructions.
+3. **Android CMake Library Target Boundary**: Never invoke default build targets in hybrid C++/Android projects. Default targets compile desktop host tests (e.g. `DKRMipmapLoadingTests`), which fail due to native window type mismatches. Always build the specific Android shared library target (e.g. `DKRPortGame` / `libDKR-R.so`).
+4. **CI Host Test Flake Isolation**: Host test failures on unrelated platforms (e.g. WebRTC socket timing on GitHub Actions macOS VMs) must be recognized as platform-specific CI flakes and isolated from blocking Android release delivery.
+
 ---
 
 ## 5. Operational Best Practices for Agents

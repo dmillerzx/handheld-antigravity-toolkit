@@ -288,4 +288,63 @@ Mirror master icon PNG to ES-DE frontend media paths:
    - Disable heavy desktop post-processing bloom/shadow passes in mobile builds.
    - Simplify descriptor set churn for TBDR architecture.
 
+---
+
+## 8. Downstream Handheld Fork Governance & Community Release Automation
+
+When an upstream maintainer drops platform support (e.g. ThatGuyMcd on DKR-R Android):
+1. **Maintain an `upstream` Remote**:
+   - Point to the official upstream repository:
+     ```powershell
+     git remote add upstream <upstream_url>
+     git fetch upstream --tags
+     ```
+2. **Continuous Upstream Synchronization**:
+   - Routinely rebase or merge upstream releases/commits onto the downstream platform branch:
+     ```powershell
+     git rebase upstream/main # or upstream tag like Version1.0.11
+     ```
+   - Always verify `ahead_by: N, behind_by: 0` before cutting community releases.
+3. **Android CMake Target Boundary**:
+   - Never execute default `ninja -C build/android-arm64`, which attempts to compile desktop host tests (such as `DKRMipmapLoadingTests` which fails because `RenderWindow` is `ANativeWindow*` rather than `SDL_Window*`).
+   - Explicitly target the Android shared library:
+     ```powershell
+     ninja -C build/android-arm64 DKRPortGame
+     ```
+     This produces `libDKR-R.so` with zero desktop test overhead.
+4. **Align CMake Version Cache with Packaging**:
+   - Pass `-DDKR_RELEASE_VERSION=<version>` during CMake configuration to match the version requested by packaging scripts (`Package-Android-Preview.ps1`).
+5. **Automated GitHub Community Release**:
+   - Handheld console users lack NDK/CMake buildchains. Build standalone APKs via packaging scripts and publish immediately to GitHub Releases:
+     ```powershell
+     gh release create <tag> <apk_path> --title "<title>" --notes "<notes>"
+     ```
+   - Always include SHA-256 checksums and controller mapping instructions in the release body.
+
+---
+
+## 9. N64Recomp Input Engine Mutex Law & Handheld Deadzone Tuning
+
+### A. Single-Action Binding Exclusivity (`runtime_input.cpp`)
+In N64Recomp engine input systems (`set_controller_binding`), binding an existing controller source ID to an action forcibly unbinds it from any previous action. Handheld layouts must allocate physical buttons mutually exclusively:
+- **Accelerate / Gas**: RT (`1011`) [Primary] / A (`0`) [Alternate]
+- **Item Fire**: LT (`1009`)
+- **Drift**: RB (`10`)
+- **Horn / Map Display**: LB (`9`)
+- **Brake / Reverse**: X (`2`) and B (`1`)
+- **Look Back**: R3 Click (`8`) and Y (`3`)
+
+### B. Hall-Effect Stick Deadzone & Trigger Calibration
+Handheld consoles like the Retroid Pocket 5 feature precision Hall-effect sticks and analog triggers. The default desktop recomp settings introduce massive deadband slop:
+- **`stick_deadzone`**: Reduce from default `23.95` down to `6.0` (eliminates deadband slop without stick drift).
+- **`trigger_threshold`**: Reduce down to `0.20` for hair-trigger response.
+- **Config Deployment**: Deploy profile deterministically to `/sdcard/Android/data/<package>/files/config/<port>-settings.ini`.
+
+### C. Retroid Pocket 5 Snapdragon 865 Real-World Profiling Receipt
+- **Display Refresh**: Locked 60.0 FPS native 1080p (`1920x1080`).
+- **GPU Frametime**: 4.65 ms (~28% of 16.66 ms budget on Adreno 650).
+- **CPU Frametime**: 5.84 ms (~35% of Kryo 585 Prime core).
+- **Interpolation**: RT64 motion-interpolates 30 Hz N64 simulation ticks to 60 Hz display refresh with zero judder.
+
+
 
