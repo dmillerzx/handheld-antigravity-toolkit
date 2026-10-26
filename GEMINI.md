@@ -163,7 +163,7 @@ Whenever finishing automation tasks, concluding a conversation turn, or awaiting
 ## 11. Autonomous High-Confidence Proceed & Review Presentation Protocol
 
 When preparing proposals, architectural designs, or improvements (such as `/learn` proposals or system refactors):
-1. **High-Confidence Autonomous Execution**: When confidence in a recommendation or improvement is very high (backed by deterministic testing, schema verification, and live hardware logs), proceed with applying the changes autonomously without halting to wait for user confirmation.
+1. **High-Confidence Autonomous Execution**: When confidence in a recommendation, refinement, or `/learn` proposal is very high (backed by deterministic testing, schema verification, and live hardware logs), proceed with applying the changes autonomously without halting to wait for user confirmation. For all `/learn` invocations with high conviction, implement the changes automatically and only ask for confirmation if genuinely unsure or facing ambiguous tradeoffs.
 2. **Always generate a self-contained HTML review page**: Build a modern, styled `.html` file with clean typography, diff highlighting, and clear sectioning (e.g. `docs/review/<topic>.html`) to serve as an audit trail.
 3. **Provide clickable `file://` link**: Always link to the `.html` file using standard markdown `file:///` format for immediate user visibility.
 4. **Enforce Anti-Hallucination Guardrails**: Adhere strictly to the 5 Laws of Schema Verification (never invent INI keys, inspect actual emulator source or device mappings, clean direct tokens, verify live on hardware) before committing changes.
