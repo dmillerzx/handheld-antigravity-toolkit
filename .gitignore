@@ -57,3 +57,4 @@ staging/
 *.rsdk
 _n64_temp/
 DKR-R/
+dkrr_logs/
