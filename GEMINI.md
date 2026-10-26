@@ -187,9 +187,13 @@ To avoid premature throttling under the 5-hour rolling rate limits and preserve 
 1. **Reasoning Effort Invariant (`Medium` Baseline)**:
    - Always default to `Medium` (or `Low`) reasoning effort for procedural execution, ADB tasks, script authoring, and INI configuration.
    - `High` reasoning effort spends 2,500–5,000 hidden thinking tokens on every single tool step. It is prohibited for routine execution and permitted only during initial decompilation analysis or on explicit user request.
-2. **Proactive Context Compaction (`/compact`)**:
-   - Antigravity transmits the cumulative transcript on every interaction. To prevent multi-megabyte context bloat and quadratic token burn, recommend the `/compact` slash command whenever a task surpasses ~30 turns.
-3. **Multi-Model Quota Balancing**:
+2. **Automated Turn-25 Compaction Alarm (`/compact`)**:
+   - Antigravity transmits the cumulative transcript on every interaction. To prevent multi-megabyte context bloat and quadratic token burn, the agent tracks conversation length and proactively prepends a high-visibility alert banner (`> [!IMPORTANT] Context Compaction Gate (Turn 25 Reached)`) advising the user to type `/compact` before sending their next prompt.
+3. **Strict Compound One-Flow Execution**:
+   - Group related inspections, mutations, and verification into a single compound execution pass per turn (or unified PowerShell scratch scripts). Strictly eliminate serialized `thought -> tool -> thought -> tool` exploratory micro-turns.
+4. **Output Silencing & Lean Receipts**:
+   - Never dump voluminous raw terminal/ADB outputs (e.g. `dumpsys`, full `logcat`, recursive directory trees, long test logs) directly into stdout, which permanently bloats `transcript.jsonl`. Pipe or filter outputs (`Select-Object -First 20`, `grep`), or redirect full logs to scratch files (`scratch/<name>.log`), reporting only concise exit codes and summaries.
+5. **Multi-Model Quota Balancing**:
    - Antigravity isolates quotas into three distinct pools:
      - **Gemini Models** (`gemini-3.8-flash`, `gemini-pro`)
      - **Claude and GPT Models** (`claude-sonnet-5-5`, `claude-opus-5-5`, `gpt-oss-120b`)
