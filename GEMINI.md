@@ -170,13 +170,13 @@ When preparing proposals, architectural designs, or improvements (such as `/lear
 
 ---
 
-## 12. GitHub Issue & Bug Report Automation
+## 12. GitHub Issue & Bug Report Governance (Human-in-the-Loop & Anti-AI Spam)
 
-The host environment has an authenticated GitHub CLI (`gh` account `dmillerzx` with full `repo` scopes). Going forward, open bug reports, feature requests, and community upstream issues directly via `gh issue create --repo <owner/repo> --title "<title>" --body-file "<file>"` rather than prompting the user to submit them manually.
-
-### Bug Report Staging & Asset Invariants
-1. **Permanent Screenshot Permalinks**: Stage bug screenshots into `docs/assets/screenshots/<name>.png`. Ensure `.gitignore` anchors `/assets/` at root so `docs/assets/` is tracked. Commit and push to `origin main` before submitting the issue so images render via permanent raw GitHub URLs.
-2. **Cross-Link Synchronization**: Immediately document the returned upstream issue URL in `WORKQUEUE.md` and `CLAUDE.md`, and update local tracking issues (e.g. `dmillerzx/handheld-antigravity-toolkit#1`) for cross-agent awareness.
+- **No Autonomous Upstream Submissions**: NEVER autonomously submit issues, bug reports, or feature requests to third-party upstream repositories (e.g., `rt64/rt64`, `HarbourMasters/*`, etc.) via `gh issue create`. Autonomous creation is permitted ONLY on the user's personal forks and tracking repositories (`dmillerzx/*`).
+- **Upstream Submission Approval**: All bug reports or communications intended for external upstream maintainers must be drafted locally (e.g. in `docs/community_reports/`), presented to the user, and staged to clipboard (`.\scripts\stage_clipboard.ps1`) for explicit user review and manual posting.
+- **No AI-Generated Report Templates**: When drafting bug reports for external maintainers, NEVER use standard LLM templates (e.g. "Root Cause Analysis", "Suggested Fixes for Developers", bold didactic bullet lists). Keep reports concise, human, and focused purely on concrete reproduction steps, raw stack traces, and targeted context. Always verify whether upstream actually supports the target platform before raising platform-specific issues.
+- **Permanent Screenshot Permalinks**: Stage bug screenshots into `docs/assets/screenshots/<name>.png`. Ensure `.gitignore` anchors `/assets/` at root so `docs/assets/` is tracked. Commit and push to `origin main` before submitting the issue so images render via permanent raw GitHub URLs.
+- **Cross-Link Synchronization**: Document issue URLs in `WORKQUEUE.md` and `CLAUDE.md`, and update local tracking issues (e.g. `dmillerzx/handheld-antigravity-toolkit#1`) for cross-agent awareness.
 
 ---
 

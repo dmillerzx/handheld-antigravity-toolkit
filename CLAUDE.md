@@ -127,7 +127,7 @@ Consult [WORKQUEUE.md](WORKQUEUE.md) for the active 30-item task tracking table.
 - **Active Community Upstream Tracking**:
   - [HarbourMasters/PaperBoat#274](https://github.com/HarbourMasters/PaperBoat/issues/274): Android GLES 2D paletted font & billboard corruption.
   - [ThatGuyMcd/DKR-R#70](https://github.com/ThatGuyMcd/DKR-R/issues/70): ThatGuyMcd stepped down from Android. Forked community repo to https://github.com/dmillerzx/DKR-R.
-  - [RT64/RT64#282](https://github.com/RT64/RT64/issues/282): Adreno 650 Vulkan shader pipeline compiler crash (Banjo Recompiled / DKR-R).
+  - [RT64/RT64#282](https://github.com/RT64/RT64/issues/282): [CLOSED - Upstream Unsupported] Upstream confirmed RT64 does not support Android; driver bundling/hooks (Turnip/AdrenoTools) and pipeline guards belong strictly in downstream Android host apps (DKR-R / Banjo Recomp). Never submit automated/AI reports to upstream.
   - [droiddeck/droiddeck#1034](https://github.com/droiddeck/droiddeck/pull/1034): 32-bit x86 Proton DX9 translation telemetry (OutRun 2006).
 
 ---
