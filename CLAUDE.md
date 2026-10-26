@@ -73,6 +73,9 @@ The following issues and components have been completely resolved and verified v
 10. **Public Toolkit Release (v1.0.0)**:
     - Formalized MIT License in root LICENSE file.
     - Streamlined README.md with a 3-step 60-second quick-start provisioning guide.
+11. **Token Efficiency, Reasoning Effort & Compaction Protocols**:
+    - Evaluated third-party accelerator `Helix-for-Antigravity-2.0` and identified root causes of token burn in Antigravity: quadratic transcript accumulation ($O(N^2)$), verbose stdout dumps into `transcript.jsonl`, and reasoning effort tokens.
+    - Codified strict compound one-flow execution, command output silencing (piping/redirecting large outputs to scratch logs), automated turn-25 compaction gating, and the proactive reasoning & model escalation gate across `AGENTS.md` and `GEMINI.md`.
 
 ---
 
