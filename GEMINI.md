@@ -258,6 +258,7 @@ When a title exists across multiple platforms (e.g. PS2, GameCube, PSP, Native P
 8. **Downstream Fork Branch Protection Prohibition**: Never configure GitHub branch protection rules or require mandatory passing status checks on downstream maintenance forks (`dmillerzx/*`). Upstream test flakes on unrelated OS targets (e.g., macOS VM WebRTC socket timeouts) block handheld Android PR merges, and branch protection obstructs zero-friction fast-forward rebasing against upstream release tags.
 9. **Pattern-Guard Baseline Indexing & Transition-Layer PR Invariant**: In repositories enforcing architectural pattern guards (e.g., `scripts/pattern_guard.py` rule `PG013`), newly staged dependency or platform patches must be sorted alphabetically into `architecture/pattern-guard-baseline.txt`. Accompanying pull requests must be explicitly tagged with the `transition-layer` label (`gh pr edit <PR> --add-label transition-layer`) so CI diff checks accept baseline expansion.
 10. **Local Python Linter Preflight (`ruff`)**: Before pushing commits modifying Python contract tests, build tools, or packaging scripts in repos enforcing automated linting, always execute `ruff check` and `ruff format --check` locally to eliminate CI turnaround cycles.
+11. **Homepage Release Prominence**: Standalone community APK releases must be promoted to the official latest release (`--latest`, `--prerelease=false`) so the download card and badge render prominently on the repository homepage sidebar rather than being collapsed under tags ("Create a new release").
 
 ---
 
