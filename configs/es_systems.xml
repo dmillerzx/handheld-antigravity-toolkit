@@ -102,7 +102,7 @@
         <path>%ROMPATH%/ports</path>
         <extension>.app .APP .game .GAME</extension>
         <command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>
-        <command label="RetroArch (CannonBall)">%EMULATOR_RETROARCH% %ACTION%=android.intent.action.MAIN -c com.retroarch.aarch64/com.retroarch.browser.retroactivity.RetroActivityFuture -e ROM %ROM% -e LIBRETRO /storage/<SD_ID>/RetroArch/cores/cannonball_libretro_android.so</command>
+        <command label="RetroArch (CannonBall)">%EMULATOR_RETROARCH% %EXTRA_CONFIGFILE%=%EXTERNALDATA%/Android/data/%ANDROIDPACKAGE%/files/retroarch.cfg %EXTRA_LIBRETRO%=%INTERNALDATA%/%ANDROIDPACKAGE%/cores/cannonball_libretro_android.so %EXTRA_ROM%=%ROM%</command>
         <platform>ports</platform>
         <theme>ports</theme>
     </system>
@@ -113,7 +113,7 @@
         <extension>.iso .ISO .xiso .XISO</extension>
         <platform>xbox</platform>
         <theme>xbox</theme>
-        <command label="hakuX (Standalone)">%ACTION%=android.intent.action.VIEW -n com.rfandango.haku_x/.LauncherActivity -d %ROM%</command>
-        <command label="hakuX SAF (Standalone)">%ACTION%=android.intent.action.VIEW -n com.rfandango.haku_x/.LauncherActivity -d %ROMSAF%</command>
+        <command label="hakuX (Standalone)">%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%</command>
+        <command label="hakuX Direct (Standalone)">%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROM%</command>
     </system>
 </systemList>

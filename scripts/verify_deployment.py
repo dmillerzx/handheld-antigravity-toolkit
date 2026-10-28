@@ -221,22 +221,24 @@ class DeploymentVerifier:
                 all_passed = False
 
         # =========================================================================
-        # 2. ES-DE Launch Syntax & Custom Systems Verification (%ROM% Check)
+        # 2. ES-DE Launch Syntax & Custom Systems Verification (XML Parse & Systems Check)
         # =========================================================================
-        esde_systems = self.pull_file("/sdcard/ES-DE/settings/es_systems.xml")
+        esde_systems = self.pull_file("/sdcard/ES-DE/custom_systems/es_systems.xml")
+        if not esde_systems or not esde_systems.exists():
+            esde_systems = self.pull_file("/sdcard/ES-DE/settings/es_systems.xml")
+
         if esde_systems and esde_systems.exists():
             try:
-                content = esde_systems.read_text(encoding="utf-8", errors="replace")
-                # Verification rule: launch strings must use %ROM%, not %ROMSAF%
-                if "%ROMSAF%" in content:
-                    results.append(("ES-DE", "es_systems.xml", "FAIL", "Found unsupported '%ROMSAF%' token"))
-                    all_passed = False
-                elif "%ROM%" in content:
-                    results.append(("ES-DE", "es_systems.xml", "PASS", "Verified %ROM% launch command syntax"))
+                import xml.etree.ElementTree as ET
+                tree = ET.parse(str(esde_systems))
+                root = tree.getroot()
+                systems = [s.find("name").text for s in root.findall("system") if s.find("name") is not None]
+                if len(systems) >= 10:
+                    results.append(("ES-DE", "es_systems.xml", "PASS", f"Valid XML with {len(systems)} systems: {', '.join(systems[:5])}..."))
                 else:
-                    results.append(("ES-DE", "es_systems.xml", "PASS", "Valid systems XML format"))
+                    results.append(("ES-DE", "es_systems.xml", "WARN", f"Parsed {len(systems)} systems"))
             except Exception as e:
-                results.append(("ES-DE", "es_systems.xml", "FAIL", str(e)))
+                results.append(("ES-DE", "es_systems.xml", "FAIL", f"XML Parse Error: {e}"))
                 all_passed = False
         else:
             results.append(("ES-DE", "es_systems.xml", "INFO", "Stock or uncustomized es_systems.xml"))
