@@ -173,6 +173,36 @@
       ],
       "allowIdChange": false,
       "overrideSource": "GitHub"
+    },
+    {
+      "id": "com.rfandango.haku_x",
+      "url": "https://github.com/rfandango/hakuX",
+      "author": "rfandango",
+      "name": "hakuX",
+      "installedVersion": "v1.2.0",
+      "latestVersion": "v1.2.0",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"hakuX.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"hakuX\",\"appAuthor\":\"rfandango\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Microsoft Xbox Emulator (hakuX)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "categories": [
+        "Emulator"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub"
+    },
+    {
+      "id": "io.github.thatguymcd.dkrr.preview",
+      "url": "https://github.com/dmillerzx/DKR-R",
+      "author": "dmillerzx",
+      "name": "Diddy Kong Racing Recompiled (DKR-R)",
+      "installedVersion": "1.0.12",
+      "latestVersion": "1.0.12",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"DKR-R-.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"DKR-R\",\"appAuthor\":\"dmillerzx\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Diddy Kong Racing Recompiled (Android Handheld Port)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub"
     }
   ]
 }

@@ -106,4 +106,14 @@
         <platform>ports</platform>
         <theme>ports</theme>
     </system>
+    <system>
+        <name>xbox</name>
+        <fullname>Microsoft Xbox</fullname>
+        <path>%ROMPATH%/xbox</path>
+        <extension>.iso .ISO .xiso .XISO</extension>
+        <platform>xbox</platform>
+        <theme>xbox</theme>
+        <command label="hakuX (Standalone)">%ACTION%=android.intent.action.VIEW -n com.rfandango.haku_x/.LauncherActivity -d %ROM%</command>
+        <command label="hakuX SAF (Standalone)">%ACTION%=android.intent.action.VIEW -n com.rfandango.haku_x/.LauncherActivity -d %ROMSAF%</command>
+    </system>
 </systemList>
