@@ -29,6 +29,7 @@ Internal storage   /sdcard/
 MicroSD            /storage/<SD_ID>/
 ├── bios/                         # BIOS files (canonical, shared by all emulators)
 ├── ROMs/                         # All ROMs (one subfolder per system, managed by ES-DE)
+│   └── xbox/                     # Original Xbox trimmed XISO images (*.iso)
 ├── ES-DE/                        # ES-DE frontend data (gamelists, media, settings)
 ├── RetroArch/                    # RetroArch configs, cores, joypad autoconfig, shaders
 ├── Saves_Backup/                 # Canonical save, savestate & memory card backup mirrors
@@ -238,6 +239,20 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 7. **Local Python Linter Preflight (`ruff`)**: Before pushing commits modifying Python contract tests, build tools, or packaging scripts in repos enforcing automated linting, always execute `ruff check` and `ruff format --check` locally to eliminate CI turnaround cycles.
 8. **Homepage Release Prominence**: Standalone community APK releases must be promoted to the official latest release (`--latest`, `--prerelease=false`) so the download card and badge render prominently on the repository homepage sidebar rather than being collapsed under tags ("Create a new release").
 
+### Q. Original Xbox Emulation (hakuX) & XDVDFS Sector Standards
+1. **Package & Distribution**: `com.rfandango.haku_x` (tracked via Obtainium from `https://github.com/haku-x/hakux-emu` releases).
+2. **Canonical ROM Storage**: `/storage/<SD_ID>/ROMs/xbox/`.
+3. **ROM Image Standard (Trimmed XISO)**:
+   - Original Xbox optical discs use a proprietary Cross-Title Virtual Disc File System (XDVDFS) layout with a standard DVD video partition in the lead-in and game data at sector 305,600.
+   - Raw Redump DVD-9 images (7.05 GiB) waste up to 90% of their volume on zero-byte sector padding.
+   - Extracting into loose folder structures breaks hakuX, which expects sector-accurate virtual disc geometry.
+   - All Xbox titles must be packed into trimmed XISOs using `extract-xiso -c` (e.g. `scripts/deploy_xbox_roms.py`), yielding a 78.1% storage reduction while preserving exact XDVDFS sector offsets.
+4. **Streaming Decompression Economics (XISO vs. CSO/ZSO)**:
+   - While hakuX supports block compression (`.cso` / `.zso` via maxcso), community standards (Retro Game Corps / Russ) prioritize uncompressed trimmed `.iso`.
+   - On the Snapdragon 865, streaming uncompressed XDVDFS images incurs 0% CPU decompression overhead via direct storage DMA, dedicating maximum CPU throughput to x86-to-ARM64 JIT dynamic translation and eliminating stutter during high-bandwidth asset streaming.
+5. **GPU Driver**: Mesa Turnip Adreno 650 GPU driver (`turnip_v24.3.0_R9v2.zip`).
+
+
 ---
 
 ## 5. Operational Best Practices for Agents
@@ -248,25 +263,26 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 4. **Multiple Devices**: Multiple devices may be attached. Always query `adb devices` at runtime and pass `-s <serial>` explicitly.
 5. **Markdown Clipboard Staging**: When generating markdown content for the user to post externally (GitHub PRs, issues, Discord), stage the raw text directly into the user's clipboard using PowerShell `.\scripts\stage_clipboard.ps1 -FilePath <path>` or `Get-Content <file> -Raw | Set-Clipboard` to prevent leading-space formatting corruption.
 6. **Strict Personal Privacy & PII Protection Invariant**: NEVER leak, publish, commit, or stage the user's real name, email, physical address, or any personally identifiable information (PII) into README files, commit messages, licenses, PRs, issues, or documentation. Strictly use the public GitHub handle (`dmillerzx`) or generic terms ("community contributor", "maintainer").
-7. **OLED Display Sleep Invariant**: Whenever tasks conclude or when waiting on user feedback, power down the physical device display (`adb shell input keyevent 26`) and verify with `adb shell dumpsys power` (`mHoldingDisplaySuspendBlocker=false`) to eliminate AMOLED burn-in risk.
-8. **Autonomous High-Confidence Proceed & Review Presentation Protocol**:
+7. **Dynamic Hardware Identifier & Anti-Leak Invariant**: NEVER hardcode physical device serial numbers (e.g. `<SERIAL>`) or MicroSD filesystem UUIDs (e.g. `<SD_ID>`) into automation scripts, documentation, or commit history. Local `.git/hooks/pre-commit` enforces strict pattern rejection. Scripts must dynamically discover devices via `adb devices` (`detect_device()`) and MicroSD mount paths via `adb shell ls /storage/` (`detect_sd_id()`), providing `--serial` and `--sd-id` CLI overrides.
+8. **OLED Display Sleep Invariant**: Whenever tasks conclude or when waiting on user feedback, power down the physical device display (`adb shell input keyevent 26`) and verify with `adb shell dumpsys power` (`mHoldingDisplaySuspendBlocker=false`) to eliminate AMOLED burn-in risk.
+9. **Autonomous High-Confidence Proceed & Review Presentation Protocol**:
    - **High-Confidence Autonomous Execution**: When confidence in a recommendation, refinement, or `/learn` proposal is very high (validated against deterministic schema checks, live ADB tests, or verified source mappings), proceed with applying the improvement autonomously without halting to wait for user confirmation. For all `/learn` invocations with high conviction, implement the changes automatically and only ask for confirmation if genuinely unsure or facing ambiguous tradeoffs.
    - **Review Page Staging**: Continue generating the self-contained `.html` review page with clean styling, diff blocks, and visual hierarchy (e.g. `docs/review/<topic>.html`), and provide a clickable `file://` link for immediate visibility and audit trail.
    - **Anti-Hallucination Guardrails**: Always enforce the 5 Laws of Schema Verification (never guess INI keys/sections, use clean direct tokens under active device blocks, flatten extension syntax, and verify on live hardware logs/screenshots) before applying autonomous updates.
-9. **GitHub Issue & Bug Report Governance (Human-in-the-Loop & Anti-AI Spam)**:
+10. **GitHub Issue & Bug Report Governance (Human-in-the-Loop & Anti-AI Spam)**:
    - **No Autonomous Upstream Submissions**: NEVER autonomously submit issues, bug reports, or feature requests to third-party upstream repositories (e.g., `rt64/rt64`, `HarbourMasters/*`, etc.) via `gh issue create`. Autonomous creation is permitted ONLY on the user's personal forks and tracking repositories (`dmillerzx/*`).
    - **Upstream Submission Approval**: All reports or communications intended for external upstream maintainers must be drafted locally (e.g. in `docs/community_reports/`), presented to the user, and staged to clipboard (`.\scripts\stage_clipboard.ps1`) for explicit user review and manual posting.
    - **No AI-Generated Report Templates**: When drafting bug reports for external maintainers, NEVER use standard LLM templates (e.g. "Root Cause Analysis", "Suggested Fixes for Developers", bold didactic bullet lists). Keep reports concise, human, and focused purely on concrete reproduction steps, raw stack traces, and targeted context. Always verify whether upstream actually supports the target platform before raising platform-specific issues.
    - **Visual Asset Staging**: Never use local file paths or ephemeral URLs in bug reports. Stage screenshots into `docs/assets/screenshots/<name>.png`. Ensure `.gitignore` anchors `/assets/` at root so `docs/assets/` is tracked. Commit and push images to `origin main` *before* opening the issue, referencing permanent raw URLs (`https://raw.githubusercontent.com/<owner>/<repo>/main/docs/assets/screenshots/<name>.png`).
    - **Cross-Link Synchronization**: After an upstream issue is created, record the URL in `WORKQUEUE.md` and `CLAUDE.md`, and track it locally on fork issues to keep all agents and sessions aligned.
-9. **Token Efficiency, Reasoning Effort & Quota Invariants**:
+11. **Token Efficiency, Reasoning Effort & Quota Invariants**:
    - **Default to Medium Reasoning**: Routine automation, ADB execution, file patching, ROM staging, and documentation MUST run on `Medium` (or `Low`) reasoning effort. `High` reasoning is strictly reserved for deep binary reverse-engineering, elusive race-condition debugging, or explicit user instruction.
    - **Proactive Reasoning & Model Escalation Gate**: If a requested task (e.g., deep C++ NDK decompilation, complex multi-file architectural refactoring, elusive race conditions, or low-level SPIR-V/Vulkan shader debugging) would benefit significantly from `High` reasoning effort or a more capable model (e.g. `Claude 3.5 Sonnet` or `Gemini Pro`), the agent MUST pause immediately, explain the technical justification, and prompt the user to make the switch in the chat UI before proceeding with execution.
    - **Automated Turn-25 Compaction Alarm**: When a session reaches 25 turns, the agent must proactively prepend a high-visibility alert banner (`> [!IMPORTANT] Context Compaction Gate (Turn 25 Reached)`) advising the user to type `/compact` before sending their next prompt to reset quadratic transcript accumulation.
    - **Strict Compound One-Flow Execution**: Group related inspections, mutations, and verification into a single compound execution pass per turn (or unified PowerShell scratch scripts). Strictly eliminate serialized `thought -> tool -> thought -> tool` exploratory micro-turns.
    - **Output Silencing & Lean Receipts**: Never dump voluminous raw terminal/ADB outputs (e.g. `dumpsys`, full `logcat`, recursive directory trees, long test logs) directly into stdout, which permanently bloats `transcript.jsonl`. Pipe or filter outputs (`Select-Object -First 20`, `grep`), or redirect full logs to scratch files (`scratch/<name>.log`), reporting only concise exit codes and summaries.
    - **Multi-Pool Awareness**: Antigravity maintains independent quota buckets for Gemini, Claude/GPT, and Argon. When one bucket nears its 5-hour burst limiter, suggest balancing work across the other 100% available pools.
-10. **Windows 11 Workstation Tuning & Shell Execution Invariants**:
+12. **Windows 11 Workstation Tuning & Shell Execution Invariants**:
    - **Dell Precision Service Boundary Law**: Always preserve `DPMService` (Dell Peripheral Manager / `DDPM.Subagent`) to protect external monitor input switching and USB-C hub peripheral controls. Set `DellTechHub` and `DellClientManagementService` to `Manual` (or `Disabled`) to eliminate 7 background telemetry subagents and prevent ~1.3 GB of idle memory bloat.
    - **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
    - **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).

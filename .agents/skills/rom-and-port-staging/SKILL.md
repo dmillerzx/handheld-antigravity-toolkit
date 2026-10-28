@@ -54,6 +54,7 @@ def repack_7z_to_clean_n64_zip(in_7z: str, out_zip: str, temp_dir: str = "_temp"
 ### C. Disc-Based Systems
 - **PS1, PS2, PSP, Dreamcast, Sega CD, Saturn**: Compressed `.chd` (CD-ROM/DVD MAME chdman format).
 - **GameCube, Wii**: Compressed `.rvz` (Dolphin RVZ format with zstd and 128KB block size).
+- **Original Xbox (hakuX)**: Sector-aligned XDVDFS `.iso` generated via `extract-xiso -c <game_folder> <target.iso>`. (See Section 10).
 
 ### D. Sony PlayStation Portable (PSP) CHD Staging & 60 FPS Optimization
 
@@ -345,6 +346,35 @@ Handheld consoles like the Retroid Pocket 5 feature precision Hall-effect sticks
 - **GPU Frametime**: 4.65 ms (~28% of 16.66 ms budget on Adreno 650).
 - **CPU Frametime**: 5.84 ms (~35% of Kryo 585 Prime core).
 - **Interpolation**: RT64 motion-interpolates 30 Hz N64 simulation ticks to 60 Hz display refresh with zero judder.
+
+---
+
+## 10. Original Microsoft Xbox (hakuX) ROM Packaging & XDVDFS Deployment Standard
+
+### A. Architectural Boundary & Disc Geometry
+- **Emulator Core**: `hakuX` (`com.rfandango.haku_x`) is a high-level reimplementation of the Xbox kernel drawing to Vulkan with an integrated x86 FEX JIT. It requires **no BIOS, MCPX ROM, or hard disk image**.
+- **Block-Level Disc Mount**: hakuX mounts games as block-level disk images reading the proprietary Xbox DVD File System (XDVDFS).
+- **Why Raw `.7z` or Extracted Folders Fail**:
+  1. Loose folder structures containing `default.xbe` cannot be mounted by hakuX's virtual disc drive and are ignored by ES-DE's Xbox system dispatch.
+  2. Raw `.7z` archives cannot be decompressed into RAM dynamically on mobile devices without causing severe out-of-memory crashes.
+
+### B. Sector-Aligned XDVDFS Packaging (`extract-xiso`)
+Transform extracted game folders containing `default.xbe` into sector-aligned XDVDFS `.iso` images using `extract-xiso`:
+```powershell
+extract-xiso.exe -c "<path_to_game_folder_with_default.xbe>" "<output_name>.iso"
+```
+
+### C. Compression Economics: Trimmed XISO vs. 1:1 Redump vs. CSO/ZSO
+1. **1:1 Redump DVD-9 Dumps**: Fixed at **7.28 GiB (7.48 GB)** per game due to zero-padding, layer-break padding, and the outer DVD-Video partition. An 11-game library consumes **80.17 GiB (86.08 GB)**.
+2. **Trimmed XDVDFS `.iso` (Community Standard)**: Strips all dummy padding and video security partitions, retaining only active game sectors. The same 11 games consume **17.55 GiB (18.84 GB)** — a **78.1% space reduction** (62.62 GiB saved).
+3. **Why We Lead with Uncompressed Trimmed XISO Over CSO/ZSO**:
+   - **Zero CPU Decompression Overhead**: Raw DMA reads from MicroSD have 0% CPU cost, reserving 100% of the Snapdragon 865's CPU cycles for FEX x86 JIT translation and game logic.
+   - **Eliminates Asset Streaming Stutter**: Real-time decompression of `.cso` (Deflate) or `.zso` (LZ4) blocks causes micro-stutter and audio crackling during streaming in open-world/racing titles (*OutRun 2006*, *Crazy Taxi 3*, *Castlevania*).
+   - **Emulator Maturity**: Early-stage emulators (hakuX v1.2.x) are most stable against uncompressed sector offsets. Reserve CSO/ZSO only when card capacity is critically depleted (< 15 GB free).
+
+### D. Automated Pipeline Tooling (`scripts/deploy_xbox_roms.py`)
+Use `scripts/deploy_xbox_roms.py` to automate unpacking `.7z`, locating `default.xbe`, building XDVDFS `.iso`, deploying to `/storage/<SD_ID>/ROMs/xbox/`, and scrubbing scratch files. Always dynamically detect device serial and SD card UUID to satisfy privacy and portability constraints.
+
 
 
 

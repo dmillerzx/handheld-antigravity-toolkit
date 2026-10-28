@@ -29,6 +29,7 @@ Your primary interface to the device is **ADB (Android Debug Bridge)** over USB 
 Internal storage   /sdcard/bios
 MicroSD            /storage/<SD_ID>/bios
                    /storage/<SD_ID>/ROMs
+                   /storage/<SD_ID>/ROMs/xbox
                    /storage/<SD_ID>/ES-DE
                    /storage/<SD_ID>/RetroArch
                    /storage/<SD_ID>/Saves_Backup
@@ -68,6 +69,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` across all emulators and frontends | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
 | **Native Port Profiles** | Stage Perfect Dark (`com.perfectdark.port`) XBLA Duty Calls profile (`StickCButtons=0`, Style 8 "Ext", `MouseAimMode=1`, `CrosshairSway=0`, Lookspring OFF, `CK_8000` crouch), Super Mario 64 ALO touchless/BetterCamera/ZL multi-bind, Sonic Mania RSDKv5, GoldenEye root files + gunbarrel 007 adaptive icon (backup `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` before reinstall), CannonBall OutRun | `adb shell "cat /sdcard/Android/data/com.perfectdark.port/files/pd.ini"` |
 | **LibUltraShip Ports** | Verify `baserom.us.z64` extraction generates `*.o2r` (SoH, 2S2H, Starship, PaperBoat), touch overlay disabled (`Enabled=0`), backend ID 1 OpenGL, ES-DE `.app` registered | `adb shell "ls -l /sdcard/Android/data/dev.net64.paperboat/files/pm64.o2r"` |
+| **Xbox (hakuX) ROMs** | Staged to `/storage/<SD_ID>/ROMs/xbox/` formatted as trimmed XDVDFS `.iso` via `extract-xiso -c` (78.1% space savings, DMA streaming, zero CPU decompression) | `adb shell "ls -la /storage/<SD_ID>/ROMs/xbox"` |
 | **ROM Compression** | Verify cartridge ROMs are Deflate `.n64.zip` (clean root `.z64`, no `.7z`), disc ROMs are `.chd`, GC/Wii are `.rvz` | `adb shell "ls -la /storage/<SD_ID>/ROMs/n64"` |
 
 ---
@@ -85,6 +87,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 - **RetroArch (64-bit)**: `com.retroarch.aarch64`
 - **ARM SX2 (PS2 Primary)**: `com.armsx2`
 - **NetherSX2 (PS2 Fallback)**: `xyz.aethersx2.android`
+- **hakuX (Original Xbox)**: `com.rfandango.haku_x`
 - **PPSSPP (PSP)**: `org.ppsspp.ppsspp`
 - **Azahar (3DS)**: `org.azahar_emu.azahar`
 - **Vita3K (PS Vita)**: `org.vita3k.emulator`
@@ -273,6 +276,26 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
   1. **Assets vs. Cores**: Frontend assets (Shaders, Joypad Autoconfig, Info files) can and should be staged to `/storage/<SD_ID>/RetroArch/`.
   2. **Core Acquisition**: Executable `.so` cores **must** be downloaded directly inside RetroArch via **Online Updater ➔ Core Downloader**. Provisioning scripts and agents must not assume pushing `.so` binaries to external storage provides a functional core.
   3. **Standalone N64 Routing**: If an in-app core download is not preferred, route N64 to standalone Mupen64Plus FZ (`org.mupen64plusae.v3.fzurita`) in `es_settings.xml`.
+
+---
+
+## 20. Original Xbox Emulation (hakuX) & Dynamic Hardware Identifier Invariant
+
+1. **Original Xbox Emulation & Sector Geometry**:
+   - Package: `com.rfandango.haku_x` (tracked via Obtainium from `https://github.com/haku-x/hakux-emu` releases).
+   - Canonical Path: `/storage/<SD_ID>/ROMs/xbox/*.iso`.
+   - Disc Geometry Standard: Trimmed XDVDFS ISO images created with `extract-xiso -c` (stripping zero-byte DVD-9 padding sectors beyond the root table). Extracting into directories or keeping raw `.7z` breaks hakuX.
+   - Decompression Economics: While hakuX supports `.cso` / `.zso`, community best practice (Retro Game Corps / Russ) leads with uncompressed trimmed `.iso`. On the Snapdragon 865, streaming uncompressed XDVDFS files incurs 0% CPU decompression overhead via direct storage DMA, dedicating maximum CPU throughput to x86-to-ARM64 JIT dynamic translation.
+   - GPU Driver: Mesa Turnip Adreno 650 GPU driver.
+
+2. **Dynamic Hardware Identifier & Anti-Leak Invariant**:
+   - NEVER hardcode physical device serial numbers (e.g. `<SERIAL>`) or MicroSD filesystem UUIDs (e.g. `<SD_ID>`) into automation scripts, documentation, or commit history. Local `.git/hooks/pre-commit` enforces strict pattern rejection.
+   - All scripts must dynamically discover devices via `adb devices` (`detect_device()`) and MicroSD mount paths via `adb shell ls /storage/` (`detect_sd_id()`), providing `--serial` and `--sd-id` CLI overrides.
+
+3. **Flutter UIAutomator Bridge & DocumentsUI SAF Mechanics**:
+   - Flutter apps (like Obtainium) draw on a single hardware `SurfaceView`, causing `uiautomator dump` to return `ERROR: null root node returned by UiTestAutomationBridge` unless accessibility semantics are explicitly active. Automate using calibrated coordinate taps or DPAD/ENTER keyevents rather than looping on XML dumps.
+   - Files pushed via ADB are invisible to DocumentsUI SAF pickers until indexed. Always trigger `am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d "file:///..."` after pushing files intended for in-app import.
+
 
 
 
