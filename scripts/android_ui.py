@@ -249,6 +249,8 @@ class AndroidUIAutomator:
 
 
 def main():
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description="Deterministic Android UI Automator")
     parser.add_argument("--serial", "-s", help="Target device serial")
     parser.add_argument("--adb", default="platform-tools/adb.exe", help="ADB binary path")

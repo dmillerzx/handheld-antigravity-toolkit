@@ -603,6 +603,12 @@ VSyncInterval = 1
 
 [Control]
 ShowTouchControls = False
+AnalogDeadzone = 0.100000
+AnalogInverseDeadzone = 0.000000
+AnalogSensitivity = 1.100000
+AnalogIsCircular = True
+AnalogDeadzoneShape = 0
+AnalogAxialDeadzone = 0.000000
 
 [CPU]
 FastMemory = True

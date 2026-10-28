@@ -147,6 +147,7 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - **Controller Style**: Xbox mode (`persist.sys.gamepad.type 0`).
 - **Trigger Mode**: Both analog axis + digital button click (`persist.sys.trigger.mode 2`).
 - **Fan Profile**: Smart active cooling (`settings put system fan_mode 4`).
+- **Performance Mode Invariant**: Maintain regular **Performance** mode (`settings put system performance_mode 1`) as the default baseline (or Standard `0` if user requests). NEVER autonomously switch or elevate the device to "High Performance" (Extreme) mode.
 
 ### I. Granting AppOps
 Android 11+ restricts storage access under Scoped Storage. The script invokes AppOps:
