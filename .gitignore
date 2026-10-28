@@ -17,6 +17,7 @@ roms/**/*
 
 # Local platform tools archive & extracted binaries
 platform-tools/
+tools/
 *.zip
 
 # GPU Driver archives
