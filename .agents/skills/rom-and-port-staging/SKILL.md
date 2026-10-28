@@ -375,6 +375,40 @@ extract-xiso.exe -c "<path_to_game_folder_with_default.xbe>" "<output_name>.iso"
 ### D. Automated Pipeline Tooling (`scripts/deploy_xbox_roms.py`)
 Use `scripts/deploy_xbox_roms.py` to automate unpacking `.7z`, locating `default.xbe`, building XDVDFS `.iso`, deploying to `/storage/<SD_ID>/ROMs/xbox/`, and scrubbing scratch files. Always dynamically detect device serial and SD card UUID to satisfy privacy and portability constraints.
 
+### E. ES-DE Launch Dispatch & SAF Intent Token Standards (`%DATA%=%ROMSAF%`)
+- **Canonical Custom Systems Location**: Deploy to `/sdcard/ES-DE/custom_systems/es_systems.xml` (internal) and `/storage/<SD_ID>/ES-DE/custom_systems/es_systems.xml` (MicroSD).
+- **XML Schema Strictness**: ES-DE parses `es_systems.xml` strictly on startup; any unclosed tag or syntax error causes an immediate fatal crash on launch. Validate XML with `python -c "import xml.etree.ElementTree as ET; ET.parse('configs/es_systems.xml')"` before pushing.
+- **Intent Binding Syntax**:
+  ```xml
+  <system>
+      <name>xbox</name>
+      <fullname>Microsoft Xbox</fullname>
+      <path>%ROMPATH%/xbox</path>
+      <extension>.iso .ISO .xiso .XISO</extension>
+      <platform>xbox</platform>
+      <theme>xbox</theme>
+      <command label="hakuX (Standalone)">%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%</command>
+      <command label="hakuX Direct (Standalone)">%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROM%</command>
+  </system>
+  ```
+  - **Android Scoped Storage (SAF)**: Android 11+ prevents external applications from reading raw storage paths (`%ROM%`). ES-DE generates a Content URI with read permissions via `%ROMSAF%` mapped into `%DATA%`.
+
+### F. Xbox Aspect Ratio Architecture & Screen Format Standards (Crazy Taxi 3 Case Study)
+- **Two-Tier Geometry Control**: Xbox display aspect ratio is controlled by console EEPROM `Screen Format` (`Normal` 4:3 vs `Wide screen` 16:9 anamorphic) and game engine capabilities.
+- **Non-Widescreen Titles**: Games coded strictly for 4:3 (e.g. *Crazy Taxi 3: High Roller*, *Jet Set Radio Future* v1) do not inspect or support 16:9 flags.
+  - When hakuX's **Screen Format** is set to `Wide screen` and **Aspect Ratio** is set to `Auto`, hakuX treats the output as 16:9, causing horizontal stretching across the 16:9 display.
+  - **Pillarboxing Standard**: For 4:3-only titles, set hakuX global **`Aspect Ratio` = `4:3`** (or change `Screen Format` to `Normal`). Setting `Aspect Ratio: 4:3` forces clean 1:1 circular pillarboxing (black sidebars) with undistorted HUD and geometry.
+- **hakuX Per-Game Override Scope**: Reverse engineering of `libhaku.so` (`gameOverrides` / `per_game_settings`) shows that hakuX v1.2.x only supports per-game overrides for `render_scale`, `upscale_filter`, and `driver`. Aspect ratio and screen format are global emulator settings.
+
+### G. Retroid Pocket 5 Hall Effect Analog Stick Deadband Standards
+- **Sensor Mechanics**: The RP5 features Hall effect magnetic analog joysticks. While immune to physical wear and drift, magnetic zero-point sensing produces microscopic resting electrical variance (±3-5%).
+- **Micro-Input Elimination**: Without software deadbands, this resting variance causes character creeping, unintentional sprinting, or menu drift.
+- **Standardized Deadbands**:
+  - **Dolphin**: `Main Stick/Dead Zone = 10.0` and `C-Stick/Dead Zone = 10.0` in `GCPadNew.ini`.
+  - **ARM SX2**: `Deadzone = 0.06` with `AxisScale = 1.33` in `RP5r.ini` (ensures 100% diagonal travel).
+  - **RetroArch**: `input_analog_deadzone = 0.10`.
+  - **Native Ports**: `stick_deadzone = 6.0` to `10.0`.
+
 
 
 

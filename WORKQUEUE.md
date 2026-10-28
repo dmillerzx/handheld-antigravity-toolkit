@@ -73,6 +73,27 @@ Both **Diddy Kong Racing (DKR-R)** (`io.github.thatguymcd.dkrr.preview`) and **B
   - Deployed across both internal storage (`/sdcard/ES-DE/`) and MicroSD (`/storage/<SD_ID>/ES-DE/`).
   - ES-DE now dynamically reads the Android package ID from each `.app` file via `%FILEINJECT%` and launches the native Android APK directly.
 
+### D. ES-DE Custom Systems XML Schema & Standalone SAF Launch Architecture
+- **Root Cause of ES-DE Crash on Launch**:
+  - ES-DE enforces strict XML parsing on boot. A malformed closing tag in custom systems XML causes ES-DE to abort launch with a fatal parsing error dialog.
+  - Automated verification script (`scripts/verify_deployment.py`) was updated to validate XML parsing with `xml.etree.ElementTree` across `/sdcard/ES-DE/custom_systems/es_systems.xml`.
+- **Standalone SAF Intent Tokens (`%DATA%=%ROMSAF%`)**:
+  - Standalone Android emulators running on Android 11+ Scoped Storage (such as ARM SX2 and hakuX) cannot open raw MicroSD filesystem paths (`%ROM%`) passed through shell parameters without explicit permission grants.
+  - ES-DE generates Content URIs and grants read permissions using `%DATA%=%ROMSAF%`.
+  - Canonical hakuX syntax in `es_systems.xml`:
+    `<command label="hakuX (Standalone)">%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%</command>`
+
+### E. Original Xbox (hakuX) Display Architecture & Crazy Taxi 3 Aspect Ratio Governance
+- **Console EEPROM vs Game Geometry**:
+  - Xbox video output is governed by console EEPROM `Screen Format` (`Normal` 4:3 vs `Wide screen` 16:9 anamorphic) and game engine capabilities.
+  - Games built strictly for 4:3 (e.g., *Crazy Taxi 3: High Roller*, *Jet Set Radio Future* v1) lack widescreen rendering code.
+  - When hakuX's console `Screen Format` is set to `Wide screen` and `Aspect Ratio` is set to `Auto`, hakuX assumes 16:9 output and horizontally stretches 4:3 viewports edge-to-edge.
+- **Pillarboxing Standard**:
+  - For authentic geometry without horizontal distortion, force hakuX global **`Aspect Ratio` = `4:3`** (or toggle `Screen Format` to `Normal`).
+  - Setting `Aspect Ratio: 4:3` forces clean 1:1 circular pillarboxing (black sidebars), ensuring circular speedometers, compass arrows, and cabs render with zero distortion.
+- **Per-Game Scope**:
+  - Binary inspection of `libhaku.so` (`gameOverrides` / `per_game_settings`) confirms that hakuX v1.2.x only supports per-game overrides for `render_scale`, `upscale_filter`, and `driver`. Aspect ratio and screen format are global emulator settings.
+
 ---
 
 ## 3. Verified Native Ports & Decompilations Audit (100% On-Device Visual Proof)

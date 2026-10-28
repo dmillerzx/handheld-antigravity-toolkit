@@ -251,6 +251,29 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
    - While hakuX supports block compression (`.cso` / `.zso` via maxcso), community standards (Retro Game Corps / Russ) prioritize uncompressed trimmed `.iso`.
    - On the Snapdragon 865, streaming uncompressed XDVDFS images incurs 0% CPU decompression overhead via direct storage DMA, dedicating maximum CPU throughput to x86-to-ARM64 JIT dynamic translation and eliminating stutter during high-bandwidth asset streaming.
 5. **GPU Driver**: Mesa Turnip Adreno 650 GPU driver (`turnip_v24.3.0_R9v2.zip`).
+6. **ES-DE Launch Dispatch Syntax (`%DATA%=%ROMSAF%`)**:
+   - In `configs/es_systems.xml` and `/sdcard/ES-DE/custom_systems/es_systems.xml`, hakuX must be launched via:
+     `<command label="hakuX (Standalone)">%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%</command>`
+   - Standalone emulator launches in ES-DE must not use raw shell syntax (`am start -d %ROM%`) or raw POSIX paths (`%ROM%`), as Android 11+ Scoped Storage requires SAF Content URIs with granted permissions to access MicroSD storage.
+7. **Aspect Ratio Architecture & EEPROM Screen Format Standards**:
+   - Original Xbox geometry is determined by two layers: the console's virtual EEPROM `Screen Format` (`Normal` 4:3 vs. `Wide screen` 16:9 anamorphic) and game engine support.
+   - Titles engineered exclusively for 4:3 (e.g., *Crazy Taxi 3: High Roller*, *Jet Set Radio Future* v1) lack widescreen code. When hakuX's global `Screen Format` is set to `Wide screen` and `Aspect Ratio` is set to `Auto`, hakuX assumes 16:9 output and horizontally stretches 4:3 games edge-to-edge.
+   - **Pillarboxing Standard**: For pure 4:3 games, set hakuX's global **`Aspect Ratio` = `4:3`** (or toggle `Screen Format` to `Normal`). Setting `Aspect Ratio: 4:3` guarantees clean 1:1 circular pillarboxing (black sidebars) regardless of EEPROM settings.
+   - **Per-Game Scope**: Decompiled binary inspection of `libhaku.so` confirms that `gameOverrides` currently only support `render_scale`, `upscale_filter`, and `driver` overrides; aspect ratio and screen format are global emulator settings in hakuX v1.2.x.
+
+### R. ES-DE Custom Systems Architecture & XML Parser Invariant
+1. **Canonical Custom Systems Location**: Custom systems live at `/sdcard/ES-DE/custom_systems/es_systems.xml` (internal storage) and `/storage/<SD_ID>/ES-DE/custom_systems/es_systems.xml` (MicroSD).
+2. **Strict XML Parser Law**: ES-DE enforces strict XML schema validation on startup. Any unclosed tag, mismatched tag, or malformed entity causes a fatal modal crash on launch (`Failed to parse es_systems.xml`). Always validate custom XML trees using Python `xml.etree.ElementTree.parse()` prior to deployment.
+3. **Intent Extra & Content URI Tokens**: ES-DE provides native tokens for Android intent dispatch: `%ACTION%`, `%DATA%=%ROMSAF%`, and `%EXTRA_*%`. Never attempt to chain ADB shell `am start` arguments into standalone `<command>` definitions.
+
+### S. Retroid Pocket 5 Hall Effect Analog Stick Calibration & Deadband Invariant
+1. **Hardware Characteristic**: The Retroid Pocket 5 features Hall effect magnetic analog joysticks. Unlike traditional potentiometers, Hall sensors eliminate physical wiper friction and mechanical wear.
+2. **Center-Point Variance**: Hall effect sensors exhibit subtle resting magnetic variance (±3-5% around center). In emulators or native ports with zero deadband, this variance causes phantom micro-inputs, subtle camera creeping, or menu navigation jitter.
+3. **Standard Calibration**: Always apply a 10% software deadband across primary emulators:
+   - Dolphin: `Main Stick/Dead Zone = 10.0` and `C-Stick/Dead Zone = 10.0` in `GCPadNew.ini`.
+   - ARM SX2: `Deadzone = 0.06` with `AxisScale = 1.33` in `RP5r.ini` for full outer circular reach.
+   - RetroArch: `input_analog_deadzone = 0.10`.
+   - Native Ports: `stick_deadzone = 6.0` to `10.0`.
 
 
 ---

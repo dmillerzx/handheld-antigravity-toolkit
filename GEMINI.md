@@ -57,7 +57,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Phantom Process** | Disable Android 13 phantom process restrictions | `adb shell "/system/bin/device_config get activity_manager max_phantom_processes"` |
 | **Storage Scaffolding** | Create canonical directories | `adb shell "ls -la /sdcard/bios /storage/<SD_ID>"` |
 | **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` (Libretro buildbot intermediateLink array for RetroArch) | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
-| **ES-DE Pre-Config** | Push `es_settings.xml` configured with MicroSD ROM path & direct ARMSX2 ROMSAF launch | `adb shell "cat /sdcard/ES-DE/settings/es_settings.xml"` |
+| **ES-DE Pre-Config** | Push `es_settings.xml` & validate `/sdcard/ES-DE/custom_systems/es_systems.xml` schema (strict XML parsing, `%DATA%=%ROMSAF%` intent tokens) | `adb shell "cat /sdcard/ES-DE/custom_systems/es_systems.xml"` |
 | **Turnip Drivers** | Stage Mesa Turnip GPU drivers (turnip_v24.3.0_R9v2 baseline, TurnipZ-0.3.0 SD865, Turnip-24.1.0 R18 a6xx) in `/sdcard/Download/drivers/` (No Adreno 7xx-only builds) | `adb shell "ls -la /sdcard/Download/drivers"` |
 | **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Smart fan mode (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode"` |
 | **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
@@ -136,7 +136,7 @@ Powered by `youtube-transcript-api` and `yt-dlp`. Structured skill definition av
 
 ---
 
-## 8. The 5 Laws of Schema Verification (Anti-Hallucination Guardrails)
+## 8. The 8 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
 
 To guarantee emulator stability and prevent input or configuration regressions:
 1. **Never Guess INI Section Names or Key Syntaxes**: Always inspect Dolphin/emulator source code, upstream documentation, or native UI auto-mappings on the device before writing configurations. Never improvise section headers or property names.
@@ -144,6 +144,9 @@ To guarantee emulator stability and prevent input or configuration regressions:
 3. **Flat Wiimote Extensions**: Dolphin Wiimote extensions (Classic, Nunchuk) live flat inside `[Wiimote1]` using extension prefixes (e.g., `Classic/Buttons/A = `Button 96``, `Nunchuk/Buttons/C = `Button 102``). Dolphin never recognizes standalone sections like `[Classic1]` or `[Wiimote1/Classic]`.
 4. **Literal Plus/Minus Keys**: Dolphin keys for Plus and Minus buttons are literally `+` and `-` (e.g., `Buttons/+`, `Classic/Buttons/-`), never `Plus` or `Minus`.
 5. **Always Verify with Live Hardware Logs & Screenshots**: Never declare input or emulator configuration complete without verifying via ADB dumps, live logcat output, or screen captures that in-game menus advance and inputs are cleanly captured without drawer/system popups.
+6. **Strict ES-DE Custom Systems XML Schema & `%DATA%=%ROMSAF%` Law**: Custom systems reside at `/sdcard/ES-DE/custom_systems/es_systems.xml`. ES-DE enforces strict XML parsing on boot; malformed or unclosed tags crash ES-DE with a fatal error. Always preflight XML using `xml.etree.ElementTree`. Standalone Android emulators requiring SAF Content URIs must use `%DATA%=%ROMSAF%` rather than raw `-d %ROM%` shell arguments.
+7. **Xbox Aspect Ratio & EEPROM Screen Format Standards**: Original Xbox display geometry is governed by emulated EEPROM `Screen Format` and game engine capabilities. 4:3-only titles (*Crazy Taxi 3*, *Jet Set Radio Future* v1) stretch horizontally when console format is `Wide screen` with `Auto` aspect ratio. For authentic geometry, force global `Aspect Ratio: 4:3` in hakuX (or toggle `Screen Format` to `Normal`). Decompiled `libhaku.so` confirms `gameOverrides` do not currently support aspect ratio overrides.
+8. **Hall Effect Joystick Resting Deadband Invariant**: RP5 Hall effect magnetic analog sticks have subtle resting variance (±3-5%). Always enforce a 10% deadband across Dolphin (`Dead Zone = 10.0`), ARM SX2 (`Deadzone = 0.06`), and RetroArch (`input_analog_deadzone = 0.10`) to eliminate premature camera drift or sprint triggering.
 
 ---
 
