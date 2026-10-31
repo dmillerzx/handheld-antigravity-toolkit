@@ -137,7 +137,7 @@ Powered by `youtube-transcript-api` and `yt-dlp`. Structured skill definition av
 
 ---
 
-## 8. The 8 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
+## 8. The 11 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
 
 To guarantee emulator stability and prevent input or configuration regressions:
 1. **Never Guess INI Section Names or Key Syntaxes**: Always inspect Dolphin/emulator source code, upstream documentation, or native UI auto-mappings on the device before writing configurations. Never improvise section headers or property names.
@@ -148,6 +148,9 @@ To guarantee emulator stability and prevent input or configuration regressions:
 6. **Strict ES-DE Custom Systems XML Schema & `%DATA%=%ROMSAF%` Law**: Custom systems reside at `/sdcard/ES-DE/custom_systems/es_systems.xml`. ES-DE enforces strict XML parsing on boot; malformed or unclosed tags crash ES-DE with a fatal error. Always preflight XML using `xml.etree.ElementTree`. Standalone Android emulators requiring SAF Content URIs must use `%DATA%=%ROMSAF%` rather than raw `-d %ROM%` shell arguments.
 7. **Xbox Aspect Ratio & EEPROM Screen Format Standards**: Original Xbox display geometry is governed by emulated EEPROM `Screen Format` and game engine capabilities. 4:3-only titles (*Crazy Taxi 3*, *Jet Set Radio Future* v1) stretch horizontally when console format is `Wide screen` with `Auto` aspect ratio. For authentic geometry, force global `Aspect Ratio: 4:3` in hakuX (or toggle `Screen Format` to `Normal`). Decompiled `libhaku.so` confirms `gameOverrides` do not currently support aspect ratio overrides.
 8. **Hall Effect Joystick Resting Deadband Invariant**: RP5 Hall effect magnetic analog sticks have subtle resting variance (±3-5%). Always enforce a 10% deadband across Dolphin (`Dead Zone = 10.0`), ARM SX2 (`Deadzone = 0.06`), and RetroArch (`input_analog_deadzone = 0.10`) to eliminate premature camera drift or sprint triggering.
+9. **Obtainium Tag-to-Manifest Divergence & Version Detection Standard**: When upstream APK releases on GitHub use a release tag (e.g. `v1.0.2`) that differs from the internal `versionName` compiled into `AndroidManifest.xml` (e.g. author forgot to bump `versionName "1.0.1"` in Gradle), Obtainium's `"versionDetection": true` ("Reconcile version string with version detected from OS") causes an endless pending update loop. Obtainium detects the OS version as `1.0.1`, compares it to `v1.0.2`, flags `"This app config may prevent updates"`, and persistently queues the app for update even after repeated installs. For any app exhibiting tag-to-manifest divergence, set `"versionDetection": false` in `configs/rp5_master_obtainium.json` and set both `installedVersion` and `latestVersion` to the canonical release tag (e.g. `v1.0.2`). This instructs Obtainium to track GitHub's canonical release tags directly, clearing the update loop while properly notifying on subsequent releases. In the Obtainium UI, clear lingering update indicators using `Additional options` ➔ `Mark updated` (`Yes, mark as updated`).
+10. **Downstream CI Hot-Loop Optimization vs. Substring Contract Test Invariant**: When refactoring or patching downstream graphics pipelines (e.g., `plume_vulkan.cpp` in DKR-R) to eliminate hot-loop `stderr` logging or debug output, verify whether unit or contract test suites (e.g., `android_startup_contract_tests.py`) assert substrings or diagnostic stage tokens (`Stage::ComputePipeline`). If diagnostic strings are removed, update the contract test to assert the functional branch guard (e.g. `s_activeComputePipelineValid = false`) rather than the removed `fprintf` call.
+11. **Platform-Agnostic Git Patch Streaming in Tests**: When invoking `git apply` inside Python contract or unit tests across multiple host platforms, never pass absolute filesystem paths with Windows drive letters (`C:\...`) to `git apply <path>`. MinGW/MSYS git misinterprets Windows drive prefixes. Always stream the patch bytes via standard input: `subprocess.run(["git", "-C", stage, "apply", "--recount", "--whitespace=error", "--ignore-space-change", "-"], input=patch_path.read_bytes(), check=True)`.
 
 ---
 
@@ -214,6 +217,8 @@ To avoid premature throttling under the 5-hour rolling rate limits and preserve 
    - Maintain exactly **0** third-party marketplace plugins. Never install marketplace plugins or third-party tool bundles into this provisioning workspace.
    - Third-party plugins bundle eager tool schemas, global rules, and lifecycle hooks that inject thousands of static tokens into *every* prompt step and subagent call.
    - Rely strictly on progressive disclosure skills (`.agents/skills/`) and targeted, lazy-loaded MCP servers (`rea`) to keep baseline turn consumption minimal.
+8. **Subprocess & Background Task Lifecycle Hygiene**:
+   - Before concluding any multi-step investigation, test pass, or conversation turn, query `manage_task(Action='list')`. Never leave stalled, long-running, or orphaned background tasks running in the background. If an asynchronous command is no longer needed or has completed its functional role, terminate it immediately via `manage_task(Action='kill')`.
 
 ---
 

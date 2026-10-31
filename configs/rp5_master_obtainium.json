@@ -4,7 +4,7 @@
       "id": "com.magneticchen.daijishou",
       "url": "https://github.com/magneticchen/Daijishou",
       "author": "magneticchen",
-      "name": "Daijish\u014d",
+      "name": "Daijishō",
       "installedVersion": "v1.5.0",
       "latestVersion": "v1.5.0",
       "apkUrls": "[[\"416.apk\", \"https://github.com/magneticchen/Daijishou/releases/download/v1.5.0/416.apk\"]]",
@@ -17,7 +17,7 @@
         "Frontend"
       ],
       "releaseDate": 1768515995000000,
-      "changeLog": "**\u26a0\ufe0f  The APK aims for universal distribution.**\r\n\r\n# 1.5.0\r\n\ud83e\udee7 Add remove title from games (Settings > Appearance).\r\n\ud83e\udee7 Add square game box arts (Settings > Appearance).\r\n\ud83e\udee7 Add live wallpapers [GIF] (Settings > Appearance).\r\n\ud83e\udee7 Add double tap top/bottom bars to lock screen.\r\n\ud83e\udee7 Add \"Visual Novels\" Categories.\r\n\r\n\ud83e\udee7 Fix/Improve wiki scraper (wrong descriptions).\r\n\ud83e\udee7 Fix missing video button for games.\r\n\ud83e\udee7 Fix missing box arts when syncing.\r\n\ud83e\udee7 Fix RA breaking changes.\r\n\r\n1.5.0 changes were made by @official-wizard.",
+      "changeLog": "**⚠️  The APK aims for universal distribution.**\r\n\r\n# 1.5.0\r\n🫧 Add remove title from games (Settings > Appearance).\r\n🫧 Add square game box arts (Settings > Appearance).\r\n🫧 Add live wallpapers [GIF] (Settings > Appearance).\r\n🫧 Add double tap top/bottom bars to lock screen.\r\n🫧 Add \"Visual Novels\" Categories.\r\n\r\n🫧 Fix/Improve wiki scraper (wrong descriptions).\r\n🫧 Fix missing video button for games.\r\n🫧 Fix missing box arts when syncing.\r\n🫧 Fix RA breaking changes.\r\n\r\n1.5.0 changes were made by @official-wizard.",
       "releaseUrl": null,
       "overrideSource": "GitHub",
       "allowIdChange": false,
@@ -356,10 +356,10 @@
       "url": "https://github.com/Waterdish/zelda3-android",
       "author": "Waterdish",
       "name": "Zelda 3 (A Link to the Past)",
-      "installedVersion": "1.0.1",
-      "latestVersion": "1.0.1",
+      "installedVersion": "v1.0.2",
+      "latestVersion": "v1.0.2",
       "preferredApkIndex": 0,
-      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"filterReleaseTitlesByRegEx\": \"\", \"filterReleaseNotesByRegEx\": \"\", \"verifyLatestTag\": false, \"sortMethodChoice\": \"date\", \"useLatestAssetDateAsReleaseDate\": false, \"releaseTitleAsVersion\": false, \"trackOnly\": false, \"versionExtractionRegEx\": \"\", \"matchGroupToUse\": \"\", \"versionDetection\": true, \"releaseDateAsVersion\": false, \"useVersionCodeAsOSVersion\": false, \"apkFilterRegEx\": \".*\\\\.apk$\", \"invertAPKFilter\": false, \"autoApkFilterByArch\": true, \"minimumUpdateAgeDays\": \"\", \"appName\": \"Zelda 3\", \"appAuthor\": \"Waterdish\", \"shizukuPretendToBeGooglePlay\": false, \"allowInsecure\": false, \"allowedSigningCertHashes\": \"\", \"exemptFromBackgroundUpdates\": false, \"skipUpdateNotifications\": false, \"about\": \"Zelda 3 Native Android Port\", \"refreshBeforeDownload\": false, \"includeZips\": false, \"zippedApkFilterRegEx\": \"\", \"includeTarballs\": false, \"tarballedApkFilterRegEx\": \"\", \"GHReqPrefix\": \"\"}",
+      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"filterReleaseTitlesByRegEx\": \"\", \"filterReleaseNotesByRegEx\": \"\", \"verifyLatestTag\": false, \"sortMethodChoice\": \"date\", \"useLatestAssetDateAsReleaseDate\": false, \"releaseTitleAsVersion\": false, \"trackOnly\": false, \"versionExtractionRegEx\": \"\", \"matchGroupToUse\": \"\", \"versionDetection\": false, \"releaseDateAsVersion\": false, \"useVersionCodeAsOSVersion\": false, \"apkFilterRegEx\": \".*\\\\.apk$\", \"invertAPKFilter\": false, \"autoApkFilterByArch\": true, \"minimumUpdateAgeDays\": \"\", \"appName\": \"Zelda 3\", \"appAuthor\": \"Waterdish\", \"shizukuPretendToBeGooglePlay\": false, \"allowInsecure\": false, \"allowedSigningCertHashes\": \"\", \"exemptFromBackgroundUpdates\": false, \"skipUpdateNotifications\": false, \"about\": \"Zelda 3 Native Android Port\", \"refreshBeforeDownload\": false, \"includeZips\": false, \"zippedApkFilterRegEx\": \"\", \"includeTarballs\": false, \"tarballedApkFilterRegEx\": \"\", \"GHReqPrefix\": \"\"}",
       "categories": [
         "Port"
       ],
