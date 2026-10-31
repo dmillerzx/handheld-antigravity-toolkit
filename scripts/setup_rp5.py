@@ -632,12 +632,26 @@ class RP5Provisioner:
                 cmd.extend(["-s", self.serial])
             subprocess.run(cmd, check=False)
 
+    def scan_device_emulator_configs(self) -> None:
+        """Scans and backs up live emulator configurations and calibrations from the device before modifications."""
+        script = WORKSPACE_ROOT / "scripts" / "sync_device_emulator_configs.py"
+        if script.exists():
+            print("\n[*] Pre-scanning & backing up live emulator configurations from device...")
+            cmd = [sys.executable, str(script), "--adb", self.adb]
+            if self.serial:
+                cmd.extend(["-s", self.serial])
+            try:
+                subprocess.run(cmd, check=False)
+            except Exception as e:
+                print(f"    [!] Error running sync_device_emulator_configs.py: {e}")
+
     def provision_all(self, apks_dir: Optional[Path] = None) -> None:
         """Runs the complete end-to-end community provisioning pipeline."""
         print("\n" + "=" * 72)
         print(f"   Starting Complete Zero-Touch Community Provisioning Pipeline")
         print(f"   Device Profile: {self.profile.get('name', 'Generic')}")
         print("=" * 72)
+        self.scan_device_emulator_configs()
         self.unlock_phantom_process_killer()
         self.scaffold_directories()
         self.stage_obtainium_config()
@@ -807,6 +821,9 @@ def main() -> int:
 
     if args.status:
         return 0
+
+    # Always scan live emulator configurations before any modifications
+    provisioner.scan_device_emulator_configs()
 
     if args.all:
         provisioner.provision_all(apks_dir=WORKSPACE_ROOT / "apks")

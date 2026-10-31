@@ -547,9 +547,13 @@ Device = {ctrl_dev}
         f_free.write_text(freelook_ini, encoding="utf-8")
 
         for remote_base in ["/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config", "/sdcard/dolphin-emu/Config"]:
-            self.push_file(f_dol, f"{remote_base}/Dolphin.ini")
-            self.push_file(f_gfx, f"{remote_base}/GFX.ini")
-            # Preserve user controller mappings if already configured on-device
+            # Preserve user settings and controller mappings if already configured on-device
+            has_dolphin = self.shell(f"[ -f '{remote_base}/Dolphin.ini' ] && echo 1 || echo 0", check=False).strip()
+            if has_dolphin != "1":
+                self.push_file(f_dol, f"{remote_base}/Dolphin.ini")
+            has_gfx = self.shell(f"[ -f '{remote_base}/GFX.ini' ] && echo 1 || echo 0", check=False).strip()
+            if has_gfx != "1":
+                self.push_file(f_gfx, f"{remote_base}/GFX.ini")
             has_gcpad = self.shell(f"[ -f '{remote_base}/GCPadNew.ini' ] && echo 1 || echo 0", check=False).strip()
             if has_gcpad != "1":
                 self.push_file(cfg_gcpad, f"{remote_base}/GCPadNew.ini")
@@ -617,6 +621,11 @@ IOTimingMethod = 0
 [System]
 FastMemory = True
 """
+        # Check if ppsspp.ini exists on device to avoid overwriting user deadzones / controls
+        has_ppsspp = self.shell("[ -f '/sdcard/PSP/SYSTEM/ppsspp.ini' ] && echo 1 || echo 0", check=False).strip()
+        if has_ppsspp == "1":
+            print("    [i] Preserving existing PPSSPP configuration and custom controls on device.")
+            return
         local_cfg = self.temp_dir / "ppsspp.ini"
         local_cfg.write_text(content, encoding="utf-8")
         self.push_file(local_cfg, "/sdcard/PSP/SYSTEM/ppsspp.ini")

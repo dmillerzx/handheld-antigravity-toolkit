@@ -148,6 +148,10 @@ adb shell "settings put global settings_enable_monitor_phantom_procs false"
 - **Trigger Mode**: Both analog axis + digital button click (`persist.sys.trigger.mode 2`).
 - **Fan Profile**: Smart active cooling (`settings put system fan_mode 4`).
 - **Performance Mode Invariant**: Maintain regular **Performance** mode (`settings put system performance_mode 1`) as the default baseline (or Standard `0` if user requests). NEVER autonomously switch or elevate the device to "High Performance" (Extreme) mode.
+- **OLED Display Saturation & Color Calibration**: The RP5 AMOLED panel natively covers ~140-150% sRGB (DCI-P3 wide gamut). For authentic, non-neon retro rendering with 0 ms added latency:
+  - System Property: `persist.sys.sf.color_saturation` (`0.90` default for punchy OLED pop without highlight clipping; `0.70` for mathematical 100% sRGB reference target).
+  - Retroid OS Colors: Disable *Intelligent environment adaptation* (`automatic_button`) to prevent real-time ambient lux sensor drift; enforce white balance *nature* (neutral D65 reference).
+  - OdinTools (`de.langerhans.odintools`): Uses `PServerBinder` to persist SurfaceFlinger saturation overrides (`service call SurfaceFlinger 1022 f <val>`) across reboots via `BootReceiver`.
 
 ### I. Granting AppOps
 Android 11+ restricts storage access under Scoped Storage. The script invokes AppOps:
@@ -276,6 +280,13 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
    - RetroArch: `input_analog_deadzone = 0.10`.
    - Native Ports: `stick_deadzone = 6.0` to `10.0`.
 
+### T. Reverse Engineer Anything (REA) Framework & MCP Integration
+1. **Unified Reverse-Engineering Engine**: REA (`morluto/rea` v6.8.0) provides a unified agent-first framework for binary disassembly, headless JADX Android APK decompilation, ADB device telemetry, and Frida dynamic tracing without requiring original source code.
+2. **Workstation Runtime & CLI**: Node.js LTS (`>=26.12.1`) is maintained on the host workstation. The `rea-agents` package is installed globally (`npm install --global rea-agents`), providing the standalone `rea` CLI command in PATH.
+3. **Antigravity MCP Integration**: Configured in `~/.gemini/config/mcp_config.json` via direct Stdio execution (`node.exe .../scripts/rea.mjs mcp`) with `REA_ADB_PATH` explicitly pointing to the workspace `platform-tools/adb.exe`. Verified via `rea doctor --client antigravity` with `healthy: true` and `state: aligned`.
+4. **Progressive Disclosure Skill**: Staged in `.agents/skills/reverse-engineer-anything/`. The skill activates autonomously whenever the task involves inspecting compiled binaries (ELF `.so`, DEX, APK, PE, IL2CPP, Dart AOT), missing source code, or live hardware hooks.
+5. **Repository Boundary Law**: Agents MUST strictly observe REA's core rule: *"Skip REA for ordinary source-repository architecture analysis."* When analyzing or editing existing workspace source files, Python scripts, INI configs, or documentation, agents must use normal repository tools (`read_file`, `edit_file`) rather than REA to conserve tokens and speed.
+
 
 ---
 
@@ -288,7 +299,7 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 5. **Markdown Clipboard Staging**: When generating markdown content for the user to post externally (GitHub PRs, issues, Discord), stage the raw text directly into the user's clipboard using PowerShell `.\scripts\stage_clipboard.ps1 -FilePath <path>` or `Get-Content <file> -Raw | Set-Clipboard` to prevent leading-space formatting corruption.
 6. **Strict Personal Privacy & PII Protection Invariant**: NEVER leak, publish, commit, or stage the user's real name, email, physical address, or any personally identifiable information (PII) into README files, commit messages, licenses, PRs, issues, or documentation. Strictly use the public GitHub handle (`dmillerzx`) or generic terms ("community contributor", "maintainer").
 7. **Dynamic Hardware Identifier & Anti-Leak Invariant**: NEVER hardcode physical device serial numbers (e.g. `<SERIAL>`) or MicroSD filesystem UUIDs (e.g. `<SD_ID>`) into automation scripts, documentation, or commit history. Local `.git/hooks/pre-commit` enforces strict pattern rejection. Scripts must dynamically discover devices via `adb devices` (`detect_device()`) and MicroSD mount paths via `adb shell ls /storage/` (`detect_sd_id()`), providing `--serial` and `--sd-id` CLI overrides.
-8. **OLED Display Sleep Invariant**: Whenever tasks conclude or when waiting on user feedback, power down the physical device display (`adb shell input keyevent 26`) and verify with `adb shell dumpsys power` (`mHoldingDisplaySuspendBlocker=false`) to eliminate AMOLED burn-in risk.
+8. **OLED Display Sleep Invariant**: Whenever tasks conclude or when waiting on user feedback, ensure the physical device display is powered down to eliminate AMOLED burn-in risk. Since `input keyevent 26` is a toggle, first query `adb shell "dumpsys power | grep mWakefulness="`. Only execute `adb shell input keyevent 26` if `mWakefulness=Awake`. Verify with `adb shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"` that `mHoldingDisplaySuspendBlocker=false` and `mWakefulness=Dozing`.
 9. **Autonomous High-Confidence Proceed & Review Presentation Protocol**:
    - **High-Confidence Autonomous Execution**: When confidence in a recommendation, refinement, or `/learn` proposal is very high (validated against deterministic schema checks, live ADB tests, or verified source mappings), proceed with applying the improvement autonomously without halting to wait for user confirmation. For all `/learn` invocations with high conviction, implement the changes automatically and only ask for confirmation if genuinely unsure or facing ambiguous tradeoffs.
    - **Review Page Staging**: Continue generating the self-contained `.html` review page with clean styling, diff blocks, and visual hierarchy (e.g. `docs/review/<topic>.html`), and provide a clickable `file://` link for immediate visibility and audit trail.
@@ -311,14 +322,18 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
    - **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
    - **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).
    - **PowerShell Scratch File Execution Invariant**: When running complex PowerShell commands via agent CLI tools, never nest double-quoted script blocks or unescaped variables inside `-Command "..."`. Always stage multi-line scripts to `<appDataDir>\brain\<conversation-id>/scratch/<name>.ps1` and execute with `-File` for 100% deterministic, uncorrupted parsing.
-11. **Community Project Orphan Takeover & Open-Source Forking Protocol**:
+13. **Community Project Orphan Takeover & Open-Source Forking Protocol**:
     - When an upstream maintainer announces departure or ends platform support (e.g., ThatGuyMcd on DKR-R Android), verify licensing (MIT/GPL).
     - Autonomously establish community continuity via `gh repo fork <owner>/<repo> --clone=false` under the user's account (`dmillerzx`).
     - Post empathetic, technically accurate feedback on the upstream issue explaining the hardware root cause (e.g. Qualcomm Vulkan SPIR-V compiler bugs vs mobile TBDR) and link to the community fork.
     - When multiple ports share the same underlying engine (e.g. N64Recomp + RT64 across DKR-R and Banjo Recomp), solve the bug on the orphaned project first, then backport or submit upstream PRs to active maintainers.
-12. **Deep Engineering Session Boundary & Reasoning Elevation Invariant**:
+14. **Deep Engineering Session Boundary & Reasoning Elevation Invariant**:
     - Transitioning from high-level triage/planning to deep C++ Android NDK builds, CMake scripting, or Vulkan shader debugging MUST occur in a fresh session to eliminate transcript bloat and prevent quadratic token inflation.
     - Explicitly prompt the user to switch to a high-reasoning model (`Claude 3.5 Sonnet` or `Gemini Pro`) with `High` thinking effort before commencing native decompilation/patching work.
+15. **REA Framework, MCP Integration & Autonomous Triggering**:
+    - REA (`morluto/rea`) provides on-demand native reverse engineering, APK manifest analysis, and ADB telemetry via 229 MCP tools.
+    - Antigravity triggers the `reverse-engineer-anything` skill autonomously when evaluating compiled targets, missing source code, or low-level runtime evidence.
+    - For ordinary repository source and scripting, agents must use native tools (`read_file`, `edit_file`) to keep token usage lean.
 
 ---
 

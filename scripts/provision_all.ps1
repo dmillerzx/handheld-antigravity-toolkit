@@ -138,6 +138,15 @@ Write-Host "[*] Python Path       : $PythonExe"
 Write-Host "========================================================================`n"
 
 # -----------------------------------------------------------------------------
+# 3b. Preflight Scan & Preservation of Live Device Emulator Configurations
+# -----------------------------------------------------------------------------
+$ScanScript = Join-Path $WorkspaceRoot "scripts\sync_device_emulator_configs.py"
+if (Test-Path $ScanScript) {
+    Write-Host "[*] Scanning and backing up live device emulator configurations..." -ForegroundColor Cyan
+    & $PythonExe $ScanScript -s $Serial
+}
+
+# -----------------------------------------------------------------------------
 # 4. Interactive Breakpoint: Google Play Store Emulators Check
 # -----------------------------------------------------------------------------
 if (-not $NonInteractive -and -not $DryRun) {

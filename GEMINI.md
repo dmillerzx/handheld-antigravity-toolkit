@@ -59,7 +59,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` (Libretro buildbot intermediateLink array for RetroArch) | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
 | **ES-DE Pre-Config** | Push `es_settings.xml` & validate `/sdcard/ES-DE/custom_systems/es_systems.xml` schema (strict XML parsing, `%DATA%=%ROMSAF%` intent tokens) | `adb shell "cat /sdcard/ES-DE/custom_systems/es_systems.xml"` |
 | **Turnip Drivers** | Stage Mesa Turnip GPU drivers (turnip_v24.3.0_R9v2 baseline, TurnipZ-0.3.0 SD865, Turnip-24.1.0 R18 a6xx) in `/sdcard/Download/drivers/` (No Adreno 7xx-only builds) | `adb shell "ls -la /sdcard/Download/drivers"` |
-| **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Smart fan mode (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`), Regular Performance mode strictly enforced (`performance_mode 1`, Never High Performance) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode; settings get system performance_mode"` |
+| **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Smart fan mode (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`), Regular Performance mode strictly enforced (`performance_mode 1`, Never High Performance), OLED display saturation tuned (`persist.sys.sf.color_saturation 0.90` default, `0.70` sRGB reference; Intelligent environment adaptation disabled) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode; settings get system performance_mode; getprop persist.sys.sf.color_saturation"` |
 | **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
 | **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
 | **2D/Arcade Cores** | Fetch & stage 11 designated cores and frontend assets | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |
@@ -161,8 +161,9 @@ When providing markdown text intended for the user to copy/paste to external sit
 ## 10. OLED Display Sleep Invariant (Burn-in Prevention)
 
 Whenever finishing automation tasks, concluding a conversation turn, or awaiting user input:
-1. **Power down display**: Execute `adb -s <serial> shell input keyevent 26`.
-2. **Verify sleep status**: Execute `adb -s <serial> shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"` to ensure `mHoldingDisplaySuspendBlocker=false` and `mWakefulness=Dozing`.
+1. **Inspect Wakefulness First**: Android `input keyevent 26` (Power) is a toggle. Sending it blindly when the screen is already dozing will turn it back ON. Query `adb -s <serial> shell "dumpsys power | grep mWakefulness="`.
+2. **Power Down Display If Awake**: Only execute `adb -s <serial> shell input keyevent 26` if `mWakefulness=Awake`. If already `mWakefulness=Dozing` or `Asleep`, do not toggle.
+3. **Verify Sleep Status**: Execute `adb -s <serial> shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"` to ensure `mHoldingDisplaySuspendBlocker=false` and `mWakefulness=Dozing`.
 
 ---
 
@@ -298,6 +299,23 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 3. **Flutter UIAutomator Bridge & DocumentsUI SAF Mechanics**:
    - Flutter apps (like Obtainium) draw on a single hardware `SurfaceView`, causing `uiautomator dump` to return `ERROR: null root node returned by UiTestAutomationBridge` unless accessibility semantics are explicitly active. Automate using calibrated coordinate taps or DPAD/ENTER keyevents rather than looping on XML dumps.
    - Files pushed via ADB are invisible to DocumentsUI SAF pickers until indexed. Always trigger `am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d "file:///..."` after pushing files intended for in-app import.
+
+---
+
+## 21. Reverse Engineer Anything (REA) Architecture & MCP Governance
+
+1. **Framework & Package Specification**:
+   - Upstream Engine: `morluto/rea` (v6.8.0), distributed as `rea-agents` on npm.
+   - Host Runtime Invariant: Node.js LTS (`>=26.12.1`) installed via winget; global `rea-agents` installed via npm, exposing standalone `rea` CLI.
+2. **Antigravity MCP Integration**:
+   - Configuration File: `~/.gemini/config/mcp_config.json`.
+   - Transport: Stdio via `"command": "C:\\Program Files\\nodejs\\node.exe"` with args `["...\\scripts\\rea.mjs", "mcp"]`.
+   - Environment Binding: `REA_ADB_PATH` MUST explicitly point to `<WORKSPACE_ROOT>\platform-tools\adb.exe` to guarantee deterministic ADB routing regardless of subprocess PATH inheritance.
+3. **Progressive Skill Disclosure & Autonomous Execution**:
+   - Skill Location: `.agents/skills/reverse-engineer-anything/`.
+   - Semantic Autonomous Trigger: Antigravity activates the skill automatically whenever instructions require analyzing compiled binaries (ELF `.so`, DEX, APK, PE, IL2CPP, Dart AOT), missing source code, or low-level runtime evidence. Explicit prompting is required only when requesting specific Evidence ledger schemas or Frida sessions.
+   - Repository Boundary Law: *"Skip REA for ordinary source-repository architecture analysis."* When repository source files, scripts, or documentation exist, agents must stick to standard codebase tools (`read_file`, `edit_file`) to preserve token budget.
+
 
 
 
