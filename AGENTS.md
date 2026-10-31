@@ -287,6 +287,20 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 4. **Progressive Disclosure Skill**: Staged in `.agents/skills/reverse-engineer-anything/`. The skill activates autonomously whenever the task involves inspecting compiled binaries (ELF `.so`, DEX, APK, PE, IL2CPP, Dart AOT), missing source code, or live hardware hooks.
 5. **Repository Boundary Law**: Agents MUST strictly observe REA's core rule: *"Skip REA for ordinary source-repository architecture analysis."* When analyzing or editing existing workspace source files, Python scripts, INI configs, or documentation, agents must use normal repository tools (`read_file`, `edit_file`) rather than REA to conserve tokens and speed.
 
+### U. Extensibility Architecture & Zero-Marketplace Plugin Invariant
+1. **Zero-Marketplace Plugin Invariant**: The Antigravity environment must maintain exactly **0** marketplace plugins (`agy plugin list` reports `No plugins installed`). Never install third-party marketplace plugins into this workspace. Third-party plugins package eager tool schemas, global rules, and lifecycle hooks that inject thousands of static tokens into every prompt turn and subagent call, exhausting the 5-hour rolling context quota.
+2. **Progressive Disclosure Skill Standard**: All procedural workflows, automation patterns, and runbooks must be created as standalone skills in `.agents/skills/<name>/SKILL.md`. Under Antigravity's progressive disclosure architecture, only the skill name and brief description are loaded into the agent prompt (~50 tokens total), and full runbook text is loaded strictly on demand when activated.
+3. **Personal Account Air-Gap & PII Boundary**: Maintain a complete air-gap between Antigravity and personal communication/calendar services. Never configure or request OAuth tokens or credentials for personal email (Gmail/Outlook) or calendar accounts in this provisioning workspace. If schedule or email text is required for a specific task, it must be provided as static, sanitized text or localized files (`.ics`, `.txt`) explicitly shared by the user in chat.
+4. **Language Server Customization Inspection Protocol**: When programmatically inspecting installed plugins or extensions, query the local language server connect endpoint (`ANTIGRAVITY_LS_ADDRESS` + `ANTIGRAVITY_CSRF_TOKEN`) via `GetAllPlugins` or run `agy plugin list`. Never read `GetAllPlugins` unfiltered as it inlines the complete markdown text of every bundled skill; always filter down to names and paths.
+
+### V. Handheld Porting, Obtainium Asset Architecture & Driver Packaging Standards
+1. **Obtainium Direct Download URL Standard**: All Obtainium manifest records in `rp5_master_obtainium.json` and on-device records (`/data/data/dev.imranr.obtainium/app_flutter/app_data/*.json`) must use public browser download URLs (`https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>.apk`). Never use GitHub REST API asset endpoints (`api.github.com/repos/.../releases/assets/<id>`), which return JSON metadata on unauthenticated calls and trigger `"no APK found"` errors during batch updates.
+2. **AdrenoTools Root Driver Packaging & `meta.json` Soname Resolution**: AdrenoTools driver loaders (e.g., in `BanjoSDLActivity.java` or emulator wrappers) must read `meta.json`'s `libraryName` (e.g. `libvulkan_freedreno.so`) and accept root-level `.so` entries rather than mandating an `arm64-v8a/` directory structure. Standard community Turnip ZIPs (`TurnipZ-0.3.0.zip`, `turnip_v24.3.0_R9v2.zip`) package files at the archive root.
+3. **Android Recomp Handheld Profile Baseline**: N64 recompiled native Android ports (RT64 / RecompUI) must default on first boot to 60 FPS target refresh rate, 16:9 Expand aspect ratio, `Original 2x` (480p) internal rendering resolution, and dual-trigger crouch multi-binding (Z mapped to both ZL/axis 22 and L1/shoulder) with C-Down dedicated to the right analog stick. All handheld modern defaults must be strictly encapsulated inside `#if defined(__ANDROID__)`.
+4. **GitHub Fork Actions Default Permission Boundary**: Community forks under `dmillerzx/*` default to read-only workflow permissions on GitHub Actions. CI release jobs attempting to attach APK artifacts will fail with HTTP 403 `Resource not accessible by integration` unless write permissions are explicitly granted at the repository level via `gh api -X PUT /repos/<owner>/<repo>/actions/permissions/workflow -f default_workflow_permissions=write`.
+5. **RT64/Plume Vulkan Null-Pipeline Guard**: RT64 Plume Vulkan bindings trigger null pipeline dereferences in Qualcomm's Adreno 650 driver (`qglinternal::vkCmdBindPipeline`). Engine patches modifying submodule dependencies (`lib/rt64/src/contrib/plume`) must be applied in CI scripts targeting the specific submodule directory (`git -C "${PWD}/lib/rt64/src/contrib/plume" apply "$patch"`).
+
+
 
 ---
 
@@ -334,6 +348,17 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
     - REA (`morluto/rea`) provides on-demand native reverse engineering, APK manifest analysis, and ADB telemetry via 229 MCP tools.
     - Antigravity triggers the `reverse-engineer-anything` skill autonomously when evaluating compiled targets, missing source code, or low-level runtime evidence.
     - For ordinary repository source and scripting, agents must use native tools (`read_file`, `edit_file`) to keep token usage lean.
+16. **Extensibility Architecture, Zero-Marketplace Plugin & Personal Account Air-Gap Invariant**:
+    - Keep installed marketplace plugins at 0 to eliminate eager tool schemas and rule bloat.
+    - Implement all project runbooks as on-demand progressive disclosure skills in `.agents/skills/`.
+    - Maintain a strict air-gap from personal email and calendar accounts; all imported data must be provided as explicit, sanitized local files or chat excerpts.
+    - Always filter language server `GetAllPlugins` queries when inspecting extensions programmatically.
+17. **Obtainium Direct Asset URLs & Handheld Recomp Invariants**:
+    - Enforce direct release download URLs in Obtainium (`releases/download/<tag>/<filename>.apk`) to prevent `"no APK found"` batch update failures.
+    - AdrenoTools loaders must parse `libraryName` from `meta.json` and accept root-level `.so` entries without enforcing `arm64-v8a/` directory nesting.
+    - N64 recompilation ports must default to 60 FPS, 16:9 Expand, `Original 2x` (480p), and dual ZL+L1 crouch bindings under `#if defined(__ANDROID__)`.
+    - Unblock GitHub Actions release attachments on downstream forks via `gh api -X PUT /repos/<owner>/<repo>/actions/permissions/workflow -f default_workflow_permissions=write`.
+
 
 ---
 

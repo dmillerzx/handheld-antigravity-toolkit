@@ -127,4 +127,45 @@ When automating import/export operations that launch the Android Storage Access 
    - Confirm selection using `input keyevent 66` (ENTER) or tap the prominent "USE THIS FOLDER" / "SELECT" button.
    - If importing into Obtainium, pre-synchronizing existing export files located in canonical paths (e.g. `/storage/<SD_ID>/Downloads/obtainium-export.json`) ensures deterministic 1-click restoration.
 
+---
+
+## 6. OLED Display Calibration, Wide-Gamut Saturation & OdinTools Architecture
+
+The Retroid Pocket 5 features a 5.5-inch 1080p AMOLED display naturally covering ~140% to 150% of the sRGB color gamut (DCI-P3 wide gamut). When standard retro titles authored for sRGB (NES through PS2/GameCube/Dreamcast) are displayed unclamped, colors are boosted by ~35–40%, resulting in neon reds, glowing skin tones, and clipped highlight details.
+
+### A. Zero-Latency Hardware Display Processing
+Adjusting display saturation via Qualcomm Snapdragon 865 SurfaceFlinger calls (`service call SurfaceFlinger 1022 f <value>`) or system properties (`persist.sys.sf.color_saturation`) executes directly in the Snapdragon 865 Mobile Display Processor (MDP / DPU scanout hardware).
+- **0 ms Input Lag**: It operates at display scanout rate. It does NOT introduce an extra GPU rendering pass, framebuffer copy, or buffer queue.
+
+### B. Calibration Values & Community Targets
+
+| Saturation Value | Target Profile | Characteristics |
+|---|---|---|
+| **`0.70`** | **Color Purists / Reference sRGB** (Most Popular) | Mathematically scales the ~143% DCI-P3 gamut down to ~100% sRGB ($1.0 \div 1.43 \approx 0.70$). Skin tones, foliage, and highlights match calibrated reference design monitors and the Nintendo Switch OLED standard mode. |
+| **`0.80`** | **Balanced Sweet Spot** | Removes glowing neon skin tones and harsh texture blowouts while preserving punchy OLED contrast and vibrancy. |
+| **`0.90`** | **Subtle Shave** | Retains maximum hyper-saturated OLED "pop", shaving off only the most aggressive highlight clip. |
+
+### C. Retroid OS System Settings Breakdown (`com.android.settings.display.ColorTemperatureActivity`)
+- **Screen Optimization Modes**:
+  - `automatic_button` (*Intelligent environment adaptation*): **Must be disabled.** Continuously reads the ambient lux sensor to dynamically alter gamma, contrast, and color temperature in real-time, causing visible color drift between room lighting conditions.
+  - `increased_button` (*Screen enhancement*): Unclamped native AMOLED wide-gamut baseline. Optimal baseline when pairing with external SurfaceFlinger saturation clamping.
+  - `standard_button` (*Standard mode*): Native Retroid OS software clamp targeting standard reference color space.
+- **Color Temperature / White Balance**:
+  - `color_normal` (*nature*): Neutral D65 (6500K) reference white point. Keep this selected.
+  - `color_warm` (*warm*): Shifts white point toward amber (~5500K).
+
+### D. OdinTools (`de.langerhans.odintools`) Automation Architecture
+OdinTools automates SurfaceFlinger saturation overrides and persists them across reboots:
+1. **Root Execution Bridge (`PServerBinder`)**: OdinTools connects to the Android system daemon `PServerBinder` (present on both AYN Odin OS and Retroid OS), allowing non-root execution of privileged binder calls (`service call SurfaceFlinger 1022 f <val>`).
+2. **Boot Persistence (`BootReceiver.kt`)**: Listens for `ACTION_BOOT_COMPLETED` and automatically applies `prefs.saturationOverride` via `service call SurfaceFlinger 1022` if not `1.0f`.
+3. **Jetpack Compose Slider Coordinates (1920x1080 Landscape)**:
+   - Slider Dialog Bounding Box: `[40, 297]` to `[1319, 882]`.
+   - Track Range: Horizontal line on `y = 513` spanning `x = 671` (0.0f) to `x = 1261` (2.0f) across 19 discrete steps (0.1 increments).
+   - Centroids:
+     - 0.70: `input tap 877 513`
+     - 0.80: `input tap 907 513`
+     - 0.90: `input tap 936 513`
+     - Save Button: `input tap 1198 676`
+
+
 

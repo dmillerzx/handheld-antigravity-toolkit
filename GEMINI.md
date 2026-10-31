@@ -94,6 +94,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 - **Flycast (Dreamcast)**: `com.flycast.emulator`
 - **Daijisho (Frontend)**: `com.magneticchen.daijishou`
 - **DroidDeck (Steam Launcher)**: `com.droiddeck.launcher`
+- **Tracked Native Android Ports (Tier 1)**: `io.github.thatguymcd.dkrr.preview` (DKR-R), `com.fexed.spacecadetpinball` (Space Cadet Pinball), `org.stjr.srb2` (SRB2), `org.eukaryot.sonic3air` (Sonic 3 A.I.R.), `com.apotris.android` (Apotris), `com.izzy.kart` (SpaghettiKart), `com.starship.android` (Starship), `com.perfectdark.port` (Perfect Dark), `com.dishii.soh` (Ship of Harkinian), `com.dishii.mm` (2 Ship 2 Harkinian), `com.dishii.zelda3` (Zelda 3)
 - **Additional Frontends / Tools**: `com.magneticstarlight.beacon` (Beacon), `org.mupen64plusae.v3.fzurita` (Mupen64Plus FZ)
 
 ---
@@ -209,6 +210,10 @@ To avoid premature throttling under the 5-hour rolling rate limits and preserve 
      - **Claude and GPT Models** (`claude-sonnet-5-5`, `claude-opus-5-5`, `gpt-oss-120b`)
      - **Gemini 4 Argon** (`gemini-4-argon`)
    - When one pool's 5-hour limit approaches depletion, immediately offer to route workloads to `claude-sonnet-5-5-medium` or `gemini-4-argon`, which maintain completely independent 100% capacity buckets.
+7. **Marketplace Plugin & Tool Minimalism Invariant (Zero-Bloat Rule)**:
+   - Maintain exactly **0** third-party marketplace plugins. Never install marketplace plugins or third-party tool bundles into this provisioning workspace.
+   - Third-party plugins bundle eager tool schemas, global rules, and lifecycle hooks that inject thousands of static tokens into *every* prompt step and subagent call.
+   - Rely strictly on progressive disclosure skills (`.agents/skills/`) and targeted, lazy-loaded MCP servers (`rea`) to keep baseline turn consumption minimal.
 
 ---
 
@@ -315,6 +320,52 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
    - Skill Location: `.agents/skills/reverse-engineer-anything/`.
    - Semantic Autonomous Trigger: Antigravity activates the skill automatically whenever instructions require analyzing compiled binaries (ELF `.so`, DEX, APK, PE, IL2CPP, Dart AOT), missing source code, or low-level runtime evidence. Explicit prompting is required only when requesting specific Evidence ledger schemas or Frida sessions.
    - Repository Boundary Law: *"Skip REA for ordinary source-repository architecture analysis."* When repository source files, scripts, or documentation exist, agents must stick to standard codebase tools (`read_file`, `edit_file`) to preserve token budget.
+
+---
+
+## 22. Extensibility Architecture & Personal Account Air-Gap Invariant
+
+1. **Zero-Marketplace Plugin Invariant**:
+   - Do NOT install marketplace plugins (`agy plugin install`). All extensions must remain at 0 plugins installed (`agy plugin list`).
+   - Third-party plugins inject persistent tool definitions and rules into every turn, causing exponential token burn and eating into rolling session limits.
+2. **Progressive Disclosure Skill Standard**:
+   - All procedural runbooks and automation procedures must be implemented as standalone skills under `.agents/skills/<name>/SKILL.md`.
+   - Skills use Antigravity progressive disclosure: only their name and description are visible to the agent initially (~50 tokens total). Full runbook text is only loaded on demand when explicitly activated.
+3. **Personal Account Air-Gap & PII Boundary (Email & Calendar)**:
+   - Antigravity maintains a strict air-gap from personal communication, email, calendar, and private identity accounts. Never integrate or configure Google Workspace, Gmail, or Microsoft 365 OAuth credentials in this workspace.
+   - When schedule, calendar, or email text is required for a task, it must be provided as static, sanitized text or localized files (`.ics`, `.txt`) explicitly shared by the user in chat.
+4. **Language Server Customization Inspection Protocol**:
+   - When programmatically inspecting installed plugins or extensions, query the local language server connect endpoint (`ANTIGRAVITY_LS_ADDRESS` + `ANTIGRAVITY_CSRF_TOKEN`) via `GetAllPlugins` or run `agy plugin list`.
+   - **Never inspect `GetAllPlugins` unfiltered**: The raw response inlines the entire text of every bundled `SKILL.md`, causing immediate transcript bloat. Always filter results to name, path, and enablement state using Python or PowerShell before outputting.
+
+---
+
+## 23. Handheld Recomp, Obtainium & Adreno Driver Packaging Invariants
+
+1. **Obtainium Direct Asset URL Standard**:
+   - Obtainium records must strictly use direct release download URLs: `https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>.apk`.
+   - Never use GitHub API asset endpoints (`api.github.com/repos/.../releases/assets/<id>`), which return JSON metadata on unauthenticated GET calls and trigger `"no APK found"` during batch updates.
+   - Do not mint release tags prior to completing APK compilation and attachment.
+2. **AdrenoTools Root Driver Packaging & `meta.json` Invariant**:
+   - AdrenoTools loaders (e.g. `BanjoSDLActivity.java`) must parse `meta.json`'s `libraryName` (e.g. `libvulkan_freedreno.so`) and accept root-level `.so` entries without mandating an `arm64-v8a/` parent directory.
+   - Standard community driver archives (`TurnipZ-0.3.0.zip`, `turnip_v24.3.0_R9v2.zip`) package files at the archive root.
+3. **Android Recomp Handheld Profile Standards (RT64 / RecompUI)**:
+   - On Android first boot, default to:
+     - **Frame Rate**: 60 FPS (synced to RP5 60Hz display).
+     - **Aspect Ratio**: 16:9 Expand (eliminates pillarboxing; widescreen clamped UI).
+     - **Resolution**: `Original 2x` (480p) for clean rasterization with zero thermal throttling.
+     - **Controls**: Multi-bind Z to both Left Trigger (ZL) and Left Shoulder (L1). Dedicate Right Analog Stick to camera/C-Down.
+   - Enforce all defaults strictly inside `#if defined(__ANDROID__)`.
+4. **Downstream Fork GitHub Actions Workflow Permissions Boundary**:
+   - Forks under `dmillerzx/*` default to read-only workflow permissions. CI release workflows fail with HTTP 403 `Resource not accessible by integration` when uploading APKs unless permissions are updated:
+     ```powershell
+     gh api -X PUT /repos/<owner>/<repo>/actions/permissions/workflow -f default_workflow_permissions=write
+     ```
+5. **RT64/Plume Vulkan Null-Pipeline Guard for Adreno 650**:
+   - Qualcomm's proprietary driver crashes (`qglinternal::vkCmdBindPipeline` null dereference) if shaders bind before pipeline states are created. Always guard pipeline binding in Plume.
+   - Apply submodule patches targeting the exact directory: `git -C "${PWD}/lib/rt64/src/contrib/plume" apply "$patch"`.
+
+
 
 
 

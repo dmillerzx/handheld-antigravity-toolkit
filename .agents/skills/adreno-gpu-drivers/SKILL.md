@@ -38,12 +38,27 @@ This skill outlines the sourcing, verification, configuration, and architectural
 
 ## 3. Application Taxonomy & Driver Boundaries
 
-### A. Native Android Ports & Decompilations (Zero Driver Config Needed)
-- **Software**: *Perfect Dark*, *Super Mario 64 ALO*, *Sonic Mania Plus*, *GoldenEye 007 Recomp*, *Banjo-Kazooie Recompiled*, *Ship of Harkinian*, *2 Ship 2 Harkinian*, *Starship*, *Paperboat*, *Spaghetti Kart*, *DKR-R*, *AM2R*, *Balatro*, *PokeMMO*, *Sonic 3 A.I.R.*
-- **Rendering Boundary**: These are native C/C++ ARM64 binaries (`arm64-v8a`) compiled with SDL2, OpenGL ES 2/3, or native Vulkan. They link directly to Android's `/system/lib64/libvulkan.so` and `/system/lib64/libGLESv2.so` via Bionic libc.
-- **Rule**: Standard Android APKs **cannot and should not** load external Turnip ZIPs. They execute directly on Qualcomm's hardware Kona GPU driver at native 1080p 60 FPS with near-zero overhead.
+### A. Native Android Ports & Decompilations
+- **Standard Direct Native Ports**: *Perfect Dark*, *Super Mario 64 ALO*, *Sonic Mania Plus*, *GoldenEye 007 Recomp*, *Ship of Harkinian*, *2 Ship 2 Harkinian*, *Starship*, *Paperboat*, *Spaghetti Kart*, *DKR-R*, *AM2R*, *Balatro*, *PokeMMO*, *Sonic 3 A.I.R.*
+  - **Rendering Boundary**: These are native C/C++ ARM64 binaries (`arm64-v8a`) compiled with SDL2, OpenGL ES 2/3, or native Vulkan. They link directly to Android's `/system/lib64/libvulkan.so` and `/system/lib64/libGLESv2.so` via Bionic libc.
+  - **Rule**: Standard Android APKs **cannot and should not** load external Turnip ZIPs. They execute directly on Qualcomm's hardware Kona GPU driver at native 1080p 60 FPS with near-zero overhead.
+- **AdrenoTools-Hooked Native Recompilations**: *Banjo-Kazooie Recompiled* (`com.aure.banjorecomp`)
+  - **Why Custom Drivers Are Required**: RT64's Vulkan rendering engine triggers pipeline state crashes (`qglinternal::vkCmdBindPipeline` null pipeline dereference) on Qualcomm's stock Kona BSP driver (`api30`).
+  - **Mechanism**: The Android wrapper embeds `AdrenoTools` (`BanjoGpuDriver.java` / `libadreno_tools.so`) and scans `/sdcard/Download/drivers/` on first launch, auto-importing `TurnipZ-0.3.0.zip` or `turnip_v24.3.0_R9v2.zip` with zero user configuration required.
 
-### B. AdrenoTools Injected Standalone 3D Emulators
+### B. AdrenoTools Root Driver Packaging & `meta.json` Invariant
+- **The Law**: AdrenoTools driver loaders must locate driver shared libraries by reading `meta.json`'s `libraryName` (e.g. `libvulkan_freedreno.so`) and accept root-level files, rather than mandating an `arm64-v8a/` directory hierarchy.
+- **Failure Mode**: Standard community Turnip driver archives (e.g. `TurnipZ-0.3.0.zip`, `turnip_v24.3.0_R9v2.zip`) store `meta.json` and `libvulkan_freedreno.so` directly at the root of the ZIP. Enforcing that the `.so` parent directory must be named `arm64-v8a` causes driver import rejection with:
+  `java.io.IOException: GPU driver package contains a supported Vulkan driver soname, but not for required ABI arm64-v8a`
+- **Dynamic Soname Resolution Pattern**:
+  ```java
+  String targetSoname = (meta != null && meta.has("libraryName")) ? meta.getString("libraryName") : null;
+  if (entryName.endsWith(".so") && (targetSoname == null || entryName.endsWith(targetSoname))) {
+      // Valid driver entry accepted regardless of parent directory name
+  }
+  ```
+
+### C. AdrenoTools Injected Standalone 3D Emulators
 These emulators bundle the `AdrenoTools` dynamic linker hook library to dynamically inject external Mesa Turnip ZIPs:
 - **Azahar (Nintendo 3DS)**:
   - File: `/sdcard/Android/data/org.azahar_emu.azahar/files/config/config.ini`
@@ -60,7 +75,7 @@ These emulators bundle the `AdrenoTools` dynamic linker hook library to dynamica
 - **Switch Emulators (Sudachi / Citron / Yuzu)**:
   - Settings ➔ GPU Driver Manager ➔ Install ➔ select `TurnipZ-0.3.0.zip` or `turnip_v24.3.0_R9v2.zip`.
 
-### C. Direct OS Bounded Emulators
+### D. Direct OS Bounded Emulators
 - **ARM SX2 & NetherSX2 (PS2)**: Link directly to Android's system Vulkan ICD. In-app `.zip` file picking is unsupported. Performance is locked at 2.0x 1080p Vulkan using `HardwareDownloadMode = 1` (Disable Readbacks).
 - **DuckStation (PS1)**: 5x 1080p PGXP on native Qualcomm Vulkan.
 - **PPSSPP (PSP)**: 4x 1080p on native Qualcomm Vulkan.

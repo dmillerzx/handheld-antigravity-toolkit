@@ -98,3 +98,70 @@ Before installing anything that adds services, scheduled tasks, startup entries,
 4. **Prune** only what the diff shows is new telemetry/updater noise: set to `Manual` rather than deleting, record the change, never touch `DPMService`.
 5. **WSL2**: keep `%USERPROFILE%\.wslconfig` capped (host: 31.7 GB RAM / 16 logical CPUs -> `memory=10GB`, `processors=8`, `swap=2GB`, `autoMemoryReclaim=gradual`, `sparseVhd=true`). Apply with `wsl --shutdown`. Enabling Virtual Machine Platform turns the hypervisor on; note it in the diff.
 6. Optional, user-approval only: Defender exclusions for build directories (speeds builds, lowers protection).
+
+---
+
+## 6. Microsoft Gaming Services & COM Embedding Suppression
+
+Microsoft Gaming Services (`GamingServices`, `GamingServicesNet`) automatically register ETW custom triggers and are repeatedly re-awakened by the background COM helper `XboxPcAppFT.exe -Embedding`.
+
+### Enforcement Architecture
+- **Registry Start Type**: Must be forced directly to `Start = 3` (Manual) in `HKLM:\SYSTEM\CurrentControlSet\Services\GamingServices` and `GamingServicesNet`.
+- **COM Helper Termination**: `XboxPcAppFT.exe` must be killed; otherwise, background OLE/COM calls will trigger the service back to running state.
+- **Associated Xbox Services**: Set `XboxService`, `XblAuthManager`, `XblGameSave`, and `XboxNetApiSvc` to `Manual` and stop them.
+
+```powershell
+# Force registry start type to Manual (3)
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\GamingServices" -Name "Start" -Value 3 -Type DWord -Force
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\GamingServicesNet" -Name "Start" -Value 3 -Type DWord -Force
+
+# Kill background COM embedding task and stop services
+Stop-Process -Name XboxPcAppFT, gamingservices, gamingservicesnet -Force -ErrorAction SilentlyContinue
+Stop-Service -Name GamingServices, GamingServicesNet, XboxService, XblAuthManager, XblGameSave, XboxNetApiSvc -Force -ErrorAction SilentlyContinue
+```
+
+---
+
+## 7. Windows Defender High-Confidence Developer Directory Suite
+
+Real-time file monitoring (`MsMpEng.exe`) severely degrades build throughput during git operations, Python tooling, and Android Gradle packaging. The following paths are verified safe for real-time exclusion:
+
+- `%USERPROFILE%\Documents\AntigravityWorkingDir` (Workspace root)
+- `%USERPROFILE%\.gradle` (Gradle daemon, JAR transforms & cache)
+- `%USERPROFILE%\.android` (Android SDK debug keystores & configs)
+- `%USERPROFILE%\.gemini` (Antigravity CLI runtime, logs, & transcripts)
+- `%LOCALAPPDATA%\pip\cache` (Python wheel cache)
+- `%LOCALAPPDATA%\npm-cache` (NPM dependency cache)
+- `%LOCALAPPDATA%\Programs\Python` (Python runtime & site-packages)
+- `%USERPROFILE%\Documents\ge` (GoldenEye recomp asset cache)
+
+```powershell
+$devPaths = @(
+    "$HOME\Documents\AntigravityWorkingDir",
+    "$HOME\.gradle",
+    "$HOME\.android",
+    "$HOME\.gemini",
+    "$env:LOCALAPPDATA\pip\cache",
+    "$env:LOCALAPPDATA\npm-cache",
+    "$env:LOCALAPPDATA\Programs\Python",
+    "$HOME\Documents\ge"
+)
+foreach ($p in $devPaths) {
+    if (Test-Path $p) { Add-MpPreference -ExclusionPath $p -ErrorAction SilentlyContinue }
+}
+```
+
+---
+
+## 8. Hardware Driver Governance & Low-Latency Network Invariants
+
+1. **Vendor Reference Preference**: Dell OEM packages on the Precision 5560 are frozen on obsolete branches. Always prefer official vendor reference packages:
+   - **NVIDIA GPU**: Maintain official NVIDIA Production Branch (Enterprise) drivers (currently `610.60` with CUDA 13.3 and WDDM 3.2).
+   - **Intel UHD iGPU**: Maintain direct Intel Arc & Iris Xe reference packages (`32.0.101.7088`+) to avoid DWM memory leak regressions.
+   - **Intel Wireless**: Maintain direct Intel PROSet Wi-Fi 6 (`24.40.x`+) and Bluetooth suites for optimal latency.
+   - **Storage**: Western Digital PC SN810 NVMe relies on Windows 11 inbox `stornvme.sys` (do not install legacy OEM miniports).
+2. **Realtek USB 2.5GbE Dock Stability**:
+   - Dell dock Ethernet adapters (RTL8156/RTL8153) experience sleep disconnects if energy-saving features are enabled. Ensure the following advanced adapter properties remain enforced:
+     - `Energy-Efficient Ethernet = Disabled`
+     - `Idle Power Saving = Disabled`
+     - `Green Ethernet = Disabled`

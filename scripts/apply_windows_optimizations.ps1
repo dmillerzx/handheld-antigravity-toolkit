@@ -152,6 +152,53 @@ foreach ($oem in $oemList) {
 
 Write-Host "[OK] DriverStore Pruning Complete: $deletedCount superseded packages safely removed, $keptCount active/in-use packages protected."
 
+# 6. Microsoft Gaming Services & COM Embedding Suppression
+Write-Host "`n--- Configuring Microsoft Gaming Services & Background COM (Manual/Stopped) ---"
+$gamingRegs = @(
+    "HKLM:\SYSTEM\CurrentControlSet\Services\GamingServices",
+    "HKLM:\SYSTEM\CurrentControlSet\Services\GamingServicesNet"
+)
+foreach ($reg in $gamingRegs) {
+    if (Test-Path $reg) {
+        Set-ItemProperty -Path $reg -Name "Start" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Kill background COM embedding task and active service workers
+Stop-Process -Name XboxPcAppFT, gamingservices, gamingservicesnet -Force -ErrorAction SilentlyContinue
+$xboxServices = @('GamingServices', 'GamingServicesNet', 'XboxService', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc')
+foreach ($x in $xboxServices) {
+    $svc = Get-Service -Name $x -ErrorAction SilentlyContinue
+    if ($svc) {
+        Stop-Service -Name $x -Force -ErrorAction SilentlyContinue
+        Set-Service -Name $x -StartupType Manual -ErrorAction SilentlyContinue
+    }
+}
+Write-Host "[OK] Gaming Services Start set to Manual (3) and background COM helper stopped."
+
+# 7. Windows Defender High-Confidence Developer Exclusions
+Write-Host "`n--- Applying Developer Directory Exclusions for Windows Defender ---"
+$userProfile = [System.Environment]::GetFolderPath('UserProfile')
+$localAppData = [System.Environment]::GetFolderPath('LocalApplicationData')
+$devPaths = @(
+    "$userProfile\Documents\AntigravityWorkingDir",
+    "$userProfile\.gradle",
+    "$userProfile\.android",
+    "$userProfile\.gemini",
+    "$localAppData\pip\cache",
+    "$localAppData\npm-cache",
+    "$localAppData\Programs\Python",
+    "$userProfile\Documents\ge"
+)
+foreach ($p in $devPaths) {
+    if (Test-Path $p) {
+        Add-MpPreference -ExclusionPath $p -ErrorAction SilentlyContinue
+        Write-Host "[OK] Verified Defender exclusion: $p"
+    }
+}
+# Remove redundant child exclusion if present
+Remove-MpPreference -ExclusionPath "$userProfile\Documents\AntigravityWorkingDir\DKR-R" -ErrorAction SilentlyContinue
+
 Write-Host "`n=========================================================="
 Write-Host "  OPTIMIZATIONS APPLIED SUCCESSFULLY                      "
 Write-Host "=========================================================="

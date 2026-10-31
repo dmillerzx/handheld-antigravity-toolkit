@@ -409,6 +409,40 @@ Use `scripts/deploy_xbox_roms.py` to automate unpacking `.7z`, locating `default
   - **RetroArch**: `input_analog_deadzone = 0.10`.
   - **Native Ports**: `stick_deadzone = 6.0` to `10.0`.
 
+---
+
+## 11. N64 Recompilation Handheld Profile Standards (RT64 & RecompUI)
+
+When porting, building, or configuring N64 recompiled native Android ports (such as *Banjo-Kazooie Recompiled* and *Diddy Kong Racing Recompiled*):
+
+### A. Android Modern Handheld Presentation Baseline
+Desktop defaults (original 30 FPS, 4:3 pillarboxing, 240p original resolution) cause jarring judder and black sidebars on handheld AMOLED panels. Handheld ports must apply the following presentation policy on first launch:
+1. **Target Refresh Rate**: 60 FPS (`presentation_policy.hpp` / `config.cpp`). Synchronizes with the RP5's 60 Hz display, eliminating stutter.
+2. **Aspect Ratio**: 16:9 Expand (`AspectRatioMode::Expand`). Renders full-width widescreen while clamping UI and 2D elements within safe 16:9 boundaries without stretching 3D geometry.
+3. **Internal Resolution**: `Original 2x` (480p). Provides pixel-clean retro presentation and rock-solid 60 FPS without GPU thermal throttling on Snapdragon 865 Adreno 650.
+4. **Code Architecture Boundary**: Enforce all handheld defaults under `#if defined(__ANDROID__)` preprocessor guards in engine config sources (e.g. `src/game/config.cpp` and `RecompUI/ui_config_tab_graphics.cpp`) to preserve upstream compatibility on desktop/Linux targets.
+
+### B. Ergonomic Twin-Stick & Dual-Trigger Controls
+Handheld grips require modern twin-stick conventions:
+1. **Z-Trigger Multi-Binding**: Map `GameInput::Z` to both Left Trigger (ZL, axis 22/LT) and Left Shoulder (L1/LB). Handheld players frequently use L1 for precision crouch, ground pounds, and long jumps.
+2. **C-Down & Right Analog Camera**: In upstream configs, L1 is frequently overloaded as C-Down. Map `GameInput::C_DOWN` strictly to the Right Analog Stick (`SDL_CONTROLLER_AXIS_RIGHTY +`), freeing L1 from conflicting actions.
+
+### C. Obtainium Direct Download URL Standard
+1. **Format Invariant**: All Obtainium manifest records in `rp5_master_obtainium.json` and on-device records (`/data/data/dev.imranr.obtainium/app_flutter/app_data/*.json`) must use public browser download URLs:
+   ```text
+   https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>.apk
+   ```
+2. **Never Use GitHub REST API Asset URLs**: `https://api.github.com/repos/.../releases/assets/<id>` returns JSON metadata headers on unauthenticated GET requests, causing Obtainium to toast `"no APK found"` during batch updates.
+3. **Synchronous Release Packaging**: Never publish release tags or announce updates before the APK artifact is compiled and attached to the GitHub release.
+
+### D. Downstream Fork GitHub Actions Workflow Permissions
+Forked community repositories (`dmillerzx/*`) default to read-only workflow permissions on GitHub Actions. Even if `permissions: contents: write` is declared in workflow YAMLs, release attachment fails with HTTP 403 `Resource not accessible by integration`.
+- **Remediation**: Execute via GitHub CLI before triggering release builds:
+  ```powershell
+  gh api -X PUT /repos/<owner>/<repo>/actions/permissions/workflow -f default_workflow_permissions=write
+  ```
+
+
 
 
 
