@@ -58,4 +58,6 @@ staging/
 *.rsdk
 _n64_temp/
 DKR-R/
+Banjo-Kazooie-Recomp/
+dist/
 dkrr_logs/

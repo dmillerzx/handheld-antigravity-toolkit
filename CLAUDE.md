@@ -76,19 +76,24 @@ The following issues and components have been completely resolved and verified v
 11. **Token Efficiency, Reasoning Effort & Compaction Protocols**:
     - Evaluated third-party accelerator `Helix-for-Antigravity-2.0` and identified root causes of token burn in Antigravity: quadratic transcript accumulation ($O(N^2)$), verbose stdout dumps into `transcript.jsonl`, and reasoning effort tokens.
     - Codified strict compound one-flow execution, command output silencing (piping/redirecting large outputs to scratch logs), automated turn-25 compaction gating, and the proactive reasoning & model escalation gate across `AGENTS.md` and `GEMINI.md`.
+12. **Native Android Port Update Governance Architecture (Obtainium vs Antigravity)**:
+    - Expanded `configs/rp5_master_obtainium.json` to 20 tracked applications by integrating 10 Tier-1 native Android ports with public GitHub ARM64 releases: Space Cadet 3D Pinball (`com.fexed.spacecadetpinball`), Sonic Robo Blast 2 (`org.stjr.srb2`), Sonic 3 A.I.R. (`org.eukaryot.sonic3air`), Apotris (`com.apotris.android`), SpaghettiKart (`com.izzy.kart`), Starship (`com.starship.android`), Perfect Dark (`com.perfectdark.port`), Ship of Harkinian (`com.dishii.soh`), 2 Ship 2 Harkinian (`com.dishii.mm`), and Zelda 3 (`com.dishii.zelda3`), alongside DKR-R (`io.github.thatguymcd.dkrr.preview`).
+    - Staged updated profile directly to `/sdcard/Download/rp5_master_obtainium.json` for 1-tap on-device updating.
+    - Codified Antigravity exclusive governance over Tier 2/3 ports: Super Mario 64 (touchless binary patch `sm64.alo.clean.apk`), PaperBoat (AArch64 tagged pointer patch PR #275), GoldenEye (asset structure & adaptive icon), Balatro (Love2D PC wrapper), AM2R (PC patcher), and Sonic Mania Plus (RSDKv5 `Data.rsdk`).
 
 ---
 
 ## 3. Active Blockers & Known Technical Bottlenecks
 
-### Issue 1: The RT64 Adreno 650 Vulkan Pipeline Crash (DKR-R & Banjo Recomp)
+### Issue 1: The RT64 Adreno 650 Vulkan Pipeline Crash (DKR-R & Banjo Recomp) [SOLVED]
 - **Affected Packages**:
-  - `io.github.thatguymcd.dkrr.preview` (Diddy Kong Racing Recomp v1.0.6)
-  - `com.aure.banjorecomp` (Banjo-Kazooie Recomp v0.1.2)
-- **Root Cause Verified via Logcat** (**CORRECTED 2026-10-25**: the only captured trace is from Banjo Recomp; see `docs/handoff/dkrr-android-2026-10-25.md`):
-  - Both ports use the `RT64` Vulkan backend.
-  - Banjo Recomp (`libgame.so`): `AdrenoVK-0: Failed to link shaders. Pipeline create failed`, then a null pointer dereference (`SEGV_MAPERR`, fault addr `0x30`) inside `/vendor/lib64/hw/vulkan.adreno.so` at `qglinternal::vkCmdBindPipeline`, called from `recompui::renderer::RT64Context::send_dummy_workload(unsigned int)+132` (upstream GitHub issue #19: Adreno 650 driver incompatibility).
-  - DKR-R (`libDKR-R.so`, v1.0.6 on RP5, captured 2026-10-25 13:43): **confirmed.** plume logs 5x `AdrenoVK-0: Failed to link shaders. Pipeline create failed`, then `SIGSEGV` (fault addr 0x8) in `vulkan.adreno.so qglinternal::vkCmdBindPipeline` via `F3DDKRRT64Bridge::Dispatch` -> `RT64Renderer::send_dl`. Evidence: `docs/handoff/evidence/dkrr-1.0.6-rp5-adreno650-logcat.txt`. v1.0.10 source binds a null `VkPipeline` after a failed `vkCreate*Pipelines`; defensive fix in `dmillerzx/DKR-R` PR #1 (diagnosable failure, not a driver fix; the link failure itself is still open; CI Android compilation, lint, and pattern-guard fully green).
+  - `io.github.thatguymcd.dkrr.preview` (Diddy Kong Racing Recomp) -> **SOLVED in v1.0.11 / v1.0.13** ([dmillerzx/DKR-R](https://github.com/dmillerzx/DKR-R))
+  - `com.aure.banjorecomp` (Banjo-Kazooie Recomp) -> **SOLVED in v0.1.4** ([dmillerzx/BanjoRecomp-Android](https://github.com/dmillerzx/BanjoRecomp-Android))
+- **Resolution**:
+  - Null pipeline guard added to Plume Vulkan (`plume_vulkan.cpp`), eliminating SIGSEGV crash.
+  - Automatic Turnip driver hydration via AdrenoTools (`TurnipZ-0.3.0.zip`) extracts directly into app-private storage on boot, providing full Mesa Vulkan execution.
+  - Android-scoped Modern Handheld Profile: 60 FPS display target, 16:9 widescreen HUD/cutscenes, 480p Original2x resolution default, 360° twin-stick analog camera, and dual-trigger (ZL + L1) crouch multi-bind.
+  - Packaged as standalone signed APKs and tracked via Obtainium.
   - Standalone Android APKs cannot inject custom Turnip drivers because they bind directly to system `libvulkan.so`.
 - **Recommended Action / Workaround**:
   - Do not attempt to rewrite the APK unless recompiling with an OpenGL ES fallback or custom Turnip loader hook.
