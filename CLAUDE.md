@@ -87,7 +87,7 @@ The following issues and components have been completely resolved and verified v
 
 ### Issue 1: The RT64 Adreno 650 Vulkan Pipeline Crash (DKR-R & Banjo Recomp) [SOLVED]
 - **Affected Packages**:
-  - `io.github.thatguymcd.dkrr.preview` (Diddy Kong Racing Recomp) -> **SOLVED in v1.0.11 / v1.0.13** ([dmillerzx/DKR-R](https://github.com/dmillerzx/DKR-R))
+  - `io.github.thatguymcd.dkrr.preview` (Diddy Kong Racing Recomp) -> **SOLVED in v1.0.14** ([dmillerzx/DKR-R](https://github.com/dmillerzx/DKR-R))
   - `com.aure.banjorecomp` (Banjo-Kazooie Recomp) -> **SOLVED in v0.1.4** ([dmillerzx/BanjoRecomp-Android](https://github.com/dmillerzx/BanjoRecomp-Android))
 - **Resolution**:
   - Null pipeline guard added to Plume Vulkan (`plume_vulkan.cpp`), eliminating SIGSEGV crash.

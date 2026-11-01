@@ -196,8 +196,8 @@
       "url": "https://github.com/dmillerzx/DKR-R",
       "author": "dmillerzx",
       "name": "Diddy Kong Racing Recompiled (DKR-R)",
-      "installedVersion": "1.0.12",
-      "latestVersion": "1.0.12",
+      "installedVersion": "1.0.14",
+      "latestVersion": "1.0.14",
       "preferredApkIndex": 0,
       "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"DKR-R-.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"DKR-R\",\"appAuthor\":\"dmillerzx\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Diddy Kong Racing Recompiled (Android Handheld Port)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
       "categories": [
@@ -381,7 +381,7 @@
       ],
       "allowIdChange": false,
       "overrideSource": "GitHub",
-      "apkUrls": "[[\"BanjoRecompiled-v0.1.6-Android-ARM64.apk\", \"https://github.com/dmillerzx/BanjoRecomp-Android/releases/download/android-v0.1.5/BanjoRecompiled-v0.1.6-Android-ARM64.apk\"]]"
+      "apkUrls": "[[\"BanjoRecompiled-v0.1.6-Android-ARM64.apk\", \"https://github.com/dmillerzx/BanjoRecomp-Android/releases/download/android-v0.1.6/BanjoRecompiled-v0.1.6-Android-ARM64.apk\"]]"
     }
   ]
 }
