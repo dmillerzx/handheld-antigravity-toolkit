@@ -6,8 +6,7 @@ This file provides system context and operational instructions for Google Gemini
 
 ## 1. Persona & Context
 
-You are assisting with the automated provisioning and maintenance of a **Retroid Pocket 5** retro gaming handheld running **Android 13** on the **Snapdragon 865** chipset.
-
+You are assisting with the automated provisioning and maintenance of a **Retroid Pocket 5** retro gaming handheld running **Android 13** on the **Snapdragon 865** chipset (Qualcomm Adreno 650 GPU).
 Your primary interface to the device is **ADB (Android Debug Bridge)** over USB or local Wi-Fi pairing.
 
 ---
@@ -18,7 +17,7 @@ Your primary interface to the device is **ADB (Android Debug Bridge)** over USB 
 - **Local Platform Tools**: `platform-tools/adb.exe`
 - **Installed Python**: `python` (Python 3.12)
 - **Git Binary**: `git.exe`
-- **RP5 serial**: Read dynamically via `adb devices` (multiple devices may be attached - always use `adb -s <serial>`)
+- **RP5 serial**: Read dynamically via `adb devices` (always use `adb -s <serial>` when targeting hardware).
 - When running commands in Windows PowerShell where PATH might not be reloaded in inherited subprocesses, ensure ADB and Python are referenced cleanly using environment refreshes or absolute fallbacks.
 
 ---
@@ -37,13 +36,10 @@ MicroSD            /storage/<SD_ID>/bios
 ```
 
 **Forbidden - never create, push to, or document these on the device:**
-
 - `Games/BIOS`, `BIOS/` (upper-case), `Bios/`
 - `roms/` (lower-case), `Emulation/`, `Emulation/roms`, `Emulation/bios`
 - `/sdcard/ROMs`, `/sdcard/roms`, `/sdcard/Emulation` (no ROM directories on internal storage)
-- Any other new top-level directory on `/storage/<SD_ID>/` besides `bios`, `ROMs`, `ES-DE`, `RetroArch`, `Saves_Backup`, `Games/Steam`
-
-If a task seems to require a different path, stop and ask the user instead of creating a new folder variant. `AGENTS.md` Section 2 is the source of truth.
+- Any other new top-level directory on `/storage/<SD_ID>/` besides `bios`, `ROMs`, `ES-DE`, `RetroArch`, `Saves_Backup`, `Games/Steam`.
 
 ---
 
@@ -56,21 +52,21 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 | **Connectivity** | Confirm device is online and authorized | `adb devices` |
 | **Phantom Process** | Disable Android 13 phantom process restrictions | `adb shell "/system/bin/device_config get activity_manager max_phantom_processes"` |
 | **Storage Scaffolding** | Create canonical directories | `adb shell "ls -la /sdcard/bios /storage/<SD_ID>"` |
-| **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` (Libretro buildbot intermediateLink array for RetroArch) | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
-| **ES-DE Pre-Config** | Push `es_settings.xml` & validate `/sdcard/ES-DE/custom_systems/es_systems.xml` schema (strict XML parsing, `%DATA%=%ROMSAF%` intent tokens) | `adb shell "cat /sdcard/ES-DE/custom_systems/es_systems.xml"` |
-| **Turnip Drivers** | Stage Mesa Turnip GPU drivers (turnip_v24.3.0_R9v2 baseline, TurnipZ-0.3.0 SD865, Turnip-24.1.0 R18 a6xx) in `/sdcard/Download/drivers/` (No Adreno 7xx-only builds) | `adb shell "ls -la /sdcard/Download/drivers"` |
-| **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), Smart fan mode (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`), Regular Performance mode strictly enforced (`performance_mode 1`, Never High Performance), OLED display saturation tuned (`persist.sys.sf.color_saturation 0.90` default, `0.70` sRGB reference; Intelligent environment adaptation disabled) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode; settings get system performance_mode; getprop persist.sys.sf.color_saturation"` |
-| **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, env overrides, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
+| **Obtainium Staging** | Push `rp5_master_obtainium.json` to `/sdcard/Download/` (intermediateLink for RetroArch) | `adb shell "ls -l /sdcard/Download/rp5_master_obtainium.json"` |
+| **ES-DE Pre-Config** | Push `es_settings.xml` & validate `es_systems.xml` schema (%DATA%=%ROMSAF%) | `adb shell "cat /sdcard/ES-DE/custom_systems/es_systems.xml"` |
+| **Turnip Drivers** | Stage Mesa Turnip GPU drivers (turnip_v24.3.0_R9v2 baseline) in `/sdcard/Download/drivers/` | `adb shell "ls -la /sdcard/Download/drivers"` |
+| **Hardware Tuning** | Lockscreen disabled, overlay hidden, auto-rotate disabled (`accelerometer_rotation 0`), fan smart (`fan_mode 4`), Xbox layout, Both triggers (`persist.sys.trigger.mode 2`), Regular Performance mode (`performance_mode 1`, Never High), OLED display saturation tuned (`persist.sys.sf.color_saturation 0.90` default, `0.70` sRGB reference; auto adaptation disabled) | `adb shell "getprop persist.sys.trigger.mode; settings get system fan_mode; settings get system performance_mode; getprop persist.sys.sf.color_saturation"` |
+| **DroidDeck & Steam** | Stage DroidDeck 720p/FSR profile, libraryfolders.vdf, and Sony Vita firmware | `adb shell "cat /sdcard/DroidDeck/config.json"` |
 | **RetroArch 2D Engine** | Deploy Vulkan, Ozone, 48ms OpenSLES, Genesis Model 1 LPF, GBA 5.5kHz DSP, mGBA LCD grid | `adb shell "ls -la /storage/<SD_ID>/RetroArch/filters/audio"` |
-| **2D/Arcade Cores** | Fetch & stage 11 designated cores and frontend assets | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |
-| **Standalone 3D Profiles** | Inject tuned Vulkan/audio profiles into DuckStation, NetherSX2 (16:9 Overscan), ARM SX2 (16:9 Overscan, Disable Readbacks, %DATA%=%ROMSAF%), Dolphin (global GFX.ini AspectRatio=0 Auto, SIDevice0=6 standard GC controller, WiimoteSource0=1, WiimoteProfile1=Classic_Controller, analog triggers L=Axis 22+ R=Axis 23+, no broken PadType0 overrides), PPSSPP, Flycast, Azahar, Vita3K (initial-setup: false, Vulkan backend, pref-path) | `adb shell "cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini"` |
-| **Universal Patches** | Stage 4,700+ PS2 pnach cheats & 550 GameCube per-game profiles in patches/gcn/ smartly merged with upstream Dolphin GameSettings (Video_Settings AspectRatio=1, Gecko_Enabled) | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
-| **Save Backup Sync** | Mirror saves, savestates, and memory cards to `/storage/<SD_ID>/Saves_Backup/latest/` | `adb shell "ls -la /storage/<SD_ID>/Saves_Backup/latest"` |
+| **2D/Arcade Cores** | Fetch frontend assets; cores downloaded via in-app Online Updater | `adb shell "ls -la /storage/<SD_ID>/RetroArch/cores"` |
+| **Standalone 3D Profiles** | Inject tuned Vulkan/audio profiles into DuckStation, NetherSX2 (16:9 Overscan), ARM SX2 (16:9 Overscan, Disable Readbacks, %DATA%=%ROMSAF%), Dolphin (global GFX.ini AspectRatio=0 Auto, SIDevice0=6, WiimoteSource0=1, analog triggers L=Axis 22+ R=Axis 23+), PPSSPP, Flycast, Azahar, Vita3K | `adb shell "cat /sdcard/Android/data/org.dolphinemu.dolphinemu/files/Config/Dolphin.ini"` |
+| **Universal Patches** | Stage 4,700+ PS2 pnach cheats & 550 GameCube per-game profiles in patches/gcn/ | `adb shell "ls /sdcard/Android/data/org.dolphinemu.dolphinemu/files/GameSettings"` |
+| **Save Backup Sync** | Mirror saves, states, and memory cards to `/storage/<SD_ID>/Saves_Backup/latest/` | `adb shell "ls -la /storage/<SD_ID>/Saves_Backup/latest"` |
 | **Permissions** | Grant `MANAGE_EXTERNAL_STORAGE` across all emulators and frontends | `adb shell "appops get <package> MANAGE_EXTERNAL_STORAGE"` |
-| **Native Port Profiles** | Stage Perfect Dark (`com.perfectdark.port`) XBLA Duty Calls profile (`StickCButtons=0`, Style 8 "Ext", `MouseAimMode=1`, `CrosshairSway=0`, Lookspring OFF, `CK_8000` crouch), Super Mario 64 ALO touchless/BetterCamera/ZL multi-bind, Sonic Mania RSDKv5, GoldenEye root files + gunbarrel 007 adaptive icon (backup `/sdcard/Android/data/com.sunjaycy.goldeneye/files/` before reinstall), CannonBall OutRun | `adb shell "cat /sdcard/Android/data/com.perfectdark.port/files/pd.ini"` |
-| **LibUltraShip Ports** | Verify `baserom.us.z64` extraction generates `*.o2r` (SoH, 2S2H, Starship, PaperBoat), touch overlay disabled (`Enabled=0`), backend ID 1 OpenGL, ES-DE `.app` registered | `adb shell "ls -l /sdcard/Android/data/dev.net64.paperboat/files/pm64.o2r"` |
-| **Xbox (hakuX) ROMs** | Staged to `/storage/<SD_ID>/ROMs/xbox/` formatted as trimmed XDVDFS `.iso` via `extract-xiso -c` (78.1% space savings, DMA streaming, zero CPU decompression) | `adb shell "ls -la /storage/<SD_ID>/ROMs/xbox"` |
-| **ROM Compression** | Verify N64 ROMs are strictly uncompressed `.z64` (big-endian per Russ/RGC standard), NDS are `.nds`, 16/8-bit cartridges are `.zip`, disc ROMs are `.chd`, GC/Wii are `.rvz`, Xbox are trimmed `.iso` | `adb shell "ls -la /storage/<SD_ID>/ROMs/n64"` |
+| **Native Port Profiles** | Stage Perfect Dark XBLA Duty Calls profile (`StickCButtons=0`, Style 8 "Ext", `MouseAimMode=1`, `CK_8000` crouch), SM64 ALO touchless/BetterCamera/ZL multi-bind, Sonic Mania RSDKv5, GoldenEye root files + gunbarrel icon, CannonBall OutRun | `adb shell "cat /sdcard/Android/data/com.perfectdark.port/files/pd.ini"` |
+| **LibUltraShip Ports** | Verify `baserom.us.z64` extraction generates `*.o2r`, touch overlay disabled, backend ID 1 OpenGL, ES-DE `.app` registered | `adb shell "ls -l /sdcard/Android/data/dev.net64.paperboat/files/pm64.o2r"` |
+| **Xbox (hakuX) ROMs** | Staged to `/storage/<SD_ID>/ROMs/xbox/` formatted as trimmed XDVDFS `.iso` via `extract-xiso -c` | `adb shell "ls -la /storage/<SD_ID>/ROMs/xbox"` |
+| **ROM Compression** | N64 strictly uncompressed `.z64` (big-endian), NDS `.nds`, 16/8-bit cartridges `.zip`, disc ROMs `.chd`, GC/Wii `.rvz`, Xbox trimmed `.iso` | `adb shell "ls -la /storage/<SD_ID>/ROMs/n64"` |
 
 ---
 
@@ -94,7 +90,7 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 - **Flycast (Dreamcast)**: `com.flycast.emulator`
 - **Daijisho (Frontend)**: `com.magneticchen.daijishou`
 - **DroidDeck (Steam Launcher)**: `com.droiddeck.launcher`
-- **Tracked Native Android Ports (Tier 1)**: `io.github.thatguymcd.dkrr.preview` (DKR-R), `com.fexed.spacecadetpinball` (Space Cadet Pinball), `org.stjr.srb2` (SRB2), `org.eukaryot.sonic3air` (Sonic 3 A.I.R.), `com.apotris.android` (Apotris), `com.izzy.kart` (SpaghettiKart), `com.starship.android` (Starship), `com.perfectdark.port` (Perfect Dark), `com.dishii.soh` (Ship of Harkinian), `com.dishii.mm` (2 Ship 2 Harkinian), `com.dishii.zelda3` (Zelda 3)
+- **Tracked Native Android Ports (Tier 1)**: `io.github.thatguymcd.dkrr.preview` (DKR-R), `com.fexed.spacecadetpinball`, `org.stjr.srb2`, `org.eukaryot.sonic3air`, `com.apotris.android`, `com.izzy.kart`, `com.starship.android`, `com.perfectdark.port`, `com.dishii.soh`, `com.dishii.mm`, `com.dishii.zelda3`, `com.dishii.banjo` (BanjoRecomp)
 - **Additional Frontends / Tools**: `com.magneticstarlight.beacon` (Beacon), `org.mupen64plusae.v3.fzurita` (Mupen64Plus FZ)
 
 ---
@@ -103,290 +99,79 @@ When executing or modifying `scripts/setup_rp5.py` and `scripts/provision_all.ps
 
 To run the complete zero-touch provisioning pipeline:
 ```powershell
-.\scripts\provision_all.ps1 -Serial <SERIAL>
-```
-Or directly via Python:
-```powershell
+.\\scripts\\provision_all.ps1 -Serial <SERIAL>
+# Or via Python:
 python scripts/setup_rp5.py --serial <SERIAL> --all
 ```
-Options available:
-- `--all`: Execute complete community provisioning pipeline (hardware tuning, storage, Obtainium, DroidDeck, Vita firmware, RetroArch low-pass engine, standalone 3D profiles, widescreen patches, and save backup sync).
-- `--dry-run`: Preview ADB commands without applying them.
-- `--status`: Check device connection and print hardware specs, then exit.
-- `--serial <id>` / `-s <id>`: Target a specific device if multiple ADB instances exist.
-- `--install-apks`: Install every `.apk` staged in `apks/`.
-- `--skip-phantom`: Skip the Phantom Process Killer unlock.
-- `--skip-scaffold`: Skip canonical directory scaffolding.
-- `--skip-obtainium`: Skip pushing `rp5_master_obtainium.json`.
-- `--skip-esde`: Skip staging headless ES-DE `es_settings.xml`.
-- `--skip-drivers`: Skip staging Mesa Turnip GPU drivers.
-- `--skip-tuning`: Skip Retroid OS hardware & system tuning.
-- `--skip-permissions`: Skip the AppOps grants.
-- `--adb <path>`: Explicit path to the adb binary.
+Common options: `--status` (inspect connection), `--install-apks` (install staged APKs), `--dry-run` (preview commands).
 
 ---
 
-## 7. YouTube Tutorial & Community Research
+## 7. The 17 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
 
-To extract metadata, chapters, links, and complete timestamped transcripts from YouTube setup guides (e.g., Retro Game Corps, Joey's Retro Handhelds):
-```powershell
-python scripts/fetch_youtube.py "<url_or_video_id>"
-python scripts/fetch_youtube.py "<url_or_video_id>" -o notes/guide.md
-```
-Powered by `youtube-transcript-api` and `yt-dlp`. Structured skill definition available at `.agents/skills/youtube-research/SKILL.md`.
-
----
-
-## 8. The 17 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
-
-To guarantee emulator stability and prevent input or configuration regressions:
-1. **Never Guess INI Section Names or Key Syntaxes**: Always inspect Dolphin/emulator source code, upstream documentation, or native UI auto-mappings on the device before writing configurations. Never improvise section headers or property names.
-2. **Clean Direct Tokens Under Active Device Sections**: Under an active `Device = <name>` section, bind buttons and axes using clean, direct tokens (e.g., `Button 96`, `Axis 1-`) rather than chained or device-prefixed expressions (e.g. `` `Device:Button 96` | ... ``), which fail to parse in Android UI builds.
-3. **Flat Wiimote Extensions**: Dolphin Wiimote extensions (Classic, Nunchuk) live flat inside `[Wiimote1]` using extension prefixes (e.g., `Classic/Buttons/A = `Button 96``, `Nunchuk/Buttons/C = `Button 102``). Dolphin never recognizes standalone sections like `[Classic1]` or `[Wiimote1/Classic]`.
-4. **Literal Plus/Minus Keys**: Dolphin keys for Plus and Minus buttons are literally `+` and `-` (e.g., `Buttons/+`, `Classic/Buttons/-`), never `Plus` or `Minus`.
-5. **Always Verify with Live Hardware Logs & Screenshots**: Never declare input or emulator configuration complete without verifying via ADB dumps, live logcat output, or screen captures that in-game menus advance and inputs are cleanly captured without drawer/system popups.
-6. **Strict ES-DE Custom Systems XML Schema & `%DATA%=%ROMSAF%` Law**: Custom systems reside at `/sdcard/ES-DE/custom_systems/es_systems.xml`. ES-DE enforces strict XML parsing on boot; malformed or unclosed tags crash ES-DE with a fatal error. Always preflight XML using `xml.etree.ElementTree`. Standalone Android emulators requiring SAF Content URIs must use `%DATA%=%ROMSAF%` rather than raw `-d %ROM%` shell arguments.
-7. **Xbox Aspect Ratio & EEPROM Screen Format Standards**: Original Xbox display geometry is governed by emulated EEPROM `Screen Format` and game engine capabilities. 4:3-only titles (*Crazy Taxi 3*, *Jet Set Radio Future* v1) stretch horizontally when console format is `Wide screen` with `Auto` aspect ratio. For authentic geometry, force global `Aspect Ratio: 4:3` in hakuX (or toggle `Screen Format` to `Normal`). Decompiled `libhaku.so` confirms `gameOverrides` do not currently support aspect ratio overrides.
-8. **Hall Effect Joystick Resting Deadband Invariant**: RP5 Hall effect magnetic analog sticks have subtle resting variance (±3-5%). Always enforce a 10% deadband across Dolphin (`Dead Zone = 10.0`), ARM SX2 (`Deadzone = 0.06`), RetroArch (`input_analog_deadzone = 0.10`), PPSSPP (`AnalogDeadzone = 0.10`), Flycast (`dead_zone = 10`), and hakuX (`Left stick dead zone = 0.10` / `Right stick dead zone = 0.10` via `scripts/configure_hakux_controls.py`) to eliminate premature camera drift, resting jitter, or sprint triggering.
-9. **Obtainium Tag-to-Manifest Divergence & Version Detection Standard**: When upstream APK releases on GitHub use a release tag (e.g. `v1.0.2`) that differs from the internal `versionName` compiled into `AndroidManifest.xml` (e.g. author forgot to bump `versionName "1.0.1"` in Gradle), Obtainium's `"versionDetection": true` ("Reconcile version string with version detected from OS") causes an endless pending update loop. Obtainium detects the OS version as `1.0.1`, compares it to `v1.0.2`, flags `"This app config may prevent updates"`, and persistently queues the app for update even after repeated installs. For any app exhibiting tag-to-manifest divergence, set `"versionDetection": false` in `configs/rp5_master_obtainium.json` and set both `installedVersion` and `latestVersion` to the canonical release tag (e.g. `v1.0.2`). This instructs Obtainium to track GitHub's canonical release tags directly, clearing the update loop while properly notifying on subsequent releases. In the Obtainium UI, clear lingering update indicators using `Additional options` ➔ `Mark updated` (`Yes, mark as updated`).
-10. **Downstream CI Hot-Loop Optimization vs. Substring Contract Test Invariant**: When refactoring or patching downstream graphics pipelines (e.g., `plume_vulkan.cpp` in DKR-R) to eliminate hot-loop `stderr` logging or debug output, verify whether unit or contract test suites (e.g., `android_startup_contract_tests.py`) assert substrings or diagnostic stage tokens (`Stage::ComputePipeline`). If diagnostic strings are removed, update the contract test to assert the functional branch guard (e.g. `s_activeComputePipelineValid = false`) rather than the removed `fprintf` call.
-11. **Platform-Agnostic Git Patch Streaming in Tests**: When invoking `git apply` inside Python contract or unit tests across multiple host platforms, never pass absolute filesystem paths with Windows drive letters (`C:\...`) to `git apply <path>`. MinGW/MSYS git misinterprets Windows drive prefixes. Always stream the patch bytes via standard input: `subprocess.run(["git", "-C", stage, "apply", "--recount", "--whitespace=error", "--ignore-space-change", "-"], input=patch_path.read_bytes(), check=True)`.
-12. **Android Component Resolution & UI Automation Focus Assertion Invariant**: When authoring or executing ADB UI automation scripts, never use shorthand dot notation (`am start -n <pkg>/.<Activity>`) assuming the activity name matches the application ID, particularly for preview or flavor packages where `applicationId` (e.g. `*.preview`) differs from the compiled Java class (e.g. `*.DkrActivity`). Always resolve the exact component string via `dumpsys package <pkg> | grep -i Activity`. Furthermore, all UI automation QA test scripts MUST query `dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'` immediately post-launch to assert that the target component is actively focused in the foreground before sending evdev/key events or capturing verification screenshots. If the target package is not focused, the script must fail fast with a fatal assertion error rather than capturing an unintended background app.
-13. **Vulkan Mobile Scissor Rect & Viewport Clamping Invariant (`VUID-00282`)**: On mobile TBDR architectures (Qualcomm Adreno 6xx/7xx), negative scissor offsets (`left < 0` or `top < 0`) violate Vulkan specification `VUID-VkRect2D-offset-00282` and cause mobile hardware drivers to discard draw calls entirely. When rendering 2D/3D mixed projection viewports or widescreen letterboxes, all scissor coordinates must be clamped strictly against target framebuffer boundaries (`[0, fbWidth]`, `[0, fbHeight]`) before submitting to `vkCmdSetScissor`. Zero-area or inverted rects must fall back to `VkRect2D{ {0, 0}, {0, 0} }`.
+1. **Never Guess INI Section Names or Key Syntaxes**: Always inspect Dolphin/emulator source code, upstream docs, or native UI auto-mappings on-device before writing configs.
+2. **Clean Direct Tokens Under Active Device Sections**: Under an active `Device = <name>` section, bind buttons and axes using clean, direct tokens (e.g. `Button 96`, `Axis 1-`) rather than chained or device-prefixed expressions.
+3. **Flat Wiimote Extensions**: Dolphin Wiimote extensions live flat inside `[Wiimote1]` using extension prefixes (e.g. `Classic/Buttons/A = \`Button 96\``, `Nunchuk/Buttons/C = \`Button 102\``). Standalone sections like `[Classic1]` are invalid.
+4. **Literal Plus/Minus Keys**: Dolphin keys for Plus and Minus buttons are literally `+` and `-` (e.g. `Buttons/+`, `Classic/Buttons/-`), never `Plus` or `Minus`.
+5. **Always Verify with Live Hardware Logs & Screenshots**: Never declare input or emulator configuration complete without verifying via ADB dumps, live logcat output, or screen captures that in-game menus advance cleanly.
+6. **Strict ES-DE Custom Systems XML Schema & `%DATA%=%ROMSAF%` Law**: Custom systems reside at `/sdcard/ES-DE/custom_systems/es_systems.xml`. Preflight with `xml.etree.ElementTree`. Standalone Android emulators requiring SAF Content URIs must use `%DATA%=%ROMSAF%` rather than raw `-d %ROM%`.
+7. **Xbox Aspect Ratio & EEPROM Screen Format Standards**: Original Xbox display geometry is governed by emulated EEPROM `Screen Format` (`Normal` 4:3 vs `Wide screen` 16:9). For authentic geometry in 4:3 titles (*Crazy Taxi 3*, *JSRF* v1), force global `Aspect Ratio: 4:3` in hakuX.
+8. **Hall Effect Joystick Resting Deadband Invariant**: Enforce a 10% deadband across Dolphin (`Dead Zone = 10.0`), ARM SX2 (`Deadzone = 0.06`), RetroArch (`input_analog_deadzone = 0.10`), PPSSPP (`AnalogDeadzone = 0.10`), Flycast (`dead_zone = 10`), and hakuX (`0.10`) to eliminate premature camera drift.
+9. **Obtainium Tag-to-Manifest Divergence & Version Detection Standard**: When upstream release tags diverge from Gradle `versionName`, set `"versionDetection": false` in `rp5_master_obtainium.json` and track GitHub release tags directly, clearing endless pending update loops.
+10. **Downstream CI Hot-Loop Optimization vs. Substring Contract Test Invariant**: When removing hot-loop log statements in downstream graphics pipelines, update contract tests to assert functional branch guards rather than removed `fprintf` strings.
+11. **Platform-Agnostic Git Patch Streaming in Tests**: Never pass absolute Windows paths (`C:\\...`) to `git apply`. Always stream patch bytes via standard input: `subprocess.run(["git", "-C", stage, "apply", ...], input=patch_path.read_bytes(), check=True)`.
+12. **Android Component Resolution & UI Automation Focus Assertion Invariant**: Resolve exact activity names via `dumpsys package <pkg> | grep -i Activity`. QA scripts must assert `mCurrentFocus` matches the target component before injecting inputs or capturing screenshots.
+13. **Vulkan Mobile Scissor Rect & Viewport Clamping Invariant (`VUID-00282`)**: On mobile TBDR architectures (Adreno 650), clamp all scissor coordinates to framebuffer bounds (`[0, fbWidth]`, `[0, fbHeight]`) before calling `vkCmdSetScissor` to avoid driver draw discards.
+14. **Static Binary Recompilation ROM Version & Silent Android Failure Law**: Recompilations hardcode binary mappings to specific base ROM revisions (e.g. NTSC-U v1.0 / Rev 0). Passing subsequent revisions (Rev A / v1.1) fails hash checks silently. Port wrappers must inspect cartridge header bytes (0x3B-0x3F) and implement zero-touch boot hydration from `/storage/*/ROMs/`. Redundant revisions must be pruned from MicroSD.
+15. **Downstream Handheld Fork Discoverability & Community Release Prominence Law**: Handheld maintenance forks (`dmillerzx/*`) must configure complete GitHub topics, descriptive headers, and promote latest releases as `--latest` (`--prerelease=false`).
+16. **Release Version & AppStream Metadata Atomic Synchronization Law**: Bumping `VERSION` across projects with packaging validation (e.g. `DKR-R`) requires atomically updating `<release version="X.Y.Z" date="YYYY-MM-DD">` in `packaging/linux/*.appdata.xml`. Verify locally with `python scripts/check.py --suite tooling`.
+17. **Upstream `pull_request_target` Fork CI Triage Invariant**: Upstream GitHub Actions workflows triggered on `pull_request_target` (e.g. `AurelioB/BanjoRecomp-Android` PR #24 `validate-external`) fail with `Refusing to check out fork pull request code` due to GitHub Actions fork security policy. This is an expected upstream CI security posture, not an error with the PR changes. Never attempt to rewrite fork branch commits to "fix" upstream checkout rejections; monitor and validate via autonomous fork CI workflows (`Android APK`).
 
 ---
 
-14. **Static Binary Recompilation ROM Version & Silent Android Failure Law**: Static binary recompilations (N64Recomp, Banjo Recomp, Zelda 64 Recomp) hardcode binary mappings to specific base ROM revisions (e.g. NTSC-U v1.0 / Rev 0). Passing subsequent revisions (Rev A / v1.1) fails hash checks. Because `recompui::message_box` is a no-op printf on Android, the launcher menu fails silently back to "Load ROM". Port wrappers must inspect cartridge header bytes (0x3B-0x3F) on selection, present user-facing `AlertDialog` warnings for wrong revisions, and implement zero-touch boot hydration from `/storage/*/ROMs/` and `/sdcard/Android/data/...` to eliminate document picker friction. Redundant incompatible revisions must be pruned from the MicroSD library to avoid duplicate ES-DE entries.
-15. **Downstream Handheld Fork Discoverability & Community Release Prominence Law**: Handheld maintenance forks (`dmillerzx/*`) must configure complete GitHub topics (e.g., `retroid-pocket-5`, `snapdragon-865`, `adreno-650`, `turnip`, `vulkan`, `recompilation`, `handheld-gaming`), an informative description, and promote the latest release as `--latest` so release cards render prominently on the repository homepage sidebar. Regular synchronization releases (e.g. `v1.1.0`) must be cut on the master toolkit when substantive feature blocks accumulate.
-16. **Release Version & AppStream Metadata Atomic Synchronization Law**: In projects enforcing release metadata consistency (e.g., `DKR-R`), bumping `VERSION` without simultaneously adding a matching `<release version="X.Y.Z" date="YYYY-MM-DD">` entry into `packaging/linux/*.appdata.xml` causes hermetic CI checks (`scripts/validate_release_metadata.py` invoked by `ReleaseMetadataTests`) to fail fatally. Version increments must atomically update both `VERSION` and Linux AppStream metadata. Always verify locally with `python scripts/check.py --suite tooling` prior to pushing commits.
-17. **Upstream `pull_request_target` Fork CI Triage Invariant**: Upstream GitHub Actions workflows triggered on `pull_request_target` (such as `AurelioB/BanjoRecomp-Android` PR #24 `validate-external`) fail with `Refusing to check out fork pull request code` because GitHub Actions restricts checking out fork commits in elevated-privilege contexts. This is an expected upstream CI security posture, not an error with the PR changes. Never attempt to rewrite fork branch commits to "fix" upstream checkout rejections; monitor and validate via autonomous fork CI workflows (`Android APK`).
+## 8. Markdown Clipboard Staging Protocol
+
+When providing markdown intended for external copy/paste (GitHub, issues, PRs, Discord):
+1. Stage directly into Windows clipboard via PowerShell: `Get-Content <file> -Raw | Set-Clipboard` or `.\\scripts\\stage_clipboard.ps1 -FilePath <file>`.
+2. Ensure strict flush-left formatting (no leading 4-space indentation) so GitHub Markdown does not parse text as code blocks.
 
 ---
 
-## 9. Markdown Clipboard Staging Protocol
-
-When providing markdown text intended for the user to copy/paste to external sites (e.g., GitHub comments, issues, PR discussions, Discord, forums):
-1. **Always stage directly into Windows clipboard**: Use PowerShell `.\scripts\stage_clipboard.ps1 -FilePath <file>` or `Get-Content <file> -Raw | Set-Clipboard` so the user can immediately paste with `Ctrl+V`.
-2. **Strict Flush-Left Formatting**: Ensure zero leading indentation (no 4-space indentations) so GitHub Markdown does not parse text, headers, lists, or HTML `<details>` drawers as indented code blocks.
-
----
-
-## 10. OLED Display Sleep Invariant (Burn-in Prevention)
+## 9. OLED Display Sleep Invariant (Burn-in Prevention)
 
 Whenever finishing automation tasks, concluding a conversation turn, or awaiting user input:
-1. **Inspect Wakefulness First**: Android `input keyevent 26` (Power) is a toggle. Sending it blindly when the screen is already dozing will turn it back ON. Query `adb -s <serial> shell "dumpsys power | grep mWakefulness="`.
+1. **Inspect Wakefulness First**: Query `adb -s <serial> shell "dumpsys power | grep mWakefulness="`.
 2. **Power Down Display If Awake**: Only execute `adb -s <serial> shell input keyevent 26` if `mWakefulness=Awake`. If already `mWakefulness=Dozing` or `Asleep`, do not toggle.
 3. **Verify Sleep Status**: Execute `adb -s <serial> shell "dumpsys power | grep -E 'mHoldingDisplay|mWakefulness'"` to ensure `mHoldingDisplaySuspendBlocker=false` and `mWakefulness=Dozing`.
 
 ---
 
-## 11. Autonomous High-Confidence Proceed & Review Presentation Protocol
+## 10. Autonomous High-Confidence Proceed & Review Presentation Protocol
 
-When preparing proposals, architectural designs, or improvements (such as `/learn` proposals or system refactors):
-1. **High-Confidence Autonomous Execution**: When confidence in a recommendation, refinement, or `/learn` proposal is very high (backed by deterministic testing, schema verification, and live hardware logs), proceed with applying the changes autonomously without halting to wait for user confirmation. For all `/learn` invocations with high conviction, implement the changes automatically and only ask for confirmation if genuinely unsure or facing ambiguous tradeoffs.
-2. **Always generate a self-contained HTML review page**: Build a modern, styled `.html` file with clean typography, diff highlighting, and clear sectioning (e.g. `docs/review/<topic>.html`) to serve as an audit trail.
-3. **Provide clickable `file://` link**: Always link to the `.html` file using standard markdown `file:///` format for immediate user visibility.
-4. **Enforce Anti-Hallucination Guardrails**: Adhere strictly to the 5 Laws of Schema Verification (never invent INI keys, inspect actual emulator source or device mappings, clean direct tokens, verify live on hardware) before committing changes.
-
----
-
-## 12. GitHub Issue & Bug Report Governance (Human-in-the-Loop & Anti-AI Spam)
-
-- **No Autonomous Upstream Submissions**: NEVER autonomously submit issues, bug reports, or feature requests to third-party upstream repositories (e.g., `rt64/rt64`, `HarbourMasters/*`, etc.) via `gh issue create`. Autonomous creation is permitted ONLY on the user's personal forks and tracking repositories (`dmillerzx/*`).
-- **Upstream Submission Approval**: All bug reports or communications intended for external upstream maintainers must be drafted locally (e.g. in `docs/community_reports/`), presented to the user, and staged to clipboard (`.\scripts\stage_clipboard.ps1`) for explicit user review and manual posting.
-- **No AI-Generated Report Templates**: When drafting bug reports for external maintainers, NEVER use standard LLM templates (e.g. "Root Cause Analysis", "Suggested Fixes for Developers", bold didactic bullet lists). Keep reports concise, human, and focused purely on concrete reproduction steps, raw stack traces, and targeted context. Always verify whether upstream actually supports the target platform before raising platform-specific issues.
-- **Permanent Screenshot Permalinks**: Stage bug screenshots into `docs/assets/screenshots/<name>.png`. Ensure `.gitignore` anchors `/assets/` at root so `docs/assets/` is tracked. Commit and push to `origin main` before submitting the issue so images render via permanent raw GitHub URLs.
-- **Strict Personal Privacy & PII Protection Invariant**: NEVER leak, publish, commit, or stage the user's real name, email, physical address, or any personally identifiable information (PII) into README files, commit messages, licenses, PRs, issues, or documentation. Strictly use the public GitHub handle (`dmillerzx`) or generic terms ("community contributor", "maintainer").
-- **Cross-Link Synchronization**: Document issue URLs in `WORKQUEUE.md` and `CLAUDE.md`, and update local tracking issues (e.g. `dmillerzx/handheld-antigravity-toolkit#1`) for cross-agent awareness.
+When preparing proposals, architectural designs, or improvements:
+1. **High-Confidence Autonomous Execution**: When confidence is very high (backed by deterministic testing, schema verification, and live hardware logs), proceed with applying changes autonomously without halting.
+2. **Generate Styled HTML Review Page**: Build a self-contained, styled `.html` file with clean typography, diff highlighting, and clear sectioning (e.g. `docs/review/<topic>.html`).
+3. **Clickable Link**: Always link using standard markdown `file:///` format.
+4. **Enforce Anti-Hallucination Guardrails**: Adhere strictly to the 17 Laws of Schema Verification before committing changes.
 
 ---
 
-## 13. Token Efficiency, Reasoning Effort & Multi-Pool Quota Architecture
+## 11. GitHub Issue & Bug Report Governance (Human-in-the-Loop & Anti-AI Spam)
 
-To avoid premature throttling under the 5-hour rolling rate limits and preserve high-velocity responsiveness:
-
-1. **Reasoning Effort Invariant (`Medium` Baseline)**:
-   - Always default to `Medium` (or `Low`) reasoning effort for procedural execution, ADB tasks, script authoring, and INI configuration.
-   - `High` reasoning effort spends 2,500–5,000 hidden thinking tokens on every single tool step. It is prohibited for routine execution and permitted only during initial decompilation analysis or on explicit user request.
-2. **Proactive Reasoning & Model Escalation Gate**:
-   - If a requested task (e.g. deep C++ NDK decompilation, complex multi-file architectural refactoring, elusive race conditions, or low-level SPIR-V/Vulkan shader debugging) would benefit significantly from `High` reasoning effort or a more capable model (e.g. `Claude 3.5 Sonnet` or `Gemini Pro`), the agent MUST pause immediately, explain the technical justification, and prompt the user to make the switch in the chat UI before proceeding with execution.
-3. **Automated Turn-25 Compaction Alarm (`/compact`)**:
-   - Antigravity transmits the cumulative transcript on every interaction. To prevent multi-megabyte context bloat and quadratic token burn, the agent tracks conversation length and proactively prepends a high-visibility alert banner (`> [!IMPORTANT] Context Compaction Gate (Turn 25 Reached)`) advising the user to type `/compact` before sending their next prompt.
-4. **Strict Compound One-Flow Execution**:
-   - Group related inspections, mutations, and verification into a single compound execution pass per turn (or unified PowerShell scratch scripts). Strictly eliminate serialized `thought -> tool -> thought -> tool` exploratory micro-turns.
-5. **Output Silencing & Lean Receipts**:
-   - Never dump voluminous raw terminal/ADB outputs (e.g. `dumpsys`, full `logcat`, recursive directory trees, long test logs) directly into stdout, which permanently bloats `transcript.jsonl`. Pipe or filter outputs (`Select-Object -First 20`, `grep`), or redirect full logs to scratch files (`scratch/<name>.log`), reporting only concise exit codes and summaries.
-6. **Multi-Model Quota Balancing**:
-   - Antigravity isolates quotas into three distinct pools:
-     - **Gemini Models** (`gemini-3.8-flash`, `gemini-pro`)
-     - **Claude and GPT Models** (`claude-sonnet-5-5`, `claude-opus-5-5`, `gpt-oss-120b`)
-     - **Gemini 4 Argon** (`gemini-4-argon`)
-   - When one pool's 5-hour limit approaches depletion, immediately offer to route workloads to `claude-sonnet-5-5-medium` or `gemini-4-argon`, which maintain completely independent 100% capacity buckets.
-7. **Marketplace Plugin & Tool Minimalism Invariant (Zero-Bloat Rule)**:
-   - Maintain exactly **0** third-party marketplace plugins. Never install marketplace plugins or third-party tool bundles into this provisioning workspace.
-   - Third-party plugins bundle eager tool schemas, global rules, and lifecycle hooks that inject thousands of static tokens into *every* prompt step and subagent call.
-   - Rely strictly on progressive disclosure skills (`.agents/skills/`) and targeted, lazy-loaded MCP servers (`rea`) to keep baseline turn consumption minimal.
-8. **Subprocess & Background Task Lifecycle Hygiene**:
-   - Before concluding any multi-step investigation, test pass, or conversation turn, query `manage_task(Action='list')`. Never leave stalled, long-running, or orphaned background tasks running in the background. If an asynchronous command is no longer needed or has completed its functional role, terminate it immediately via `manage_task(Action='kill')`.
+- **No Autonomous Upstream Submissions**: NEVER autonomously submit issues, bug reports, or feature requests to third-party upstream repositories via `gh issue create`. Autonomous creation is permitted ONLY on user personal forks and tracking repositories (`dmillerzx/*`).
+- **Upstream Submission Approval**: All bug reports intended for external maintainers must be drafted locally (e.g. in `docs/community_reports/`), presented to the user, and staged to clipboard (`.\\scripts\\stage_clipboard.ps1`) for explicit user review and manual posting.
+- **Permanent Screenshot Permalinks**: Stage bug screenshots into `docs/assets/screenshots/<name>.png`. Commit and push to `origin main` before submitting issues so images render via permanent raw GitHub URLs.
+- **Strict Privacy Invariant**: NEVER leak, publish, or commit user real names, work directories, corporate file paths, or private hostnames. Scrub paths to generic forms.
 
 ---
 
-## 14. Host Workstation Optimization & Shell Execution Invariants
+## 12. Specialized Skills Reference Directory
 
-1. **Dell Precision Service Boundary Law**: Always preserve `DPMService` (Dell Peripheral Manager / `DDPM.Subagent`) to protect external monitor input switching and USB-C hub peripheral controls. Set `DellTechHub` and `DellClientManagementService` to `Manual` (or `Disabled`) and kill child subagents to eliminate ~1.3 GB of idle memory bloat.
-2. **Audio Shield Watchdog**: The scheduled task `MaxxAudioShield_AntiDistortion` locks Waves/Realtek services to `Start = 4` (Disabled) on boot and logon as `SYSTEM`, ensuring Peace Equalizer APO and RNNoise AI microphone filtering run with zero Realtek driver compression or distortion.
-3. **OneNote Tray & Phone Link Suppression**: Office Click-to-Run must be prevented from restoring `Send to OneNote.lnk` on logon via `HKCU:\Software\Microsoft\Office\16.0\OneNote\Options\Other\EnableMemoryTrayMenuItem = 0`. Windows Phone Link background permissions must remain disabled (`Disabled = 1`, `EnableMmx = 0`).
-4. **PowerShell Scratch File Execution Invariant**: When running complex PowerShell commands via agent CLI tools, never nest double-quoted script blocks or unescaped variables inside `-Command "..."`. Always stage multi-line scripts to `<appDataDir>\brain\<conversation-id>/scratch/<name>.ps1` and execute with `-File` for 100% deterministic, uncorrupted parsing.
-
----
-
-## 15. GPU Driver Architecture & Native Port Rendering Invariant
-
-1. **Adreno 650 Driver Hierarchy**: The Retroid Pocket 5 features a Qualcomm Snapdragon 865 (SM8250 / Kona) with an Adreno 650 GPU (`a6xx` family). Supported drivers:
-   - `turnip_v24.3.0_R9v2.zip`: Gold-standard general baseline (Azahar 3DS, DroidDeck DXVK).
-   - `TurnipZ-0.3.0.zip`: SD865-tailored Mesa 27.0-devel branch (highest Switch/heavy Vulkan FPS, Unreal Engine color fixes).
-   - `Turnip-24.1.0.adpkg_R18.a6xx.zip`: Dedicated `a6xx` depth clearing & tessellation fix.
-   - Qualcomm Kona Stock Driver (`com.qualcomm.qti.gpudrivers.kona.api30`): Built-in system driver; default for PS2, Dolphin baseline, and native Android ports.
-2. **Native Port Boundary**: Native Android ports (Perfect Dark, SM64 ALO, Banjo, SoH, Sonic Mania, etc.) and direct OS bounded emulators (ARM SX2, NetherSX2, PPSSPP, Flycast, DuckStation) bind directly to `/system/lib64/libvulkan.so` and execute natively on Qualcomm hardware with zero translation overhead. Do not attempt to inject Turnip ZIPs into native ports.
-3. **Adreno 6xx Invariant**: Never stage Adreno 7xx-only (`vulkan.ad07xx.so`) driver archives as primary drivers on the RP5. Always verify `meta.json` inside driver ZIPs.
-
----
-
-## 16. Controller Configuration Preservation Invariant
-
-Automated provisioning scripts (`setup_rp5.py`, `configure_standalones.py`, `provision_all.ps1`) must **never** unconditionally overwrite existing emulator controller mappings on the device:
-1. **Dolphin Controller Guard**: Always check if `GCPadNew.ini` or `WiimoteNew.ini` exists on-device before pushing. If present, skip deploying controller templates to preserve user-calibrated physical button assignments and stick deadzones.
-2. **RetroArch & Standalone Pads**: Input profiles in NetherSX2, ARM SX2, DuckStation, and PPSSPP must respect user-calibrated files once created.
-
----
-
-## 17. Architecture-Driven Platform Routing Heuristic
-
-When a title exists across multiple platforms (e.g. PS2, GameCube, PSP, Native PC):
-1. **Bespoke Console Titles**: Titles engineered natively for the PS2 architecture (e.g., *Gran Turismo 4*, *God of War*, *Devil May Cry 3*) run at a locked 60 FPS at 2.0x 1080p on the Snapdragon 865.
-2. **PC/Xbox-Ported Outliers**: Titles originally engineered for PC/Xbox architectures (DirectX 8/9 with programmable shaders, e.g., *OutRun 2006: Coast 2 Coast*) fight the PS2 hardware, triggering excessive `autoFlush` stalls and single-threaded Emotion Engine bottlenecks.
-3. **Preferred Routing**: For these outlier titles, prioritize:
-   - **PSP (PPSSPP)**: Rendered at 4x Native (1080p) with emulated CPU clock unlocked to `444 MHz` for a locked 60 FPS presentation.
-   - **GameCube (Dolphin)**: 2.5x 1080p with Gecko widescreen patches.
-   - **Native PC (DroidDeck / Wine)**: Once 32-bit x86 DX9 translation stabilizes under FEX.
-
----
-
-## 18. Community Project Orphan Takeover & Deep Engineering Session Boundary
-
-1. **Orphan Takeover Protocol**: When an upstream open-source maintainer announces departure or ends platform support (e.g. ThatGuyMcd on DKR-R Android), verify licensing (MIT/GPL), autonomously establish community continuity via `gh repo fork <owner>/<repo> --clone=false` under the user's account (`dmillerzx`), and post empathetic, technically accurate feedback explaining the hardware root cause.
-2. **Shared-Engine Triage Strategy**: When multiple ports share the same underlying engine (e.g. N64Recomp + RT64 across DKR-R and Banjo Recomp), solve the bug on the orphaned project first, then backport or submit upstream PRs to active maintainers.
-3. **Session Boundary & Reasoning Elevation Invariant**: Transitioning from high-level triage/planning to deep C++ Android NDK builds, CMake scripting, or Vulkan shader debugging MUST occur in a fresh session to eliminate transcript bloat and prevent quadratic token inflation. Explicitly prompt the user to switch to a high-reasoning model (`Claude 3.5 Sonnet` or `Gemini Pro`) with `High` thinking effort before commencing native decompilation/patching work.
-4. **Continuous Upstream Synchronization**: When maintaining an orphaned or downstream handheld fork (e.g., DKR-R Android on `dmillerzx/DKR-R`), continuously track and rebase against `upstream/main` and upstream release tags. Downstream branches must never lag behind upstream bugfixes and engine enhancements (`ahead_by: N, behind_by: 0`).
-5. **Community Standalone Release Obligation**: Handheld console users cannot compile C++ Android NDK code on-device. Whenever an upstream sync or downstream platform fix completes, package standalone signed APKs (`Package-Android-Preview.ps1`) and publish them to GitHub Releases with verified SHA-256 checksums and controller mapping instructions.
-6. **Android CMake Library Target Boundary**: Never invoke default build targets in hybrid C++/Android projects. Default targets compile desktop host tests (e.g. `DKRMipmapLoadingTests`), which fail due to native window type mismatches. Always build the specific Android shared library target (e.g. `DKRPortGame` / `libDKR-R.so`).
-7. **CI Host Test Flake Isolation**: Host test failures on unrelated platforms (e.g. WebRTC socket timing on GitHub Actions macOS VMs) must be recognized as platform-specific CI flakes and isolated from blocking Android release delivery.
-8. **Downstream Fork Branch Protection Prohibition**: Never configure GitHub branch protection rules or require mandatory passing status checks on downstream maintenance forks (`dmillerzx/*`). Upstream test flakes on unrelated OS targets (e.g., macOS VM WebRTC socket timeouts) block handheld Android PR merges, and branch protection obstructs zero-friction fast-forward rebasing against upstream release tags.
-9. **Pattern-Guard Baseline Indexing & Transition-Layer PR Invariant**: In repositories enforcing architectural pattern guards (e.g., `scripts/pattern_guard.py` rule `PG013`), newly staged dependency or platform patches must be sorted alphabetically into `architecture/pattern-guard-baseline.txt`. Accompanying pull requests must be explicitly tagged with the `transition-layer` label (`gh pr edit <PR> --add-label transition-layer`) so CI diff checks accept baseline expansion.
-10. **Local Python Linter Preflight (`ruff`)**: Before pushing commits modifying Python contract tests, build tools, or packaging scripts in repos enforcing automated linting, always execute `ruff check` and `ruff format --check` locally to eliminate CI turnaround cycles.
-11. **Homepage Release Prominence**: Standalone community APK releases must be promoted to the official latest release (`--latest`, `--prerelease=false`) so the download card and badge render prominently on the repository homepage sidebar rather than being collapsed under tags ("Create a new release").
-
----
-
-## 19. Android 13 Dynamic Linker Classloader Namespace Invariant (RetroArch Cores)
-
-On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynamic linker restricts native library loading via `classloader-namespace`:
-- **Permitted Paths**: `permitted_paths="/data:/mnt/expand:/data/user/0/com.retroarch.aarch64"`.
-- **External Storage Prohibition**: RetroArch cannot `dlopen()` any `.so` dynamic library located on `/sdcard/`, `/storage/emulated/0/`, or external MicroSD (`/storage/<SD_ID>/RetroArch/cores/`). Attempts to pass external core paths fail with:
-  `dlopen failed: library "..." is not accessible for the namespace: [name="classloader-namespace"]`
-- **Non-Root Write Boundary**: Unrooted ADB shell cannot write to `/data/user/0/com.retroarch.aarch64/cores/` (`Permission denied`), and `run-as` is unavailable on non-debuggable production builds.
-- **Operational Requirement**:
-  1. **Assets vs. Cores**: Frontend assets (Shaders, Joypad Autoconfig, Info files) can and should be staged to `/storage/<SD_ID>/RetroArch/`.
-  2. **Core Acquisition**: Executable `.so` cores **must** be downloaded directly inside RetroArch via **Online Updater ➔ Core Downloader**. Provisioning scripts and agents must not assume pushing `.so` binaries to external storage provides a functional core.
-  3. **Standalone N64 Routing**: If an in-app core download is not preferred, route N64 to standalone Mupen64Plus FZ (`org.mupen64plusae.v3.fzurita`) in `es_settings.xml`.
-
----
-
-## 20. Original Xbox Emulation (hakuX) & Dynamic Hardware Identifier Invariant
-
-1. **Original Xbox Emulation & Sector Geometry**:
-   - Package: `com.rfandango.haku_x` (tracked via Obtainium from `https://github.com/haku-x/hakux-emu` releases).
-   - Canonical Path: `/storage/<SD_ID>/ROMs/xbox/*.iso`.
-   - Disc Geometry Standard: Trimmed XDVDFS ISO images created with `extract-xiso -c` (stripping zero-byte DVD-9 padding sectors beyond the root table). Extracting into directories or keeping raw `.7z` breaks hakuX.
-   - Decompression Economics: While hakuX supports `.cso` / `.zso`, community best practice (Retro Game Corps / Russ) leads with uncompressed trimmed `.iso`. On the Snapdragon 865, streaming uncompressed XDVDFS files incurs 0% CPU decompression overhead via direct storage DMA, dedicating maximum CPU throughput to x86-to-ARM64 JIT dynamic translation.
-   - GPU Driver: Mesa Turnip Adreno 650 GPU driver.
-
-2. **Dynamic Hardware Identifier & Anti-Leak Invariant**:
-   - NEVER hardcode physical device serial numbers (e.g. `<SERIAL>`) or MicroSD filesystem UUIDs (e.g. `<SD_ID>`) into automation scripts, documentation, or commit history. Local `.git/hooks/pre-commit` enforces strict pattern rejection.
-   - All scripts must dynamically discover devices via `adb devices` (`detect_device()`) and MicroSD mount paths via `adb shell ls /storage/` (`detect_sd_id()`), providing `--serial` and `--sd-id` CLI overrides.
-
-3. **Flutter UIAutomator Bridge & DocumentsUI SAF Mechanics**:
-   - Flutter apps (like Obtainium) draw on a single hardware `SurfaceView`, causing `uiautomator dump` to return `ERROR: null root node returned by UiTestAutomationBridge` unless accessibility semantics are explicitly active. Automate using calibrated coordinate taps or DPAD/ENTER keyevents rather than looping on XML dumps.
-   - Files pushed via ADB are invisible to DocumentsUI SAF pickers until indexed. Always trigger `am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d "file:///..."` after pushing files intended for in-app import.
-
----
-
-## 21. Reverse Engineer Anything (REA) Architecture & MCP Governance
-
-1. **Framework & Package Specification**:
-   - Upstream Engine: `morluto/rea` (v6.8.0), distributed as `rea-agents` on npm.
-   - Host Runtime Invariant: Node.js LTS (`>=26.12.1`) installed via winget; global `rea-agents` installed via npm, exposing standalone `rea` CLI.
-2. **Antigravity MCP Integration**:
-   - Configuration File: `~/.gemini/config/mcp_config.json`.
-   - Transport: Stdio via `"command": "C:\\Program Files\\nodejs\\node.exe"` with args `["...\\scripts\\rea.mjs", "mcp"]`.
-   - Environment Binding: `REA_ADB_PATH` MUST explicitly point to `<WORKSPACE_ROOT>\platform-tools\adb.exe` to guarantee deterministic ADB routing regardless of subprocess PATH inheritance.
-3. **Progressive Skill Disclosure & Autonomous Execution**:
-   - Skill Location: `.agents/skills/reverse-engineer-anything/`.
-   - Semantic Autonomous Trigger: Antigravity activates the skill automatically whenever instructions require analyzing compiled binaries (ELF `.so`, DEX, APK, PE, IL2CPP, Dart AOT), missing source code, or low-level runtime evidence. Explicit prompting is required only when requesting specific Evidence ledger schemas or Frida sessions.
-   - Repository Boundary Law: *"Skip REA for ordinary source-repository architecture analysis."* When repository source files, scripts, or documentation exist, agents must stick to standard codebase tools (`read_file`, `edit_file`) to preserve token budget.
-
----
-
-## 22. Extensibility Architecture & Personal Account Air-Gap Invariant
-
-1. **Zero-Marketplace Plugin Invariant**:
-   - Do NOT install marketplace plugins (`agy plugin install`). All extensions must remain at 0 plugins installed (`agy plugin list`).
-   - Third-party plugins inject persistent tool definitions and rules into every turn, causing exponential token burn and eating into rolling session limits.
-2. **Progressive Disclosure Skill Standard**:
-   - All procedural runbooks and automation procedures must be implemented as standalone skills under `.agents/skills/<name>/SKILL.md`.
-   - Skills use Antigravity progressive disclosure: only their name and description are visible to the agent initially (~50 tokens total). Full runbook text is only loaded on demand when explicitly activated.
-3. **Personal Account Air-Gap & PII Boundary (Email & Calendar)**:
-   - Antigravity maintains a strict air-gap from personal communication, email, calendar, and private identity accounts. Never integrate or configure Google Workspace, Gmail, or Microsoft 365 OAuth credentials in this workspace.
-   - When schedule, calendar, or email text is required for a task, it must be provided as static, sanitized text or localized files (`.ics`, `.txt`) explicitly shared by the user in chat.
-4. **Language Server Customization Inspection Protocol**:
-   - When programmatically inspecting installed plugins or extensions, query the local language server connect endpoint (`ANTIGRAVITY_LS_ADDRESS` + `ANTIGRAVITY_CSRF_TOKEN`) via `GetAllPlugins` or run `agy plugin list`.
-   - **Never inspect `GetAllPlugins` unfiltered**: The raw response inlines the entire text of every bundled `SKILL.md`, causing immediate transcript bloat. Always filter results to name, path, and enablement state using Python or PowerShell before outputting.
-
----
-
-## 23. Handheld Recomp, Obtainium & Adreno Driver Packaging Invariants
-
-1. **Obtainium Direct Asset URL Standard**:
-   - Obtainium records must strictly use direct release download URLs: `https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>.apk`.
-   - Never use GitHub API asset endpoints (`api.github.com/repos/.../releases/assets/<id>`), which return JSON metadata on unauthenticated GET calls and trigger `"no APK found"` during batch updates.
-   - Do not mint release tags prior to completing APK compilation and attachment.
-2. **AdrenoTools Root Driver Packaging & `meta.json` Invariant**:
-   - AdrenoTools loaders (e.g. `BanjoSDLActivity.java`) must parse `meta.json`'s `libraryName` (e.g. `libvulkan_freedreno.so`) and accept root-level `.so` entries without mandating an `arm64-v8a/` parent directory.
-   - Standard community driver archives (`TurnipZ-0.3.0.zip`, `turnip_v24.3.0_R9v2.zip`) package files at the archive root.
-3. **Android Recomp Handheld Profile Standards (RT64 / RecompUI)**:
-   - On Android first boot, default to:
-     - **Frame Rate**: 60 FPS (synced to RP5 60Hz display).
-     - **Aspect Ratio**: 16:9 Expand (eliminates pillarboxing; widescreen clamped UI).
-     - **Resolution**: `Original 2x` (480p) for clean rasterization with zero thermal throttling.
-     - **Controls**: Multi-bind Z to both Left Trigger (ZL) and Left Shoulder (L1). Dedicate Right Analog Stick to camera/C-Down.
-   - Enforce all defaults strictly inside `#if defined(__ANDROID__)`.
-4. **Downstream Fork GitHub Actions Workflow Permissions Boundary**:
-   - Forks under `dmillerzx/*` default to read-only workflow permissions. CI release workflows fail with HTTP 403 `Resource not accessible by integration` when uploading APKs unless permissions are updated:
-     ```powershell
-     gh api -X PUT /repos/<owner>/<repo>/actions/permissions/workflow -f default_workflow_permissions=write
-     ```
-5. **RT64/Plume Vulkan Null-Pipeline Guard for Adreno 650**:
-   - Qualcomm's proprietary driver crashes (`qglinternal::vkCmdBindPipeline` null dereference) if shaders bind before pipeline states are created. Always guard pipeline binding in Plume.
-   - Apply submodule patches targeting the exact directory: `git -C "${PWD}/lib/rt64/src/contrib/plume" apply "$patch"`.
-
-
-
-
-
-
-
-
-
-
-
-
+For domain-specific runbooks, progressive skills are available in `.agents/skills/`:
+- **Downstream Fork Governance & Releases**: [`.agents/skills/handheld-fork-governance/SKILL.md`](.agents/skills/handheld-fork-governance/SKILL.md)
+- **ROM Packaging & Port Profiles**: [`.agents/skills/rom-and-port-staging/SKILL.md`](.agents/skills/rom-and-port-staging/SKILL.md)
+- **Qualcomm Adreno 650 Drivers**: [`.agents/skills/adreno-gpu-drivers/SKILL.md`](.agents/skills/adreno-gpu-drivers/SKILL.md)
+- **RP5 Hardware & OLED Display Sleep**: [`.agents/skills/rp5-device-control/SKILL.md`](.agents/skills/rp5-device-control/SKILL.md)
+- **Workstation Tuning & Audio Shield**: [`.agents/skills/workstation-tuning/SKILL.md`](.agents/skills/workstation-tuning/SKILL.md)
+- **YouTube Research & Setup Guides**: [`.agents/skills/youtube-research/SKILL.md`](.agents/skills/youtube-research/SKILL.md)
+- **Binary Reverse Engineering (REA)**: [`.agents/skills/reverse-engineer-anything/SKILL.md`](.agents/skills/reverse-engineer-anything/SKILL.md)

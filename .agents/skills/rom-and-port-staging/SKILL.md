@@ -459,7 +459,7 @@ Forked community repositories (`dmillerzx/*`) default to read-only workflow perm
    - Offset `0x3F`: Cartridge version byte (`0x00` = v1.0 / Rev 0, `0x01` = Rev A / v1.1).
    - Android wrappers must inspect byte `0x3F` on selection and display an `AlertDialog` if an unsupported revision is selected, avoiding silent returns to the menu.
 3. **Zero-Touch Boot Hydration**:
-   - In `Activity.onCreate()`, scan `/sdcard/Android/data/<pkg>/files/` and `/storage/*/ROMs/n64/` for authentic base ROMs (`NBKE `).
+   - In `Activity.onCreate()`, scan `/sdcard/Android/data/<pkg>/files/` and `/storage/*/ROMs/n64/` for authentic base ROMs (`NBKE\0`).
    - Atomically copy verified ROMs to internal storage (`data/<game_id>.z64`).
    - Ensures `recomp::is_rom_valid()` evaluates to `true` on first boot, presenting "Start Game" without file picker interaction.
 4. **MicroSD Library Deduplication**:
