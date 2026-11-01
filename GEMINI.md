@@ -137,7 +137,7 @@ Powered by `youtube-transcript-api` and `yt-dlp`. Structured skill definition av
 
 ---
 
-## 8. The 13 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
+## 8. The 17 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
 
 To guarantee emulator stability and prevent input or configuration regressions:
 1. **Never Guess INI Section Names or Key Syntaxes**: Always inspect Dolphin/emulator source code, upstream documentation, or native UI auto-mappings on the device before writing configurations. Never improvise section headers or property names.
@@ -158,6 +158,8 @@ To guarantee emulator stability and prevent input or configuration regressions:
 
 14. **Static Binary Recompilation ROM Version & Silent Android Failure Law**: Static binary recompilations (N64Recomp, Banjo Recomp, Zelda 64 Recomp) hardcode binary mappings to specific base ROM revisions (e.g. NTSC-U v1.0 / Rev 0). Passing subsequent revisions (Rev A / v1.1) fails hash checks. Because `recompui::message_box` is a no-op printf on Android, the launcher menu fails silently back to "Load ROM". Port wrappers must inspect cartridge header bytes (0x3B-0x3F) on selection, present user-facing `AlertDialog` warnings for wrong revisions, and implement zero-touch boot hydration from `/storage/*/ROMs/` and `/sdcard/Android/data/...` to eliminate document picker friction. Redundant incompatible revisions must be pruned from the MicroSD library to avoid duplicate ES-DE entries.
 15. **Downstream Handheld Fork Discoverability & Community Release Prominence Law**: Handheld maintenance forks (`dmillerzx/*`) must configure complete GitHub topics (e.g., `retroid-pocket-5`, `snapdragon-865`, `adreno-650`, `turnip`, `vulkan`, `recompilation`, `handheld-gaming`), an informative description, and promote the latest release as `--latest` so release cards render prominently on the repository homepage sidebar. Regular synchronization releases (e.g. `v1.1.0`) must be cut on the master toolkit when substantive feature blocks accumulate.
+16. **Release Version & AppStream Metadata Atomic Synchronization Law**: In projects enforcing release metadata consistency (e.g., `DKR-R`), bumping `VERSION` without simultaneously adding a matching `<release version="X.Y.Z" date="YYYY-MM-DD">` entry into `packaging/linux/*.appdata.xml` causes hermetic CI checks (`scripts/validate_release_metadata.py` invoked by `ReleaseMetadataTests`) to fail fatally. Version increments must atomically update both `VERSION` and Linux AppStream metadata. Always verify locally with `python scripts/check.py --suite tooling` prior to pushing commits.
+17. **Upstream `pull_request_target` Fork CI Triage Invariant**: Upstream GitHub Actions workflows triggered on `pull_request_target` (such as `AurelioB/BanjoRecomp-Android` PR #24 `validate-external`) fail with `Refusing to check out fork pull request code` because GitHub Actions restricts checking out fork commits in elevated-privilege contexts. This is an expected upstream CI security posture, not an error with the PR changes. Never attempt to rewrite fork branch commits to "fix" upstream checkout rejections; monitor and validate via autonomous fork CI workflows (`Android APK`).
 
 ---
 
