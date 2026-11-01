@@ -452,7 +452,19 @@ Forked community repositories (`dmillerzx/*`) default to read-only workflow perm
   gh api -X PUT /repos/<owner>/<repo>/actions/permissions/workflow -f default_workflow_permissions=write
   ```
 
+### E. Static Binary Recompilation ROM Governance & Header Inspection Standard
+1. **Base Revision Requirement**: Recompilation ports (N64Recomp, Banjo-Kazooie Recompiled, Zelda64Recomp) statically recompile specific base ROMs (e.g. NTSC-U v1.0). Alternate revisions (Rev A / v1.1) shift code offsets and fail cryptographic hash checks (`RomValidationError::IncorrectVersion`).
+2. **Cartridge Header Validation**:
+   - Offset `0x3B–0x3E`: 4-character ID (e.g. `NBKE` for Banjo-Kazooie, `NDRE` for DKR, `CZLE` for OOT).
+   - Offset `0x3F`: Cartridge version byte (`0x00` = v1.0 / Rev 0, `0x01` = Rev A / v1.1).
+   - Android wrappers must inspect byte `0x3F` on selection and display an `AlertDialog` if an unsupported revision is selected, avoiding silent returns to the menu.
+3. **Zero-Touch Boot Hydration**:
+   - In `Activity.onCreate()`, scan `/sdcard/Android/data/<pkg>/files/` and `/storage/*/ROMs/n64/` for authentic base ROMs (`NBKE `).
+   - Atomically copy verified ROMs to internal storage (`data/<game_id>.z64`).
+   - Ensures `recomp::is_rom_valid()` evaluates to `true` on first boot, presenting "Start Game" without file picker interaction.
+4. **MicroSD Library Deduplication**:
+   - Prune redundant or incompatible revisions (e.g. `Banjo-Kazooie (USA) (Rev A).z64`) from `/storage/<SD_ID>/ROMs/n64/` once the working base ROM is staged to prevent user confusion and duplicate ES-DE wheel entries.
 
-
-
-
+### F. Downstream Handheld Repository Discoverability Protocol
+1. **Repository Topics**: Configure comprehensive tags on GitHub via `gh repo edit --add-topic <tag>` (`retroid-pocket-5`, `snapdragon-865`, `adreno-650`, `turnip`, `vulkan`, `recompilation`, `handheld-gaming`, `ayn-odin`).
+2. **Homepage Release Prominence**: Standalone APK releases must be promoted as `--latest` (`--prerelease=false`) so the release card and download badge render prominently on the repository homepage.

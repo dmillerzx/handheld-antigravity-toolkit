@@ -156,6 +156,11 @@ To guarantee emulator stability and prevent input or configuration regressions:
 
 ---
 
+14. **Static Binary Recompilation ROM Version & Silent Android Failure Law**: Static binary recompilations (N64Recomp, Banjo Recomp, Zelda 64 Recomp) hardcode binary mappings to specific base ROM revisions (e.g. NTSC-U v1.0 / Rev 0). Passing subsequent revisions (Rev A / v1.1) fails hash checks. Because `recompui::message_box` is a no-op printf on Android, the launcher menu fails silently back to "Load ROM". Port wrappers must inspect cartridge header bytes (0x3B-0x3F) on selection, present user-facing `AlertDialog` warnings for wrong revisions, and implement zero-touch boot hydration from `/storage/*/ROMs/` and `/sdcard/Android/data/...` to eliminate document picker friction. Redundant incompatible revisions must be pruned from the MicroSD library to avoid duplicate ES-DE entries.
+15. **Downstream Handheld Fork Discoverability & Community Release Prominence Law**: Handheld maintenance forks (`dmillerzx/*`) must configure complete GitHub topics (e.g., `retroid-pocket-5`, `snapdragon-865`, `adreno-650`, `turnip`, `vulkan`, `recompilation`, `handheld-gaming`), an informative description, and promote the latest release as `--latest` so release cards render prominently on the repository homepage sidebar. Regular synchronization releases (e.g. `v1.1.0`) must be cut on the master toolkit when substantive feature blocks accumulate.
+
+---
+
 ## 9. Markdown Clipboard Staging Protocol
 
 When providing markdown text intended for the user to copy/paste to external sites (e.g., GitHub comments, issues, PR discussions, Discord, forums):

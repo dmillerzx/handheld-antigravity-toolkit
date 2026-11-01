@@ -313,6 +313,25 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 
 ---
 
+
+### W. Static Binary Recompilation ROM Version Invariant & Zero-Touch Hydration Law
+1. **Static Recompilation Base ROM Dependency**: Static binary recompilations (e.g., N64Recomp, Banjo Recompiled, Zelda 64 Recompiled) statically recompile the machine instructions and RAM layout of one specific base ROM revision (e.g. NTSC-U v1.0 / Rev 0). Subsequent revisions (such as Rev A / v1.1 or European PAL) feature shifted code addresses and different data tables; feeding them to `librecomp` fails cryptographic hash checks (`RomValidationError::IncorrectVersion`).
+2. **Silent Android Message Box Failure**: In RecompUI on Android, `recompui::message_box()` defaults to a console `printf("[ERROR]...")` because SDL's native message box path requires active Java Activity state. When an unsupported revision is selected, the document picker closes silently and reloads the launcher menu with "Load ROM", giving the false appearance that the game crashed or refused to open.
+3. **Cartridge Header Version Inspection**: Android port wrappers must inspect the N64 cartridge header at bytes `0x3B–0x3F` on selection:
+   - Offset `0x3B–0x3E`: Game ID (`NBKE` for Banjo-Kazooie)
+   - Offset `0x3F`: Revision byte (`0x00` = v1.0 / Rev 0, `0x01` = Rev A / v1.1, `0x02` = Rev B / v1.2)
+   - If an unsupported revision is selected, the application MUST present an explicit `AlertDialog` / `Toast` explaining that v1.0 is required.
+4. **Zero-Touch Boot Hydration**: To eliminate friction with Android's DocumentsUI on controller-based handhelds, the startup activity (`onCreate`) must scan common storage locations (`/sdcard/Android/data/<package>/files/` and MicroSD `/storage/*/ROMs/n64/`) for authentic base ROMs (`*.z64`), verify the header signature, and automatically copy the verified ROM into internal storage (`data/<game_id>.z64`). On boot, `recomp::is_rom_valid()` evaluates to `true` immediately and the primary launcher button displays "Start Game" without requiring manual file navigation.
+5. **Redundant Revision Pruning**: To prevent user selection errors and eliminate duplicate entries on ES-DE game wheels, incompatible cartridge revisions (e.g. `Banjo-Kazooie (USA) (Rev A).z64`) must be pruned from the MicroSD library once the working base ROM is verified.
+
+### X. Handheld Repository Discoverability & Release Prominence Protocol
+1. **Comprehensive Community Topics**: Community forks and provisioning toolkits under `dmillerzx/*` must configure rich GitHub repository topics (`gh repo edit --add-topic <topic>`) targeting the hardware SoC, GPU, architecture, and handheld model (e.g., `retroid-pocket-5`, `snapdragon-865`, `adreno-650`, `turnip`, `vulkan`, `recompilation`, `handheld-gaming`, `ayn-odin`, `adb-automation`).
+2. **Action-Oriented Description**: Keep repository descriptions concise and focused on hardware-specific enhancements (e.g. Adreno 650 crash fix, Turnip GPU drivers, ZIP support, 60 FPS defaults).
+3. **Homepage Release Prominence**: All standalone community APK releases must be promoted as the official latest release (`--latest`, `--prerelease=false`) so the release card and download badge render prominently on the repository homepage sidebar rather than being collapsed under tags.
+4. **Master Toolkit Release Synchronization**: When significant automation scripts, port profiles, and driver configurations accumulate on the master provisioning repository, tag and publish formal community releases (e.g. `v1.1.0`) documenting the complete ecosystem progress.
+
+---
+
 ## 5. Operational Best Practices for Agents
 
 1. **Master Runner**: Execute `.\scripts\provision_all.ps1 -Serial <SERIAL>` or `python scripts/setup_rp5.py --serial <SERIAL> --all`.
