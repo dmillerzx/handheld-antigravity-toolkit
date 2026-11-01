@@ -35,15 +35,8 @@ def get_micro_sd_id(serial: str) -> str:
 
 GAMES_QUEUE = [
     # (relative_7z_path, target_iso_name)
-    ("XBOX HDD ready (#-I) [20140930]/Gunvalkrye [!].7z", "Gunvalkyrie.iso"),
-    ("XBOX HDD ready (#-I) [20140930]/Auto Modellista [!].7z", "Auto Modellista.iso"),
-    ("XBOX HDD ready (J-Q) [20140930]/Kung Fu Chaos [!].7z", "Kung Fu Chaos.iso"),
-    ("XBOX HDD ready (R-Z) [20140930]/SSX 3 [!].7z", "SSX 3.iso"),
-    ("XBOX HDD ready (#-I) [20140930]/Amped 2 [!].7z", "Amped 2.iso"),
-    ("XBOX HDD ready (#-I) [20140930]/ESPN NHL 2K5 [!].7z", "ESPN NHL 2K5.iso"),
-    ("XBOX HDD ready (J-Q) [20140930]/Midnight Club 3 DUB Edition Remix [!].7z", "Midnight Club 3 - DUB Edition Remix.iso"),
-    ("XBOX HDD ready (#-I) [20140930]/Halo 2 [!].7z", "Halo 2.iso"),
-    ("XBOX HDD ready (R-Z) [20140930]/Sega GT Online [!].7z", "Sega GT Online.iso"),
+    ("XBOX HDD ready (J-Q) [20140930]/PGR [!].7z", "Project Gotham Racing.iso"),
+    ("XBOX HDD ready (J-Q) [20140930]/PGR2 [!].7z", "Project Gotham Racing 2.iso"),
 ]
 
 def adb_cmd(serial: str, args):
@@ -140,6 +133,10 @@ def process_game(serial: str, remote_xbox_dir: str, archive_rel: str, iso_name: 
     return True
 
 def main():
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+    except Exception:
+        pass
     parser = argparse.ArgumentParser(description="Batch stage Xbox 7z HDD games to trimmed XDVDFS ISO on RP5")
     parser.add_argument("--serial", "-s", default=None, help="ADB device serial")
     parser.add_argument("--sd-id", default=None, help="MicroSD card UUID")
