@@ -15,40 +15,50 @@ This skill provides deterministic procedures and Python toolchains for packaging
 
 Handheld frontends (ES-DE) and emulators (RetroArch cores, Mupen64Plus FZ, Dolphin, DuckStation, NetherSX2) require clean archive structures without nested subdirectories.
 
-### A. Cartridge Systems (Nintendo 64, SNES, GBA, Genesis)
+### A. Nintendo 64 (N64) — Russ's Retro Game Corps Best Practice
+- **Format**: Strictly uncompressed / extracted `.z64` (big-endian byte order).
+- **Why Uncompressed**: In Russ's Retro Game Corps guides (including the *Android Emulation Starter Guide* and device-specific setup guides), keeping N64 games unzipped rather than leaving them in `.zip` or `.7z` archives is strongly recommended. Standalone emulators (such as Mupen64Plus FZ) and certain frontends (ES-DE) experience loading, parsing, or background extraction issues with compressed N64 archives.
+- **Why `.z64` (Big-Endian)**: `.z64` files use big-endian byte ordering (the native format of the Nintendo 64 hardware), making them the universal standard across modern emulators and native PC/Android recompilation ports (Banjo-Kazooie, DKR-R, Starship, SpaghettiKart) without requiring on-the-fly byte-swapping.
+- **Rule**: Never leave N64 games in `.zip` or `.7z` archives in `/storage/<SD_ID>/ROMs/n64/`.
+
+### B. Nintendo DS (NDS)
+- **Format**: Uncompressed `.nds`. Eliminates duplicate `.zip` containers and ensures instant discovery in DraStic and melonDS DS.
+
+### C. 16-bit / 8-bit Cartridge Systems (SNES, GBA, Genesis, NES)
 - **Format**: Standard ZIP archive using Deflate compression (`ZIP_DEFLATED`, `compresslevel=9`).
 - **Archive Contents**: Exactly **one** ROM binary file directly at the root of the `.zip`. Never include nested subdirectories, `.txt` documentation, or patch notes inside the archive.
 - **Naming Rule**:
-  - N64: `<Game Title>.n64.zip` containing `<Game Title>.z64` at root.
   - SNES: `<Game Title>.sfc.zip` containing `<Game Title>.sfc`.
   - GBA: `<Game Title>.gba.zip` containing `<Game Title>.gba`.
+  - Genesis: `<Game Title>.md.zip` containing `<Game Title>.md`.
 - **Why Avoid `.7z` on Android Handhelds**:
-  1. Standalone emulators (such as Mupen64Plus FZ) do not support `.7z`.
-  2. RetroArch must decompress the full `.7z` into RAM/cache storage before booting, introducing severe launch lag on 64MB expanded ROMs.
-  3. Community `.7z` distributions frequently contain nested subfolders that break automated emulator ROM path resolution.
+  1. Standalone emulators frequently do not support `.7z`.
+  2. RetroArch must decompress the full `.7z` into RAM/cache storage before booting, introducing launch lag.
+  3. Community `.7z` distributions frequently contain nested subfolders that break automated frontend scraper matching.
 
-### B. Python Repackaging Pipeline (7z -> Canonical Deflate .n64.zip)
+### D. Python Repackaging Pipeline (7z / Zip -> Clean Uncompressed .z64)
 
 ```python
 import py7zr, zipfile, os, shutil
 
-def repack_7z_to_clean_n64_zip(in_7z: str, out_zip: str, temp_dir: str = "_temp"):
-    with py7zr.SevenZipFile(in_7z, mode='r') as z:
-        names = z.getnames()
-        # Find the .z64 / .n64 file
-        rom_entries = [n for n in names if n.lower().endswith(('.z64', '.n64', '.v64'))]
-        if not rom_entries:
-            raise FileNotFoundError("No ROM binary found in archive")
-        target_entry = rom_entries[0]
-        z.extract(path=temp_dir, targets=[target_entry])
-    
-    extracted_path = os.path.join(temp_dir, target_entry)
-    clean_filename = os.path.basename(target_entry)
-    
-    with zipfile.ZipFile(out_zip, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
-        zout.write(extracted_path, arcname=clean_filename)
-    
-    shutil.rmtree(temp_dir)
+def extract_to_clean_z64(in_archive: str, out_dir: str):
+    """Extracts N64 archive to pure big-endian .z64 per RGC best practice."""
+    if in_archive.lower().endswith(".7z"):
+        with py7zr.SevenZipFile(in_archive, mode='r') as z:
+            names = z.getnames()
+            rom_entries = [n for n in names if n.lower().endswith(('.z64', '.n64', '.v64'))]
+            if not rom_entries:
+                raise FileNotFoundError("No ROM binary found in archive")
+            target = rom_entries[0]
+            z.extract(path=out_dir, targets=[target])
+    elif in_archive.lower().endswith(".zip"):
+        with zipfile.ZipFile(in_archive, mode='r') as z:
+            names = z.namelist()
+            rom_entries = [n for n in names if n.lower().endswith(('.z64', '.n64', '.v64'))]
+            if not rom_entries:
+                raise FileNotFoundError("No ROM binary found in archive")
+            target = rom_entries[0]
+            z.extract(target, path=out_dir)
 ```
 
 ### C. Disc-Based Systems

@@ -372,8 +372,8 @@
       "url": "https://github.com/dmillerzx/BanjoRecomp-Android",
       "author": "dmillerzx",
       "name": "Banjo-Kazooie Recompiled (Banjo Recomp)",
-      "installedVersion": "0.1.3",
-      "latestVersion": "android-v0.1.3",
+      "installedVersion": "0.1.6",
+      "latestVersion": "android-v0.1.6",
       "preferredApkIndex": 0,
       "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"BanjoRecompiled-.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"Banjo-Kazooie Recompiled\",\"appAuthor\":\"dmillerzx\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Banjo-Kazooie Recompiled (Android Handheld Port)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
       "categories": [
@@ -381,7 +381,7 @@
       ],
       "allowIdChange": false,
       "overrideSource": "GitHub",
-      "apkUrls": "[[\"BanjoRecompiled-v0.1.3-Android-ARM64.apk\", \"https://github.com/dmillerzx/BanjoRecomp-Android/releases/download/android-v0.1.3/BanjoRecompiled-v0.1.3-Android-ARM64.apk\"]]"
+      "apkUrls": "[[\"BanjoRecompiled-v0.1.6-Android-ARM64.apk\", \"https://github.com/dmillerzx/BanjoRecomp-Android/releases/download/android-v0.1.5/BanjoRecompiled-v0.1.6-Android-ARM64.apk\"]]"
     }
   ]
 }

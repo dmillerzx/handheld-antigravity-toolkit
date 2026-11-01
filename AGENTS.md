@@ -190,14 +190,20 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
   - Disable on-screen touch overlays via `"gTouchControls": {"Enabled": 0}` and set backend ID `1` (OpenGL) in `<port>.cfg.json`.
   - Register standalone `.app` launcher pointing to `<package>` in `/storage/<SD_ID>/ROMs/ports/` dispatched via `<command label="Android App">%ANDROIDAPP%=%FILEINJECT%</command>`.
 
-### K. ROM Packaging & Compression Standards
-- **Cartridge Systems (N64, SNES, Genesis, GBA, NES)**:
-  - Standard Deflate `.zip` (level 9). Never push raw `.7z` archives to the device (Mupen64Plus FZ does not support `.7z`, and RetroArch experiences extraction lag on 64MB expanded ROMs).
-  - N64 convention: `<Game Title>.n64.zip` containing exactly one clean `.z64` at the root of the archive (strip all nested subfolders, `.txt` documentation, and patch notes).
-- **Disc Systems (PS1, PS2, PSP, Dreamcast, Sega CD)**:
+### K. ROM Packaging & Compression Standards (Retro Game Corps Best Practices)
+- **Nintendo 64 (N64)**:
+  - **Format**: Strictly uncompressed / extracted `.z64` (big-endian).
+  - **Rule**: Never leave N64 games in `.zip` or `.7z` archives on the device. Standalone emulators (such as Mupen64Plus-FZ) and frontends (ES-DE) experience loading, parsing, or extraction delay issues with compressed N64 archives. Big-endian `.z64` is the native format of the Nintendo 64 hardware, ensuring maximum compatibility across standalone emulators and native recompilation ports without on-the-fly byte-swapping.
+- **Nintendo DS (NDS)**:
+  - **Format**: Uncompressed `.nds`. Eliminates redundant `.zip` duplicates and ensures instant loading in standalone DraStic and melonDS DS.
+- **16-bit / 8-bit Cartridge Systems (SNES, Genesis, GBA, NES)**:
+  - Standard Deflate `.zip` (level 9, exactly 1 game per archive). Never push `.7z` archives to the device.
+- **Disc Systems (PS1, PS2, PSP, Dreamcast, Sega CD, Saturn)**:
   - Compressed `.chd` (CD-ROM/DVD MAME chdman format).
 - **Nintendo Disc Systems (GameCube, Wii)**:
-  - Compressed `.rvz` (Dolphin RVZ format with zstd/128KB chunking).
+  - Compressed `.rvz` (Dolphin RVZ format with zstd/128KB chunking) or `.wbfs` for Wii.
+- **Original Xbox (hakuX)**:
+  - Sector-aligned trimmed XDVDFS `.iso` generated via `extract-xiso -c` (78.1% space savings, direct DMA streaming, zero decompression overhead).
 
 ### L. GPU Driver Architecture & Adreno 650 Governance
 - **Device SoC**: Qualcomm Snapdragon 865 (SM8250 / Kona) with Adreno 650 GPU (`a6xx` architecture family).
@@ -365,7 +371,7 @@ On Android 10+ and strictly on Android 13 (Retroid OS on RP5), the Android dynam
 
 ---
 
-## 6. The 5 Laws of Schema Verification (Anti-Hallucination Guardrails)
+## 6. The 13 Laws of Schema Verification & Device Standards (Anti-Hallucination Guardrails)
 
 To guarantee emulator stability and prevent input or configuration regressions:
 1. **Never Guess INI Section Names or Key Syntaxes**: Always inspect Dolphin/emulator source code, upstream documentation, or native UI auto-mappings on the device before writing configurations. Never improvise section headers or property names.
@@ -373,4 +379,12 @@ To guarantee emulator stability and prevent input or configuration regressions:
 3. **Flat Wiimote Extensions**: Dolphin Wiimote extensions (Classic, Nunchuk) live flat inside `[Wiimote1]` using extension prefixes (e.g., `Classic/Buttons/A = `Button 96``, `Nunchuk/Buttons/C = `Button 102``). Dolphin never recognizes standalone sections like `[Classic1]` or `[Wiimote1/Classic]`.
 4. **Literal Plus/Minus Keys**: Dolphin keys for Plus and Minus buttons are literally `+` and `-` (e.g., `Buttons/+`, `Classic/Buttons/-`), never `Plus` or `Minus`.
 5. **Always Verify with Live Hardware Logs & Screenshots**: Never declare input or emulator configuration complete without verifying via ADB dumps, live logcat output, or screen captures that in-game menus advance and inputs are cleanly captured without drawer/system popups.
+6. **Strict ES-DE Custom Systems XML Schema & `%DATA%=%ROMSAF%` Law**: Custom systems reside at `/sdcard/ES-DE/custom_systems/es_systems.xml`. ES-DE enforces strict XML parsing on boot; malformed or unclosed tags crash ES-DE with a fatal error. Always preflight XML using `xml.etree.ElementTree`. Standalone Android emulators requiring SAF Content URIs must use `%DATA%=%ROMSAF%` rather than raw `-d %ROM%` shell arguments.
+7. **Xbox Aspect Ratio & EEPROM Screen Format Standards**: Original Xbox display geometry is governed by emulated EEPROM `Screen Format` and game engine capabilities. 4:3-only titles (*Crazy Taxi 3*, *Jet Set Radio Future* v1) stretch horizontally when console format is `Wide screen` with `Auto` aspect ratio. For authentic geometry, force global `Aspect Ratio: 4:3` in hakuX (or toggle `Screen Format` to `Normal`). Decompiled `libhaku.so` confirms `gameOverrides` do not currently support aspect ratio overrides.
+8. **Hall Effect Joystick Resting Deadband Invariant**: RP5 Hall effect magnetic analog sticks have subtle resting variance (±3-5%). Always enforce a 10% deadband across Dolphin (`Dead Zone = 10.0`), ARM SX2 (`Deadzone = 0.06`), and RetroArch (`input_analog_deadzone = 0.10`) to eliminate premature camera drift or sprint triggering.
+9. **Obtainium Tag-to-Manifest Divergence & Version Detection Standard**: When upstream APK releases on GitHub use a release tag (e.g. `v1.0.2`) that differs from the internal `versionName` compiled into `AndroidManifest.xml` (e.g. author forgot to bump `versionName "1.0.1"` in Gradle), Obtainium's `"versionDetection": true` ("Reconcile version string with version detected from OS") causes an endless pending update loop. Obtainium detects the OS version as `1.0.1`, compares it to `v1.0.2`, flags `"This app config may prevent updates"`, and persistently queues the app for update even after repeated installs. For any app exhibiting tag-to-manifest divergence, set `"versionDetection": false` in `configs/rp5_master_obtainium.json` and set both `installedVersion` and `latestVersion` to the canonical release tag (e.g. `v1.0.2`). This instructs Obtainium to track GitHub's canonical release tags directly, clearing the update loop while properly notifying on subsequent releases. In the Obtainium UI, clear lingering update indicators using `Additional options` ➔ `Mark updated` (`Yes, mark as updated`).
+10. **Downstream CI Hot-Loop Optimization vs. Substring Contract Test Invariant**: When refactoring or patching downstream graphics pipelines (e.g., `plume_vulkan.cpp` in DKR-R) to eliminate hot-loop `stderr` logging or debug output, verify whether unit or contract test suites (e.g., `android_startup_contract_tests.py`) assert substrings or diagnostic stage tokens (`Stage::ComputePipeline`). If diagnostic strings are removed, update the contract test to assert the functional branch guard (e.g. `s_activeComputePipelineValid = false`) rather than the removed `fprintf` call.
+11. **Platform-Agnostic Git Patch Streaming in Tests**: When invoking `git apply` inside Python contract or unit tests across multiple host platforms, never pass absolute filesystem paths with Windows drive letters (`C:\...`) to `git apply <path>`. MinGW/MSYS git misinterprets Windows drive prefixes. Always stream the patch bytes via standard input: `subprocess.run(["git", "-C", stage, "apply", "--recount", "--whitespace=error", "--ignore-space-change", "-"], input=patch_path.read_bytes(), check=True)`.
+12. **Android Component Resolution & UI Automation Focus Assertion Invariant**: When authoring or executing ADB UI automation scripts, never use shorthand dot notation (`am start -n <pkg>/.<Activity>`) assuming the activity name matches the application ID, particularly for preview or flavor packages where `applicationId` (e.g. `*.preview`) differs from the compiled Java class (e.g. `*.DkrActivity`). Always resolve the exact component string via `dumpsys package <pkg> | grep -i Activity`. Furthermore, all UI automation QA test scripts MUST query `dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'` immediately post-launch to assert that the target component is actively focused in the foreground before sending evdev/key events or capturing verification screenshots. If the target package is not focused, the script must fail fast with a fatal assertion error rather than capturing an unintended background app.
+13. **Vulkan Mobile Scissor Rect & Viewport Clamping Invariant (`VUID-00282`)**: On mobile TBDR architectures (Qualcomm Adreno 6xx/7xx), negative scissor offsets (`left < 0` or `top < 0`) violate Vulkan specification `VUID-VkRect2D-offset-00282` and cause mobile hardware drivers to discard draw calls entirely. When rendering 2D/3D mixed projection viewports or widescreen letterboxes, all scissor coordinates must be clamped strictly against target framebuffer boundaries (`[0, fbWidth]`, `[0, fbHeight]`) before submitting to `vkCmdSetScissor`. Zero-area or inverted rects must fall back to `VkRect2D{ {0, 0}, {0, 0} }`.
 

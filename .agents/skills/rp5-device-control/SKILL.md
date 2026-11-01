@@ -167,5 +167,32 @@ OdinTools automates SurfaceFlinger saturation overrides and persists them across
      - 0.90: `input tap 936 513`
      - Save Button: `input tap 1198 676`
 
+---
+
+## 5. Deterministic App Launch & Focus Preflight Invariant
+
+When authoring or executing ADB UI automation scripts:
+
+1. **Resolve Full Component Name**:
+   Never assume shorthand dot notation (`am start -n <pkg>/.<Activity>`) succeeds when `applicationId` differs from the compiled Java class (e.g. preview, dev, or custom flavor builds). Query the exact registered activity name via:
+   ```bash
+   adb shell "dumpsys package <package_name> | grep -E 'ActivityResolverTable|filter' -A 2"
+   ```
+
+2. **Mandatory Focus Preflight Assertion**:
+   Always assert foreground focus before sending controller inputs or taking verification screenshots to eliminate false-positive test passes on stale background apps:
+   ```python
+   def launch_and_verify_focus(package, component, timeout=5):
+       run_adb(["shell", f"am start -n {component}"])
+       start = time.time()
+       while time.time() - start < timeout:
+           focus = run_adb(["shell", "dumpsys window | grep mCurrentFocus"]).stdout
+           if package in focus:
+               return True
+           time.sleep(0.5)
+       raise RuntimeError(f"FATAL: Target app {package} failed to take foreground focus! Current: {focus.strip()}")
+   ```
+
+
 
 
