@@ -60,13 +60,14 @@ Get a factory-fresh or reset Retroid Pocket 5 fully configured in minutes:
   ```
 
 ### 4. Native Android Ports & Decompilations Ecosystem
-- Manages 19 native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app` using `%ANDROIDAPP%=%FILEINJECT%`:
+- Manages 21 native Android C/C++ source ports, static recompilations, and standalone fan projects launched directly from ES-DE via `/storage/<SD_ID>/ROMs/ports/*.app` using `%ANDROIDAPP%=%FILEINJECT%`:
   - **Super Mario 64 (sm64ex-alo)**: Native Snapdragon 865 60 FPS 1080p widescreen port with full 360° right-analog camera, ZL multi-bind, and clean touchless binary
   - **CannonBall: OutRun**: Standalone 60 FPS 16:9 widescreen arcade engine rewrite eliminating PC translation overhead
   - **Another Metroid 2 Remake (AM2R)**: Native 60 FPS 1080p AMOLED widescreen with HQ audio and physical gamepad mapping (`com.companyname.AM2RWrapper`)
   - **Sonic Mania Plus**: Retro Engine v5 native Android port (`com.decomp.rsdkv5`) running 1080p 60 FPS with full controller support and `Data.rsdk` assets
   - **Zelda N64**: Ship of Harkinian (OOT) + 3DS Link/Young Link HD models, 2 Ship 2 Harkinian (MM)
   - **Retro 2D**: Zelda 3 (A Link to the Past), Apotris (Native GBA engine rewrite, 60fps), Sonic 3 A.I.R., Sonic Robo Blast 2 (SRB2)
+  - **N64 Static Recompilations**: Banjo-Kazooie Recompiled (`com.dishii.banjorecomp` - RP5 verified, Turnip loader, auto-hydration, ZL/L1 crouch), Diddy Kong Racing Recompiled (`io.github.thatguymcd.dkrr.preview` - v1.0.14-android, Adreno 650 compute guards, 60 FPS interpolated)
   - **N64 Classics**: Mario Kart 64 (SpaghettiKart), Star Fox 64 (Starship), GoldenEye 007 (Recomp), Perfect Dark, Paper Mario 64 (PaperBoat)
   - **Fan Overhauls**: Mega Man X: Regenesis (SNES timeline), Mega Man X8 16-Bit Demake (Touch Mod v1.6 + 100% save)
   - **Modern Decomps**: Balatro (1080p 60fps AMOLED), Space Cadet 3D Pinball, PokeMMO (All 5 generations staged)
@@ -121,13 +122,14 @@ MicroSD Storage    /storage/<SD_ID>/
 ├── ROMs/                          # Game ROMs organized by system subfolder
 │   ├── gba/                       # Full verified GBA library (.zip)
 │   ├── gc/                        # GameCube games (.rvz)
-│   ├── n64/                       # Full N64 Best Set (.n64.zip)
-│   ├── nds/                       # Nintendo DS (.zip)
+│   ├── n64/                       # Full N64 library (uncompressed .z64 big-endian)
+│   ├── nds/                       # Nintendo DS (.nds)
 │   ├── ports/                     # Native Android port launchers (*.app)
 │   ├── ps2/                       # PlayStation 2 (.chd)
 │   ├── psx/                       # PlayStation 1 (.chd)
 │   ├── snes/                      # Super Nintendo (.zip)
-│   └── wii/                       # Nintendo Wii (.rvz)
+│   ├── wii/                       # Nintendo Wii (.rvz)
+│   └── xbox/                      # Original Xbox trimmed XISO images (*.iso)
 ├── ES-DE/                         # ES-DE themes, media, and gamelists
 ├── RetroArch/                     # RetroArch configs, cores, joypad profiles, shaders
 ├── Saves_Backup/                  # On-device latest and timestamped save archives
@@ -157,6 +159,11 @@ MicroSD Storage    /storage/<SD_ID>/
   - *(Note: Windows PC execution under DroidDeck / FEX x86 Proton is blocked pending upstream 32-bit DX9 translation stability; play via PPSSPP or ARM SX2 on RP5).*
 - **Apotris (Native Port)**:
   - Standalone ARM64 APK running at native 60fps with full gamepad mapping; bypasses GBA emulation.
+- **Banjo-Kazooie (Native Android Recomp)**:
+  - Native 60 FPS 1080p widescreen presentation (`16:9 Expand`) verified on the Retroid Pocket 5.
+  - Integrated AdrenoTools GPU driver loader with Mesa Turnip support, dual-trigger crouch multi-bind (`ZL` + `L1`), and automatic US v1.0 ROM hydration from `/storage/*/ROMs/n64/`.
+- **Diddy Kong Racing (DKR-R Native Port)**:
+  - Locked 60 FPS interpolated rendering at native 1080p on Snapdragon 865 / Adreno 650 with dedicated Vulkan compute pipeline guards eliminating driver crashes.
 - **GoldenEye 007 (Native Android Recomp)**:
   - Native 60 FPS execution on physical RP5 hardware with full dual-analog camera controls; Rareware intro and 007 gunbarrel sequence verified in-game.
 - **Perfect Dark (Native Android Port)**:
