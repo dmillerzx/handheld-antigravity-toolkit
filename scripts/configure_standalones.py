@@ -752,6 +752,25 @@ show-gui: true
                 self.push_file(local_settings, f"/storage/{self.sd_id}/ES-DE/settings/es_settings.xml")
         print("    [OK] ES-DE custom_systems & AlternativeEmulator mappings locked down.")
 
+    # 9. hakuX (Original Xbox)
+    def configure_hakux(self) -> None:
+        print("\n[*] Configuring hakuX (Original Xbox - 10% Hall Effect Deadzones)...")
+        pm = self.shell("pm list packages com.rfandango.haku_x", check=False)
+        if "com.rfandango.haku_x" not in pm:
+            print("    [-] hakuX (com.rfandango.haku_x) is not installed, skipping.")
+            return
+
+        if self.dry_run:
+            print("    [dry-run] Would execute scripts/configure_hakux_controls.py")
+            return
+
+        script = WORKSPACE_ROOT / "scripts" / "configure_hakux_controls.py"
+        if script.exists():
+            res = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+            for line in res.stdout.strip().splitlines():
+                print(f"    {line}")
+        print("    [OK] hakuX analog sticks optimized with 10% Hall Effect deadzones.")
+
     def run_all(self) -> None:
         print(f"\n[Standalone 3D Profiler] Active Profile: {self.profile.get('name', 'Unknown')}")
         print(f"[Standalone 3D Profiler] MicroSD Root   : {f'/storage/{self.sd_id}' if self.sd_id else 'None (/sdcard/ fallback)'}")
@@ -765,6 +784,7 @@ show-gui: true
         self.configure_flycast()
         self.configure_azahar()
         self.configure_vita3k()
+        self.configure_hakux()
         self.configure_esde_routing()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
         print("\n========================================================================")
