@@ -360,10 +360,15 @@ class RP5Provisioner:
         # 2. Disable on-screen floating game assistant icon overlay
         self.shell("settings put system is_show_floatingIcon 0", check=False)
 
-        # 3. Disable accelerometer screen auto-rotation (Retro Game Corps guideline: lock to landscape)
+        # 3. Disable accelerometer screen auto-rotation (lock orientation to landscape)
         print("    -> Disabling screen auto-rotation (locking orientation to landscape)...")
         self.shell("settings put system accelerometer_rotation 0", check=False)
-        self.shell("settings put system user_rotation 0", check=False)
+        self.shell("settings put system user_rotation 1", check=False)
+        # Remove volatile rotation tile from Quick Settings so shade swipes cannot accidentally toggle it
+        qs_tiles = self.shell("settings get secure sysui_qs_tiles", check=False).stdout.strip()
+        if "rotation" in qs_tiles.split(","):
+            new_tiles = ",".join([t for t in qs_tiles.split(",") if t != "rotation"])
+            self.shell(f"settings put secure sysui_qs_tiles '{new_tiles}'", check=False)
 
         # 4. Disable UI touch and lockscreen audio click sounds
         print("    -> Disabling touch clicks and lockscreen sound effects...")

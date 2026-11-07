@@ -15,7 +15,7 @@
     "DXVK_STATE_CACHE": "1",
     "MESA_VK_WSI_PRESENT_MODE": "mailbox",
     "TU_DEBUG": "noconform",
-    "CUSTOM_GPU_DRIVER": "/sdcard/Download/drivers/turnip_v24.3.0_R9v2.zip",
+    "CUSTOM_GPU_DRIVER": "/sdcard/Download/drivers/TurnipZ-0.3.0.zip",
     "WINEDLLOVERRIDES": "dinput8=n,b"
   },
   "storage": {

@@ -22,7 +22,8 @@ This skill provides operational workflows, CI triage protocols, and packaging pr
 
 ### B. Community Standalone Release Obligation
 - Handheld gaming users cannot compile C++ Android NDK projects on-device.
-- Whenever upstream synchronization or a downstream platform fix completes, package standalone signed APKs (`Package-Android-Preview.ps1`) and publish them to GitHub Releases.
+- Whenever upstream synchronization or a downstream platform fix completes, package standalone signed APKs (`Package-Android-Preview.ps1 -ReleaseBuild`) and publish them to GitHub Releases.
+- Standardize on exactly ONE canonical release asset per architecture (e.g., `DKR-R-<version>-Android-arm64.apk` and its `.sha256`). Never upload redundant duplicate `-preview.apk` aliases, ensuring Obtainium and end users have zero ambiguity or modal prompts.
 - Attach verified SHA-256 checksums and controller mapping instructions in the release notes.
 
 ### C. Android CMake Library Target Boundary

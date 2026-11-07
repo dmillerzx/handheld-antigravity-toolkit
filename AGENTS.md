@@ -145,10 +145,13 @@ adb shell appops set com.droiddeck.launcher REQUEST_INSTALL_PACKAGES allow
 - **Architectural Boundary**: Native Android ports and direct OS bounded emulators bind directly to `/system/lib64/libvulkan.so` with zero translation overhead. Never inject Turnip drivers into native ports. Never stage Adreno 7xx-only (`vulkan.ad07xx.so`) builds.
 *(Full runbook in `.agents/skills/adreno-gpu-drivers/SKILL.md`.)*
 
-### M. Controller Configuration Preservation Invariant
-Automated provisioning scripts must **never** unconditionally overwrite existing emulator controller mappings on-device:
-1. **Dolphin Guard**: Check if `GCPadNew.ini` or `WiimoteNew.ini` exists before pushing; skip if present to preserve user calibrations.
-2. **RetroArch & Standalone Pads**: Input profiles in NetherSX2, ARM SX2, DuckStation, and PPSSPP must respect user-calibrated files once created.
+### M. Controller Configuration & User Setting Preservation Invariant
+Automated provisioning scripts and agents must **never** unconditionally overwrite existing emulator configurations or user system settings on-device:
+1. **Monolithic Provisioning Prohibition**: Once the device is provisioned, NEVER execute `setup_rp5.py --all`, `provision_all.ps1`, or broad `--hardware` passes autonomously. The Retroid Pocket 5 is an active daily-driver console; running full provisioning wipes out manual tweaks.
+2. **Surgical, Targeted Operations Only**: All ongoing maintenance must be strictly surgical (e.g. checking a single package, pulling a specific logcat, deploying one targeted patch).
+3. **Preserve User Calibrations & Preferences**: User-defined Quick Settings tiles, fan curves, controller styles, audio click sounds, and display orientations must be treated as user-owned state. If a change is recommended, document it in repo configs and seek confirmation before modifying live hardware.
+4. **Dolphin Guard**: Check if `GCPadNew.ini` or `WiimoteNew.ini` exists before pushing; skip if present to preserve user calibrations.
+5. **RetroArch & Standalone Pads**: Input profiles in NetherSX2, ARM SX2, DuckStation, and PPSSPP must respect user-calibrated files once created.
 
 ### N. Architecture-Driven Platform Routing Heuristic
 - **Bespoke Console Titles**: Native PS2 titles (*Gran Turismo 4*, *God of War*) run locked 60 FPS at 2.0x 1080p on SD865.

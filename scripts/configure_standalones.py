@@ -666,7 +666,7 @@ VirtualGamepad = 0
     # 6. AZAHAR (3DS)
     def configure_azahar(self) -> None:
         scale = self.emulation.get("azahar_resolution_factor", 3)
-        turnip_line = "custom_driver = /sdcard/Download/drivers/turnip_v24.3.0_R9v2.zip\n" if self.supports_turnip else ""
+        turnip_line = "custom_driver = /sdcard/Download/drivers/TurnipZ-0.3.0.zip\n" if self.supports_turnip else ""
         driver_desc = "Mesa Turnip Driver" if self.supports_turnip else "System Vulkan Driver"
         print(f"\n[*] Configuring Azahar (3DS - {scale}x Vulkan, Async Shaders & {driver_desc})...")
         content = f"""[Renderer]
