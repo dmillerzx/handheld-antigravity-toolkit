@@ -136,6 +136,11 @@ When providing markdown intended for external copy/paste (GitHub, issues, PRs, D
 1. Stage directly into Windows clipboard via PowerShell: `Get-Content <file> -Raw | Set-Clipboard` or `.\\scripts\\stage_clipboard.ps1 -FilePath <file>`.
 2. Ensure strict flush-left formatting (no leading 4-space indentation) so GitHub Markdown does not parse text as code blocks.
 
+### 8.1 Windows Command Line Encoding & Mojibake Guardrail
+When publishing GitHub releases, commit messages, or tags via `gh release create` or `gh release edit`:
+- Never pass unicode em-dashes (`—`) directly in CLI argument strings on Windows PowerShell, as Windows-1252 / ANSI translation produces `â€”` mojibake.
+- Standardize on clean ASCII hyphens (` - `) in `--title`, or pass multi-line text via `--notes-file <file.md>`.
+
 ---
 
 ## 9. OLED Display Sleep Invariant (Burn-in Prevention)

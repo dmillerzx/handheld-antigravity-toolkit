@@ -169,7 +169,7 @@ OdinTools automates SurfaceFlinger saturation overrides and persists them across
 
 ---
 
-## 5. Deterministic App Launch & Focus Preflight Invariant
+## 7. Deterministic App Launch & Focus Preflight Invariant
 
 When authoring or executing ADB UI automation scripts:
 
@@ -192,6 +192,29 @@ When authoring or executing ADB UI automation scripts:
            time.sleep(0.5)
        raise RuntimeError(f"FATAL: Target app {package} failed to take foreground focus! Current: {focus.strip()}")
    ```
+
+---
+
+## 8. Display Orientation Lock & Accidental Quick-Tile Stripping
+
+The Retroid Pocket 5 uses a native 1080x1920 (portrait) AMOLED panel mounted in landscape orientation (`persist.panel.orientation: 90`). When system auto-rotate is active, any slight physical tilt flips the device into portrait.
+
+### Root Cause of Accidental Rotation
+In stock Retroid OS, the `rotation` quick settings tile sits at index 9 in `sysui_qs_tiles`. Whenever users swipe down the notification shade to adjust brightness, volume, or Wi-Fi, accidental contact frequently toggles auto-rotate back on.
+
+### Deterministic Mitigation & Fix
+1. **Strip the Volatile Quick Tile**:
+   Remove `rotation` from the active Quick Settings layout so it cannot be triggered from the pull-down shade:
+   ```bash
+   adb shell "settings put secure sysui_qs_tiles '$(settings get secure sysui_qs_tiles | sed \"s/,rotation//\")'"
+   ```
+2. **Enforce Landscape Orientation**:
+   ```bash
+   adb shell "settings put system accelerometer_rotation 0"
+   adb shell "settings put system user_rotation 1"
+   ```
+   *(Note: On the RP5 display panel, `user_rotation 1` is 90° Landscape; `user_rotation 0` is Portrait).*
+
 
 
 
