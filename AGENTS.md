@@ -182,6 +182,12 @@ Detailed runbook in [`.agents/skills/handheld-fork-governance/SKILL.md`](.agents
 3. **ES-DE Dispatch**: `%EMULATOR_HAKUX% %ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%`.
 4. **Geometry**: Original Xbox geometry is governed by emulated EEPROM `Screen Format` (`Normal` 4:3 vs. `Wide screen` 16:9) and game engine support. Force global `Aspect Ratio: 4:3` in hakuX for 4:3-only titles (*Crazy Taxi 3*, *JSRF* v1).
 
+### R. External Emulation Storage Volume Health Pre-flight (Law 19)
+Before executing batch writes, conversions, or staging on external USB/SATA drives (NTFS, exFAT, FAT32), inspect volume health via `Get-Volume`. If `HealthStatus` is not `Healthy` or `OperationalStatus` indicates repair is needed (`NeedOfflineScanAndFix` / `Full Repair Needed`), run non-destructive repair (`Repair-Volume -DriveLetter <X> -OfflineScanAndFix` or `chkdsk <X>: /f`) and verify `OperationalStatus : OK` prior to modifying files.
+
+### S. GameCube & Wii NKIT Prohibition and 1:1 Redump RVZ Standard (Law 20)
+Never stage or retain GameCube or Wii ROMs in NKIT format (`.nkit.iso`, `.nkit.gcz`, `.nkit.rvz`). NKIT strips partition padding and modifies filesystem structures, breaking cryptographic Redump verification, failing Dolphin hash checks, and causing emulation crashes. Disc images must be sourced from authentic Redump ISOs and encoded to 1:1 lossless `.rvz` (zstd level 5, 128KB chunking) via `dolphin-tool`. Legacy `.nkit.*` files must be identified and replaced.
+
 ---
 
 ## 5. Specialized Skills Reference Directory

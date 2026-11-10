@@ -468,3 +468,92 @@ Forked community repositories (`dmillerzx/*`) default to read-only workflow perm
 ### F. Downstream Handheld Repository Discoverability Protocol
 1. **Repository Topics**: Configure comprehensive tags on GitHub via `gh repo edit --add-topic <tag>` (`retroid-pocket-5`, `snapdragon-865`, `adreno-650`, `turnip`, `vulkan`, `recompilation`, `handheld-gaming`, `ayn-odin`).
 2. **Homepage Release Prominence**: Standalone APK releases must be promoted as `--latest` (`--prerelease=false`) so the release card and download badge render prominently on the repository homepage.
+
+---
+
+## 12. External Emulation Drive Health Pre-flight (Law 19)
+
+Prior to executing multi-gigabyte batch writes, in-place conversions, or staging operations against external USB/SATA emulation storage (NTFS, exFAT, FAT32), verify volume health via PowerShell:
+
+```powershell
+# 1. Inspect volume operational status
+Get-Volume -DriveLetter <Drive> | Select-Object DriveLetter, FileSystemLabel, HealthStatus, OperationalStatus
+
+# 2. Non-destructive scan and fix if flagged
+if ($vol.OperationalStatus -ne "OK") {
+    Repair-Volume -DriveLetter <Drive> -OfflineScanAndFix
+}
+
+# 3. Confirm clean health before proceeding
+Get-Volume -DriveLetter <Drive> | Select-Object OperationalStatus, HealthStatus
+```
+
+---
+
+## 13. Multi-Core In-Place Cartridge Repackaging Toolchain
+
+For 16-bit / 8-bit cartridge libraries (SNES `.sfc`, Genesis `.md`, Game Gear `.gg`, Master System `.sms`, 32X `.32x`), loose binaries waste NTFS cluster allocations and slow frontend directory parsing.
+
+Use multi-threaded atomic in-place packaging with Deflate level 9:
+
+```python
+import os, sys, time, zipfile
+from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+def process_single_rom(file_path_str: str) -> tuple[bool, str, int, int]:
+    f = Path(file_path_str)
+    orig_size = f.stat().st_size
+    target_zip = f.parent / f"{f.stem}.zip"
+    temp_zip = f.parent / f"{f.stem}.tmp.zip"
+    
+    try:
+        # Atomic write to temporary zip
+        with zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+            zf.write(f, arcname=f.name)
+            
+        # In-memory integrity validation
+        with zipfile.ZipFile(temp_zip, 'r') as zf:
+            if zf.testzip() is not None:
+                temp_zip.unlink(missing_ok=True)
+                return False, f"Corruption in {f.name}", 0, 0
+                
+        # Promote temporary zip to target
+        if target_zip.exists():
+            target_zip.unlink()
+        temp_zip.rename(target_zip)
+        
+        # Safely remove original uncompressed binary
+        f.unlink()
+        return True, f.name, orig_size, target_zip.stat().st_size
+    except Exception as e:
+        if temp_zip.exists():
+            temp_zip.unlink(missing_ok=True)
+        return False, str(e), 0, 0
+```
+
+---
+
+## 14. GameCube & Wii NKIT Remediation Protocol (Law 20)
+
+NKIT formats (`.nkit.iso`, `.nkit.gcz`, `.nkit.rvz`) strip partition garbage data and modify filesystem headers, breaking cryptographic Redump verification, failing Dolphin hash checks, and causing emulation crashes.
+
+### Remediation Protocol:
+1. **Audit Storage**:
+   ```powershell
+   Get-ChildItem -Path "<Path>\Nintendo - GameCube" -Recurse | Where-Object { $_.Name -match "\.nkit\." }
+   ```
+2. **Standard Conversion Pipeline**: Sourced authentic Redump ISOs must be converted directly to 1:1 lossless `.rvz` (zstd level 5, 128KB chunking):
+   ```powershell
+   npx dolphin-tool convert -i "<clean_dump>.iso" -o "<target>.rvz" -f rvz -c zstd -l 5 -b 131072
+   ```
+3. **Purge Defective NKITs**: Delete obsolete `.nkit.*` files once clean RVZ images are staged.
+
+---
+
+## 15. Wii Mod & Track Pack (Pulsar) State Synchronization
+
+When deploying major community modifications (such as *Mario Kart Wii Deluxe X*):
+1. **Disc Payload Staging**: Deploy `.wbfs` or `.rvz` directly to `<Drive>:\Games\Nintendo - Wii\Mario Kart Wii Deluxe X -Blue Edition-.wbfs`.
+2. **Telemetry & Settings Sync**: Pulsar custom track settings, cup unlocks, and ghost telemetry reside at `/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Wii/shared2/Pulsar/deluxeX/Settings.pul`.
+3. **Dolphin Mirror**: Always sync `/sdcard/.../Pulsar/deluxeX/` to `<Drive>:\Dolphin Settings\Wii\shared2\Pulsar\deluxeX\` to preserve player records across platforms.
