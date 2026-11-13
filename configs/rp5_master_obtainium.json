@@ -382,6 +382,38 @@
       "allowIdChange": false,
       "overrideSource": "GitHub",
       "apkUrls": "[[\"BanjoRecompiled-v0.1.6-Android-ARM64.apk\", \"https://github.com/dmillerzx/BanjoRecomp-Android/releases/download/android-v0.1.6/BanjoRecompiled-v0.1.6-Android-ARM64.apk\"]]"
+    },
+    {
+      "id": "com.deivid22srk.dk64recomp",
+      "url": "https://github.com/deivid22srk/dk64-recomp-android",
+      "author": "deivid22srk",
+      "name": "Donkey Kong 64 Recompiled",
+      "installedVersion": "v1.0.3-android-r7",
+      "latestVersion": "v1.0.3-android-r7",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"filterReleaseTitlesByRegEx\": \"\", \"filterReleaseNotesByRegEx\": \"\", \"verifyLatestTag\": false, \"sortMethodChoice\": \"date\", \"useLatestAssetDateAsReleaseDate\": false, \"releaseTitleAsVersion\": false, \"trackOnly\": false, \"versionExtractionRegEx\": \"\", \"matchGroupToUse\": \"\", \"versionDetection\": true, \"releaseDateAsVersion\": false, \"useVersionCodeAsOSVersion\": false, \"apkFilterRegEx\": \"dk64recomp.*\\\\.apk$\", \"invertAPKFilter\": false, \"autoApkFilterByArch\": true, \"minimumUpdateAgeDays\": \"\", \"appName\": \"DK64 Recompiled\", \"appAuthor\": \"deivid22srk\", \"shizukuPretendToBeGooglePlay\": false, \"allowInsecure\": false, \"allowedSigningCertHashes\": \"\", \"exemptFromBackgroundUpdates\": false, \"skipUpdateNotifications\": false, \"about\": \"Donkey Kong 64 Native Recompiled Android Port\", \"refreshBeforeDownload\": false, \"includeZips\": false, \"zippedApkFilterRegEx\": \"\", \"includeTarballs\": false, \"tarballedApkFilterRegEx\": \"\", \"GHReqPrefix\": \"\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub",
+      "apkUrls": "[]"
+    },
+    {
+      "id": "org.gbarecomp.fftarecomp",
+      "url": "https://github.com/james2doyle/ffta-recomp",
+      "author": "james2doyle",
+      "name": "Final Fantasy Tactics Advance Recompiled",
+      "installedVersion": "v2.1",
+      "latestVersion": "v2.1",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"filterReleaseTitlesByRegEx\": \"\", \"filterReleaseNotesByRegEx\": \"\", \"verifyLatestTag\": false, \"sortMethodChoice\": \"date\", \"useLatestAssetDateAsReleaseDate\": false, \"releaseTitleAsVersion\": false, \"trackOnly\": false, \"versionExtractionRegEx\": \"\", \"matchGroupToUse\": \"\", \"versionDetection\": true, \"releaseDateAsVersion\": false, \"useVersionCodeAsOSVersion\": false, \"apkFilterRegEx\": \"FFTARecomp.*arm64.*\\\\.apk$\", \"invertAPKFilter\": false, \"autoApkFilterByArch\": true, \"minimumUpdateAgeDays\": \"\", \"appName\": \"FFTA Recompiled\", \"appAuthor\": \"james2doyle\", \"shizukuPretendToBeGooglePlay\": false, \"allowInsecure\": false, \"allowedSigningCertHashes\": \"\", \"exemptFromBackgroundUpdates\": false, \"skipUpdateNotifications\": false, \"about\": \"Final Fantasy Tactics Advance Native Recompilation\", \"refreshBeforeDownload\": false, \"includeZips\": false, \"zippedApkFilterRegEx\": \"\", \"includeTarballs\": false, \"tarballedApkFilterRegEx\": \"\", \"GHReqPrefix\": \"\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub",
+      "apkUrls": "[]"
     }
   ]
 }
