@@ -4,6 +4,7 @@
 *.apk
 apks/*.apk
 apks/**/*.apk
+apks/*.sha256
 !apks/.gitkeep
 
 # BIOS files (exclude binary dumps, retain directory structure)
