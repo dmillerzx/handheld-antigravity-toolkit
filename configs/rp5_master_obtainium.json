@@ -414,6 +414,54 @@
       "allowIdChange": false,
       "overrideSource": "GitHub",
       "apkUrls": "[]"
+    },
+    {
+      "id": "dev.twilitrealm.dusk",
+      "url": "https://github.com/TwilitRealm/dusklight",
+      "author": "TwilitRealm",
+      "name": "The Legend of Zelda: Twilight Princess (Dusklight)",
+      "installedVersion": "v2.0.3",
+      "latestVersion": "v2.0.3",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"apkFilterRegEx\": \"Dusklight.*android.*arm64.*\\\\.apk$\", \"versionDetection\": true, \"appName\": \"Dusklight\", \"appAuthor\": \"TwilitRealm\", \"about\": \"Twilight Princess Native Reimplementation\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub",
+      "apkUrls": "[]"
+    },
+    {
+      "id": "com.halo.decomp",
+      "url": "https://github.com/FulGerNet/halo-ce-android",
+      "author": "FulGerNet",
+      "name": "Halo: Combat Evolved",
+      "installedVersion": "4.0",
+      "latestVersion": "4.0",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"apkFilterRegEx\": \"Halo-CE.*\\\\.apk$\", \"versionDetection\": true, \"appName\": \"Halo CE\", \"appAuthor\": \"FulGerNet\", \"about\": \"Halo: Combat Evolved Native Decompilation\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub",
+      "apkUrls": "[]"
+    },
+    {
+      "id": "dev.picori.tmc",
+      "url": "https://github.com/999sian/tmc",
+      "author": "999sian",
+      "name": "The Legend of Zelda: The Minish Cap (Project Picori)",
+      "installedVersion": "v0.9.6",
+      "latestVersion": "v0.9.6",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\": false, \"fallbackToOlderReleases\": true, \"apkFilterRegEx\": \"tmc-multi-android.*\\\\.apk$\", \"versionDetection\": true, \"appName\": \"Project Picori\", \"appAuthor\": \"999sian\", \"about\": \"The Minish Cap Native Decompilation\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub",
+      "apkUrls": "[]"
     }
   ]
 }
