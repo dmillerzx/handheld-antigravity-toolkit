@@ -208,6 +208,22 @@
       "apkUrls": "[]"
     },
     {
+      "id": "org.outrun2.c2c",
+      "url": "https://github.com/dmillerzx/outrun2-decomp",
+      "author": "dmillerzx",
+      "name": "OutRun 2006: Coast 2 Coast",
+      "installedVersion": "v1.0.2-preview",
+      "latestVersion": "v1.0.2-preview",
+      "preferredApkIndex": 0,
+      "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"sortMethodChoice\":\"date\",\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"outrun2-c2c-android-.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"minimumUpdateAgeDays\":\"\",\"appName\":\"OutRun 2006: Coast 2 Coast\",\"appAuthor\":\"dmillerzx\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"allowedSigningCertHashes\":\"\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"OutRun 2006 Coast 2 Coast (Android Native Port)\",\"refreshBeforeDownload\":false,\"includeZips\":false,\"zippedApkFilterRegEx\":\"\",\"includeTarballs\":false,\"tarballedApkFilterRegEx\":\"\",\"GHReqPrefix\":\"\"}",
+      "categories": [
+        "Port"
+      ],
+      "allowIdChange": false,
+      "overrideSource": "GitHub",
+      "apkUrls": "[]"
+    },
+    {
       "id": "com.fexed.spacecadetpinball",
       "url": "https://github.com/fexed/Pinball-on-Android",
       "author": "fexed",
