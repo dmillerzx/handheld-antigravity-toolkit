@@ -123,3 +123,61 @@ When invoking `git apply` inside Python contract or unit tests across multiple h
       check=True,
   )
   ```
+
+---
+
+## 6. Native Android App Launcher Icon & Adaptive Mipmap Suite Standard
+
+Every native Android port repository must include a complete suite of launcher icons to ensure professional presentation in Android system launchers, ES-DE, and Daijisho:
+
+1. **Standard & Round Mipmap Icons** (`android/app/src/main/res/`):
+   - `mipmap-mdpi/`: 48x48 (`ic_launcher.png`, `ic_launcher_round.png`)
+   - `mipmap-hdpi/`: 72x72
+   - `mipmap-xhdpi/`: 96x96
+   - `mipmap-xxhdpi/`: 144x144
+   - `mipmap-xxxhdpi/`: 192x192
+2. **Adaptive Icons (API 26+)**:
+   - `mipmap-anydpi-v26/ic_launcher.xml` and `ic_launcher_round.xml` referencing `@color/ic_launcher_background` and `@mipmap/ic_launcher_foreground`.
+   - Foreground assets generated with safe-zone inset (~72% inner canvas).
+   - Background color defined in `res/values/colors.xml`.
+3. **Store / Repository Icon**: `docs/assets/icon.png` (512x512).
+4. **Manifest Registration**: `AndroidManifest.xml` must explicitly declare `android:icon="@mipmap/ic_launcher"` and `android:roundIcon="@mipmap/ic_launcher_round"`.
+
+---
+
+## 7. Handheld Simulation Frame Pacing & FIFO Present Implementation
+
+On Android handhelds running native ports, unthrottled presentation causes physics simulation loops to run at hundreds or thousands of frames per second. Implement microsecond frame pacing in the main render/presenter loop:
+
+```cpp
+bool draw() override {
+    using clock = std::chrono::steady_clock;
+    static auto target_time = clock::now();
+    const auto now = clock::now();
+    if (now < target_time) {
+        std::this_thread::sleep_for(target_time - now);
+    }
+    // Advance target by 16,666,667 nanoseconds (60.00 Hz)
+    target_time = std::max(clock::now(), target_time + std::chrono::nanoseconds(16666667));
+
+    return ps5_renderer_draw(renderer_);
+}
+```
+
+---
+
+## 8. Decompilation Guest Virtual Memory Mapping, ChrSet Indexing & Logging
+
+1. **Explicit Memory Mapping**: Map all guest data tables (racer records, string blobs, AI structures) into virtual guest memory before dispatching execution blocks.
+2. **Diagnostic Fault Logging**: Catch blocks for guest memory unmapped exceptions must log exact addresses to Android logcat:
+   ```cpp
+   catch(const PcRaceUnmapped& x) {
+       *soft_fault = x.address;
+       __android_log_print(ANDROID_LOG_ERROR, "PortDecomp", "run_end soft_fault PcRaceUnmapped at %08X: %s", x.address, x.what());
+   }
+   ```
+3. **Empty String Pointer Fallback**: Check both pointer validity and string content byte:
+   ```cpp
+   const std::uint32_t name_str = (name && m.mapped(name, 1) && m.u8(name)) ? name : kDefaultPlayerStr;
+   ```
+4. **ChrSet Table Slots vs Model Asset IDs**: Distinguish between character definition slot indices (e.g. slots `0..12`) and raw model asset resource IDs (e.g. `197..199`). Passing asset IDs to slot lookup tables causes out-of-bounds reads and infinite asset initialization hangs.

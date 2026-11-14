@@ -218,6 +218,12 @@ Dedicated handheld gaming consoles with physical controls (e.g. RP5) require an 
    - *FFTA Recompiled*: Inject `<boolean name="controls" value="false" />` and `<float name="opacity" value="0.0" />` into `shared_prefs/video_audio_input.xml`.
    - *Project Picori*: Set `"menu_hint_seen": true` in `config.json` to eliminate setup overlays.
 
+### Y. Handheld Simulation Frame Pacing & FIFO Present Invariant (Law 26)
+When developing or deploying native Android handheld decompilations or source ports (e.g. Vulkan / SDL2), never rely on unthrottled swapchains (`VK_PRESENT_MODE_MAILBOX_KHR` or `IMMEDIATE`) or uncalibrated hardware counters (`cntpct_el0`), which cause simulation loops to fast-forward at 2,000+ FPS. Agents must enforce `VK_PRESENT_MODE_FIFO_KHR` and implement a microsecond-precise frame pacer in the presentation loop using `std::chrono::steady_clock` to sleep until the exact frame budget (16.666 ms for 60.00 Hz baseline).
+
+### Z. Decompilation Guest Virtual Memory Mapping & UI String Fallback Law (Law 27)
+In static decompilations where translated guest code interacts with reconstructed runtime tables, all memory addresses accessed by guest subroutines (e.g. rival records, traffic buffers, string tables) must be explicitly mapped in virtual memory (`m.map_const`) before invocation. Catch blocks for unmapped memory must never swallow exceptions silently; they must log faulting addresses via Android logcat. Furthermore, string pointers must be validated for buffer mapping (`m.mapped`) and non-empty content (`m.u8(name) != 0`) before drawing, ensuring fallback to default labels (e.g. `"PLAYER"`).
+
 ---
 
 ## 5. Specialized Skills Reference Directory

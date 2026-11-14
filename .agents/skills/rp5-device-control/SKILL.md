@@ -215,6 +215,22 @@ In stock Retroid OS, the `rotation` quick settings tile sits at index 9 in `sysu
    ```
    *(Note: On the RP5 display panel, `user_rotation 1` is 90° Landscape; `user_rotation 0` is Portrait).*
 
+---
+
+## 9. Android Back Key (`KEYCODE_BACK`) vs. Native Game Surface Lifecycle Guardrail
+
+When automating native Android games, ports (Vulkan/SDL2), or emulators:
+- **Never blindly issue `adb shell input keyevent 4` (KEYCODE_BACK)** to dismiss transient OS dialogs (such as "Use USB for").
+- If the target game activity already has focus (`mCurrentFocus`), `KEYCODE_BACK` triggers `Activity.onBackPressed()`. This signals the Activity to tear down its surface, resulting in:
+  ```text
+  BufferQueueProducer: dequeueBuffer: BufferQueue has been abandoned
+  vulkan: dequeueBuffer failed: No such device (-19)
+  ```
+- **Safe Dialog Dismissal Workflow**:
+  1. Inspect focus: `adb shell "dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'"`
+  2. Use `python scripts/android_ui.py --click-text "CANCEL"` or tap outside the dialog bounding box.
+  3. Never send keyevent 4 when the game activity is `mCurrentFocus`.
+
 
 
 
