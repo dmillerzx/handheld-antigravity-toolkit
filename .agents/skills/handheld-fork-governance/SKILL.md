@@ -181,3 +181,45 @@ bool draw() override {
    const std::uint32_t name_str = (name && m.mapped(name, 1) && m.u8(name)) ? name : kDefaultPlayerStr;
    ```
 4. **ChrSet Table Slots vs Model Asset IDs**: Distinguish between character definition slot indices (e.g. slots `0..12`) and raw model asset resource IDs (e.g. `197..199`). Passing asset IDs to slot lookup tables causes out-of-bounds reads and infinite asset initialization hangs.
+
+---
+
+## 9. Handheld Haptic Lifecycle & Universal Teardown Implementation
+
+When implementing or porting force feedback or tactile rumble to Android handhelds:
+
+1. **Active Non-Paused Guard in Presentation Loop**:
+   Always combine gameplay mode checks with real-time in-game pause flags:
+   ```cpp
+   const bool paused = (context.event_function36.title_pause_flag_95b214 != 0u ||
+                        context.event_function36.title_pause_flag_7d2614 != 0u);
+   const bool in_active_game = (mode == 16u || mode == 18u) && !paused;
+
+   if (in_active_game) {
+       trigger_android_haptics(vib.left, vib.right);
+   } else {
+       trigger_android_haptics(0.0f, 0.0f);
+   }
+   ```
+
+2. **Universal Haptic Stop Across All Devices**:
+   When stopping haptics (`device_id == -1` or `999999`), iterate through all registered haptic handles:
+   ```java
+   public void stop(int device_id) {
+       if (device_id == 999999 || device_id == -1) {
+           for (SDLHaptic haptic : mHaptics) {
+               if (haptic != null && haptic.vib != null) {
+                   try { haptic.vib.cancel(); } catch (Throwable t) {}
+               }
+           }
+           return;
+       }
+       SDLHaptic haptic = getHaptic(device_id);
+       if (haptic != null && haptic.vib != null) {
+           try { haptic.vib.cancel(); } catch (Throwable t) {}
+       }
+   }
+   ```
+
+3. **Activity Lifecycle Hooks**:
+   Explicitly invoke `hapticStop(-1)` inside `SDLActivity.onPause()` and `onDestroy()` to prevent orphan background vibration when suspending the console.

@@ -224,6 +224,9 @@ When developing or deploying native Android handheld decompilations or source po
 ### Z. Decompilation Guest Virtual Memory Mapping & UI String Fallback Law (Law 27)
 In static decompilations where translated guest code interacts with reconstructed runtime tables, all memory addresses accessed by guest subroutines (e.g. rival records, traffic buffers, string tables) must be explicitly mapped in virtual memory (`m.map_const`) before invocation. Catch blocks for unmapped memory must never swallow exceptions silently; they must log faulting addresses via Android logcat. Furthermore, string pointers must be validated for buffer mapping (`m.mapped`) and non-empty content (`m.u8(name) != 0`) before drawing, ensuring fallback to default labels (e.g. `"PLAYER"`).
 
+### AA. Handheld Haptic Lifecycle & In-Game Pause Guard Law (Law 28)
+In native Android handheld game ports with tactile force feedback or rumble (Vulkan, OpenGL, SDL2), haptic vibration must be strictly gated to active, non-paused gameplay (`in_game && !paused`). All pause menu activations, game mode transitions, and Android Activity lifecycle events (`onPause()`, `onDestroy()`) must immediately invoke universal cancellation across all hardware vibrator channels—canceling both Android `Context.VIBRATOR_SERVICE` and all enumerated `InputDevice` controller motors to eliminate infinite rumble latches.
+
 ---
 
 ## 5. Specialized Skills Reference Directory
