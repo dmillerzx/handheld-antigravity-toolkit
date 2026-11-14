@@ -557,3 +557,40 @@ When deploying major community modifications (such as *Mario Kart Wii Deluxe X*)
 1. **Disc Payload Staging**: Deploy `.wbfs` or `.rvz` directly to `<Drive>:\Games\Nintendo - Wii\Mario Kart Wii Deluxe X -Blue Edition-.wbfs`.
 2. **Telemetry & Settings Sync**: Pulsar custom track settings, cup unlocks, and ghost telemetry reside at `/sdcard/Android/data/org.dolphinemu.dolphinemu/files/Wii/shared2/Pulsar/deluxeX/Settings.pul`.
 3. **Dolphin Mirror**: Always sync `/sdcard/.../Pulsar/deluxeX/` to `<Drive>:\Dolphin Settings\Wii\shared2\Pulsar\deluxeX\` to preserve player records across platforms.
+
+---
+
+## 16. External Drive Recycle Bin Purge & Cluster Recovery Protocol (Law 22)
+
+When pruning or replacing large disc images (PS2 `.chd`, GameCube `.rvz`, Xbox `.iso`) on external USB/SATA emulation drives, files often remain trapped in `<Drive>:\$RECYCLE.BIN`.
+
+### A. PowerShell Expansion Trap
+Never pass unescaped `$RECYCLE.BIN` in PowerShell commands:
+- ❌ `python -c "import os; print(os.listdir('D:\$RECYCLE.BIN'))"` -> Evaluates to `D:\.BIN`
+- ❌ `Clear-RecycleBin -DriveLetter D -Force` -> Fails with `Win32Exception: The system cannot find the path specified`
+- ✅ Pass paths via single quotes or dedicated Python scripts: `Path("D:/$RECYCLE.BIN")`
+
+### B. Deterministic Reclamation Script
+```python
+import shutil
+from pathlib import Path
+
+def purge_external_recycle_bin(drive_letter: str) -> int:
+    bin_dir = Path(f"{drive_letter}:/$RECYCLE.BIN")
+    if not bin_dir.exists():
+        return 0
+    freed_bytes = 0
+    for sid_dir in bin_dir.iterdir():
+        if sid_dir.is_dir():
+            for item in sid_dir.iterdir():
+                try:
+                    if item.is_dir():
+                        freed_bytes += sum(f.stat().st_size for f in item.rglob('*') if f.is_file())
+                        shutil.rmtree(item, ignore_errors=True)
+                    else:
+                        freed_bytes += item.stat().st_size
+                        item.unlink(missing_ok=True)
+                except Exception as e:
+                    print(f"Warning: Could not remove {item.name}: {e}")
+    return freed_bytes
+```

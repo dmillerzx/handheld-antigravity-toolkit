@@ -188,6 +188,14 @@ Before executing batch writes, conversions, or staging on external USB/SATA driv
 ### S. GameCube & Wii NKIT Prohibition and 1:1 Redump RVZ Standard (Law 20)
 Never stage or retain GameCube or Wii ROMs in NKIT format (`.nkit.iso`, `.nkit.gcz`, `.nkit.rvz`). NKIT strips partition padding and modifies filesystem structures, breaking cryptographic Redump verification, failing Dolphin hash checks, and causing emulation crashes. Disc images must be sourced from authentic Redump ISOs and encoded to 1:1 lossless `.rvz` (zstd level 5, 128KB chunking) via `dolphin-tool`. Legacy `.nkit.*` files must be identified and replaced.
 
+### T. External Storage Boundary, Download Inviolability & Zero-Loss Verification (Law 21)
+1. **External Storage Boundary**: Never autonomously clean, reorganize, or offload files to external storage volumes (`D:`, `E:`, USB, MicroSD) unless explicitly instructed for specific designated directories.
+2. **Downloads Inviolability**: Active downloads and torrent payloads (`Downloads/`, game collections like `XBOX.Collection.*`, ISO/ROM archives, and `.torrent` metadata) are strictly protected from routine disk cleanup, moving, or reorganizing passes.
+3. **Zero-Loss Verification Invariant**: When migrating or upgrading media/data libraries across network storage or drives, NEVER delete or clean up source files until a comprehensive audit verifies 100% byte-level match (`srcLen == dstLen`), container/file header integrity (e.g. MKV EBML `0x1A 0x45 0xDF 0xA3`), tail seek readability, and application metadata (e.g. Jellyfin `movie.nfo` with verified TMDB ID).
+
+### U. External Emulation Storage Recycle Bin Trapping & Cluster Recovery (Law 22)
+Deleting superseded or redundant disc images on external NTFS/exFAT drives frequently traps gigabytes in `<Drive>:\$RECYCLE.BIN` under user SID folders. Standard `Clear-RecycleBin` commands often fail due to unmapped external volume shell handles. When performing storage audits or cleanups, agents must inspect and purge `<Drive>:\$RECYCLE.BIN` using direct filesystem tools (e.g. Python `shutil.rmtree`), escaping `$` prefixes to avoid PowerShell variable evaluation, and asserting recovered space via `Get-Volume`.
+
 ---
 
 ## 5. Specialized Skills Reference Directory
