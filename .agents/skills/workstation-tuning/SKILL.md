@@ -165,3 +165,81 @@ foreach ($p in $devPaths) {
      - `Energy-Efficient Ethernet = Disabled`
      - `Idle Power Saving = Disabled`
      - `Green Ethernet = Disabled`
+
+---
+
+## 9. Power Plan Sleep Preservation (Dock & Network Wake Guard)
+
+Connected Dell USB-C docks, network adapters, and Windows Update tasks enable AC wake timers by default, causing laptops to wake unexpectedly overnight while docked.
+
+### Enforcement Command:
+```powershell
+# Disable RTC wake timers on AC power
+powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_SLEEP RTCWAKE 0
+powercfg /SETACTIVE SCHEME_CURRENT
+
+# Verify both AC and DC are disabled (0x00000000)
+powercfg /query SCHEME_CURRENT SUB_SLEEP RTCWAKE
+```
+
+---
+
+## 10. Post-Reboot Component Store Servicing (`DISM`)
+
+When Windows Update stages cumulative security updates (e.g. KB5132061), the Component-Based Servicing (CBS) stack sets `RebootRequired` and locks WinSxS component manifests. Running `DISM /StartComponentCleanup` while a reboot is pending causes servicing deadlocks.
+
+### Execution Protocol (`workstation/scripts/post_reboot_cleanup.ps1`):
+1. **Assert Reboot Complete**: Verify that `HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired` and CBS `RebootPending` do not exist.
+2. **Execute Cleanup**: Run `dism.exe /Online /Cleanup-Image /StartComponentCleanup` to flush superseded packages.
+3. **Purge Stale Temp Files**: Remove user temporary files older than 7 days.
+4. **Invariant Re-Check**: Validate `lock_audio_services.ps1`, `DPMService` status, and Dell telemetry suppression.
+
+---
+
+## 11. High-Speed AI Tooling Architecture (`uv`)
+
+To prevent bloating the system Python 3.12 environment with CUDA wheels and heavy machine learning dependencies, maintain Astral's high-speed `uv` package manager in user scope:
+
+- **Binary Location**: `%USERPROFILE%\.local\bin\uv.exe`
+- **PATH Requirement**: Ensure `C:\Users\<user>\.local\bin` is prioritized in User `PATH`.
+- **Defender Exclusion**: Register `%USERPROFILE%\.local\bin` in Windows Defender exclusions to ensure zero-latency process invocation.
+- **Workflow**: Create isolated project environments via `uv venv` and `uv pip install` instead of installing globally.
+
+---
+
+## 12. Microsoft Edge Startup Boost & Background Preload Suppression
+
+Microsoft Edge automatically injects `MicrosoftEdgeAutoLaunch_*` into `HKCU:\Software\Microsoft\Windows\CurrentVersion\Run` and preloads background processes on user logon even when Edge is not in use.
+
+### Enforcement Command:
+```powershell
+# Remove auto-launch Run key
+Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' | 
+    Get-Member -MemberType NoteProperty | 
+    Where-Object { $_.Name -like 'MicrosoftEdgeAutoLaunch*' } | 
+    ForEach-Object { Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name $_.Name -Force }
+
+# Disable Startup Boost and background extensions via Group Policy registry
+$edgePolicy = "HKCU:\SOFTWARE\Policies\Microsoft\Edge"
+if (-not (Test-Path $edgePolicy)) { New-Item -Path $edgePolicy -Force | Out-Null }
+Set-ItemProperty -Path $edgePolicy -Name "StartupBoostEnabled" -Value 0 -Type DWord -Force
+Set-ItemProperty -Path $edgePolicy -Name "BackgroundModeEnabled" -Value 0 -Type DWord -Force
+```
+
+---
+
+## 13. Unbuffered LAN Media Transfers (`Robocopy /J`) & Jellyfin TMDB Standards
+
+When transferring multi-hundred-gigabyte media collections across 2.5GbE/1GbE LAN to network storage (`\\<IP>\Media\Movies`):
+
+1. **Unbuffered I/O**: Use `robocopy "$source" "$dest" "$file" /J /R:3 /W:5 /NP /NDL /NFL` to prevent OS file cache exhaustion and buffer bloat.
+2. **Jellyfin Movie Scraping Standard**: In each movie directory, generate a standardized `movie.nfo` with the official TheMovieDatabase (TMDB) ID:
+   ```xml
+   <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+   <movie>
+     <title>Movie Title</title>
+     <year>YYYY</year>
+     <tmdbid>XXXXX</tmdbid>
+   </movie>
+   ```
+3. **Deterministic Multi-Point Audit**: Run `workstation/scripts/audit_db_movies.ps1` to assert exact byte match (`srcLen == dstLen`), Matroska EBML signature (`0x1A 0x45 0xDF 0xA3`), and tail seek readability before any source cleanup.

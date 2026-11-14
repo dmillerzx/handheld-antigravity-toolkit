@@ -594,3 +594,80 @@ def purge_external_recycle_bin(drive_letter: str) -> int:
                     print(f"Warning: Could not remove {item.name}: {e}")
     return freed_bytes
 ```
+
+---
+
+## 17. Static Recompilation Native Port Ingestion & AMOLED Configuration Runbook (Laws 24 & 25)
+
+When deploying and configuring static recompilation ports and native Android decompilations on dedicated handheld hardware (Retroid Pocket 5):
+
+### A. Android Storage Access Framework (SAF) DocumentsUI Staging (Law 24)
+Deep directory traversal and continuous scrolling inside `com.android.documentsui` file pickers can produce swipe gesture release (`ACTION_UP`) events in the upper screen zone, triggering clicks on `BROWSE FILES IN OTHER APPS` and launching foreign background applications.
+
+**Deterministic 1-Tap Staging Protocol**:
+1. Copy the target ROM temporarily to internal storage:
+   ```powershell
+   adb -s <serial> push "<local_rom_path>" /sdcard/Download/<filename>
+   ```
+2. Launch the port's file picker activity.
+3. Open the navigation drawer (`Show roots` hamburger icon) at coordinates `(x=63, y=108)`:
+   ```powershell
+   adb -s <serial> shell input tap 63 108
+   ```
+4. Select `Downloads` (pinned at `(x=300, y=860)`):
+   ```powershell
+   adb -s <serial> shell input tap 300 860
+   ```
+5. Tap the target ROM card directly at the root grid (e.g. `(x=300, y=360)`).
+6. Clean up the temporary staged file immediately after ingestion:
+   ```powershell
+   adb -s <serial> shell rm /sdcard/Download/<filename>
+   ```
+
+### B. Native Handheld Port AMOLED Pillarbox & Touch Suppression Standard (Law 25)
+
+#### 1. The Legend of Zelda: The Minish Cap (Project Picori)
+- **Package**: `org.projectpicori.picori`
+- **Config Path**: `/sdcard/Android/data/org.projectpicori.picori/files/config.json`
+- **AMOLED Pillarbox Invariant**:
+  - ❌ `"bg_fill": "blurred"` performs bilinear stretching rather than Gaussian blur, creating duplicate vertical slice artifacts in the 150px side pillarboxes on 1080p OLED displays.
+  - ✅ `"bg_fill": "black"` powers off OLED pixels in the pillarbox bars, saving battery and eliminating visual artifacts.
+- **Widescreen & Display Calibration**:
+  ```json
+  {
+    "scale": "16:9",
+    "bg_fill": "black",
+    "menu_hint_seen": true
+  }
+  ```
+
+#### 2. Donkey Kong 64 Recompiled
+- **Package**: `dev.dk64recomp.dk64recomp`
+- **Activity**: `dev.dk64recomp.dk64recomp/.MainActivity`
+- **Touch Overlay Suppression**:
+  - The Android port includes an on-screen touch controller overlay that obscures gameplay on handheld hardware.
+  - Suppress touch controls by tapping the virtual pad toggle button centroid at `(x=1820, y=930)` (`VirtualPadView.toggleHit`).
+
+#### 3. Final Fantasy Tactics Advance Recompiled
+- **Package**: `dev.recompiled.ffta`
+- **ROM Ingestion**:
+  - Stage the GBA ROM directly to `/sdcard/Android/data/dev.recompiled.ffta/files/roms/ffta_usa.gba` to bypass the file picker completely.
+- **Touch Overlay Suppression**:
+  - Suppress on-screen virtual pads by injecting preferences into `shared_prefs/video_audio_input.xml`:
+    ```xml
+    <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+    <map>
+        <boolean name="controls" value="false" />
+        <float name="opacity" value="0.0" />
+    </map>
+    ```
+
+### C. Binary-Safe PowerShell Screenshot Protocol
+PowerShell redirects stdout text streams with UTF-16LE encoding and BOM headers, corrupting PNG files when using `adb exec-out screencap -p > screen.png`.
+Always use device-side capture and pull:
+```powershell
+adb -s <serial> shell screencap -p /sdcard/screen.png
+adb -s <serial> pull /sdcard/screen.png .\screen.png
+adb -s <serial> shell rm /sdcard/screen.png
+```
+

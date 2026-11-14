@@ -196,6 +196,28 @@ Never stage or retain GameCube or Wii ROMs in NKIT format (`.nkit.iso`, `.nkit.g
 ### U. External Emulation Storage Recycle Bin Trapping & Cluster Recovery (Law 22)
 Deleting superseded or redundant disc images on external NTFS/exFAT drives frequently traps gigabytes in `<Drive>:\$RECYCLE.BIN` under user SID folders. Standard `Clear-RecycleBin` commands often fail due to unmapped external volume shell handles. When performing storage audits or cleanups, agents must inspect and purge `<Drive>:\$RECYCLE.BIN` using direct filesystem tools (e.g. Python `shutil.rmtree`), escaping `$` prefixes to avoid PowerShell variable evaluation, and asserting recovered space via `Get-Volume`.
 
+### V. Mutating Action Permission Invariant & Ephemeral Disk Cleanup (Law 23)
+1. **Strict Non-Mutating Audit Boundary**: When inspecting production infrastructure, homelab systems (UniFi, Synology, Proxmox, Cloudflare), or personal cloud platforms (Gmail, Google Drive, Microsoft 365), agents must operate in a strictly read-only advisory capacity. Agents must NEVER autonomously archive, delete, label, modify firewall rules, toggle gateway features, or mutate data without explicit, affirmative user confirmation detailing the exact targets and parameters.
+2. **Ephemeral Disk Cleanup Obligation**: Whenever an agent creates temporary browser profiles, directory copies, or staging scratchpads (such as temporary Chrome debug clones or extraction folders), the agent is strictly obligated to track, terminate associated background processes, and permanently delete the temporary clones prior to concluding the task, recovering all host storage.
+
+### W. Android Storage Access Framework (SAF) DocumentsUI Staging Invariant (Law 24)
+When automating file selection inside Android's native `com.android.documentsui` file picker:
+1. **Never Scroll Deep Directories**: Swiping down through large directory trees (such as `/storage/<SD_ID>/ROMs/`) causes swipe releases (`ACTION_UP`) in the top half of the screen to accidentally trigger clicks on the `BROWSE FILES IN OTHER APPS` drawer, launching unrelated background applications.
+2. **Deterministic 1-Tap Staging Workflow**:
+   - Temporarily copy the target ROM to `/sdcard/Download/<filename>`.
+   - In DocumentsUI, tap `Show roots` at `(x=63, y=108)`.
+   - Tap `Downloads` (pinned at `[300, 860]`).
+   - Select the target file directly from the top of the card grid.
+   - Clean up the temporary staging copy in `/sdcard/Download/` immediately after app ingestion.
+
+### X. Native Handheld Port AMOLED Pillarbox & Touch Suppression Standard (Law 25)
+Dedicated handheld gaming consoles with physical controls (e.g. RP5) require an uncluttered 1080p canvas:
+1. **AMOLED Pillarbox Invariant**: On OLED panels, never retain bilinear blurred background fills (`"bg_fill": "blurred"`), which create repeating vertical slice artifacts. Enforce `"bg_fill": "black"` to power down pillarbox subpixels, eliminate distortion, and maximize battery efficiency.
+2. **Touch Overlay Suppression**: Dedicated handheld consoles must suppress on-screen mobile touch overlays:
+   - *DK64 Recompiled*: Tap the virtual pad toggle button at `(1820, 930)` (`VirtualPadView.toggleHit`).
+   - *FFTA Recompiled*: Inject `<boolean name="controls" value="false" />` and `<float name="opacity" value="0.0" />` into `shared_prefs/video_audio_input.xml`.
+   - *Project Picori*: Set `"menu_hint_seen": true` in `config.json` to eliminate setup overlays.
+
 ---
 
 ## 5. Specialized Skills Reference Directory
@@ -207,4 +229,6 @@ For domain-specific procedures, refer directly to the corresponding skills:
 - **RP5 Hardware & OLED Display Sleep**: [`.agents/skills/rp5-device-control/SKILL.md`](.agents/skills/rp5-device-control/SKILL.md)
 - **Workstation Tuning & Audio Shield**: [`.agents/skills/workstation-tuning/SKILL.md`](.agents/skills/workstation-tuning/SKILL.md)
 - **YouTube Research & Setup Guides**: [`.agents/skills/youtube-research/SKILL.md`](.agents/skills/youtube-research/SKILL.md)
-- **Binary Reverse Engineering (REA)**: [`.agents/skills/reverse-engineer-anything/SKILL.md`](.agents/skills/reverse-engineer-anything/SKILL.md)
+- **Binary Reverse Engineering (REA)**: [`.agents/skills/reverse-engineer-anything/SKILL.md`](.agents/skills/reverse-engineer-anything/SKILL.md)
+- **Google Workspace MCP**: [`.agents/skills/google-workspace-mcp/SKILL.md`](.agents/skills/google-workspace-mcp/SKILL.md)
+- **Homelab Infrastructure Auditing**: [`.agents/skills/homelab-infrastructure-audit/SKILL.md`](.agents/skills/homelab-infrastructure-audit/SKILL.md)
